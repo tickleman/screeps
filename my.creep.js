@@ -3,7 +3,10 @@ var getRoute = require('my.route');
 module.exports =
 {
 
-	/** @param {Creep} creep **/
+	/**
+	 * @param creep Creep
+	 * @param reset_target boolean
+	 **/
 	fill: function(creep, reset_target)
 	{
 		if (!this.full(creep, reset_target)) {
@@ -17,7 +20,10 @@ module.exports =
 		return false;
 	},
 
-	/** @param {Creep} creep **/
+	/**
+	 * @param creep Creep
+	 * @param reset_target boolean
+	 */
 	full: function(creep, reset_target)
 	{
 		if (creep.memory.full) {

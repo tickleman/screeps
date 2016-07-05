@@ -1,7 +1,9 @@
 module.exports =
 {
 
-	/** @param {Structure} tower **/
+	/**
+	 * @param tower Structure
+	 **/
 	run: function(tower)
 	{
 		if (tower.energy) {

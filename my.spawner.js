@@ -36,7 +36,9 @@ module.exports =
 		}
 	},
 
-	/** @param {Creep} creep **/
+	/**
+	 * @param creep Creep
+	 **/
 	findWork: function(creep)
 	{
 		// assign creep

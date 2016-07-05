@@ -1,3 +1,7 @@
+/**
+ * @param creep       Creep
+ * @param destination Structure
+ **/
 module.exports = function(creep, destination)
 {
 

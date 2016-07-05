@@ -9,8 +9,8 @@ var tower         = require('tower');
 module.exports.loop = function ()
 {
 	if (_.filter(Game.creeps, (creep) => true).length < spawner.population) {
-	spawner.autoSpawn();
-}
+		spawner.autoSpawn();
+	}
 
 	for (var name in Game.creeps) {
 		var creep = Game.creeps[name];

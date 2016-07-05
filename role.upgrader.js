@@ -1,7 +1,9 @@
 module.exports =
 {
 
-	/** @param {Creep} creep **/
+	/**
+	 * @param creep Creep
+	 **/
 	run: function(creep)
 	{
 		if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {

@@ -1,7 +1,9 @@
 module.exports =
 {
 
-	/** @param {Creep} creep **/
+	/**
+	 * @param creep Creep
+	 **/
 	run: function(creep)
 	{
 		var target = Game.getObjectById(creep.memory.target);
@@ -28,7 +30,9 @@ module.exports =
 		return true;
 	},
 
-	/** @param {Creep} creep **/
+	/**
+	 * @param creep Creep
+	 **/
 	targets: function(creep)
 	{
 		var                 result = creep.room.find(FIND_STRUCTURES, { filter: structure => structure.energy < structure.energyCapacity && structure.structureType == STRUCTURE_EXTENSION });
