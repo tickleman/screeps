@@ -27,3 +27,35 @@ module.exports = function(source)
 	this.terrains = terrains;
 
 };
+
+/**
+ * Affects a creep to the first available access terrain
+ *
+ * @param creep string|Creep
+ */
+module.exports.prototype.affect = function(creep)
+{
+	for (var terrain in this.terrains) {
+		terrain = this.terrains[terrain];
+		if (!terrain.creep) {
+			terrain.creep = (typeof creep == 'object') ? creep.id : creep;
+			break;
+		}
+	}
+};
+
+/**
+ * Returns available access terrains count
+ *
+ * @return integer
+ */
+module.exports.prototype.availableTerrainsCount = function()
+{
+	var available_terrains_count = 0;
+	for (var terrain in this.terrains) {
+		terrain = this.terrains[terrain];
+		if (!terrain.creep) {
+			available_terrains_count++;
+		}
+	}
+};
