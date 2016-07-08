@@ -1,7 +1,7 @@
 var Creep = require('creep');
 
 var builder   = require('role.builder');
-var harvester = require('role.harvester');
+var harvester = require('role.harvester.simple');
 var repairer  = require('role.repairer');
 var upgrader  = require('role.upgrader');
 
