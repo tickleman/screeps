@@ -22,11 +22,11 @@ module.exports =
 
 	spawnHarvester: function()
 	{
-		var source_id = sources.availableSourceId();
-		var creep_name = Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], undefined, {
-			role: 'harvester', source: source_id, target: Game.spawns.Spawn.id
-		});
-		if (Game.creeps[creep_name]) {
+		if (!Game.spawns.Spawn.canCreateCreep([CARRY, MOVE, WORK])) {
+			var source_id = sources.availableSourceId();
+			Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], undefined, {
+				role: 'harvester', source: source_id, target: Game.spawns.Spawn.id
+			});
 			sources.memorize(true);
 		}
 	}

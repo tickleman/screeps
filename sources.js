@@ -75,7 +75,7 @@ s	 * @param creep Creep
 			// affects creeps
 			for (var creep_name in Game.creeps) {
 				var creep = Game.creeps[creep_name];
-				if (Memory.sources[creep.source]) {
+				if (Memory.sources[creep.memory.source]) {
 					this.affect(creep);
 				}
 			}
