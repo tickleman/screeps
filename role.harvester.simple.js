@@ -1,3 +1,12 @@
+/**
+ * A very simple harvester :
+ * - must be at least CARRY, MOVE, WORK
+ * - must be associated to a source
+ * - must be associated to a target
+ *
+ * It will go to the source, get energy, go to the target and transfer the energy, until it dies.
+ * This is the first creep that starts the colony.
+ */
 module.exports =
 {
 
@@ -35,10 +44,9 @@ module.exports =
 	 **/
 	targets: function(creep)
 	{
-		var                 result = creep.room.find(FIND_STRUCTURES, { filter: structure => structure.energy < structure.energyCapacity && structure.structureType == STRUCTURE_EXTENSION });
-		if (!result.length) result = creep.room.find(FIND_STRUCTURES, { filter: structure => structure.energy < structure.energyCapacity && structure.structureType == STRUCTURE_SPAWN });
-		if (!result.length) result = creep.room.find(FIND_STRUCTURES, { filter: structure => structure.energy < structure.energyCapacity && structure.structureType == STRUCTURE_TOWER });
-		return result;
+		return creep.room.find(FIND_STRUCTURES, { filter: structure =>
+			structure.energy < structure.energyCapacity && structure.structureType == STRUCTURE_SPAWN
+		});
 	}
 
 };
