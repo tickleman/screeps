@@ -1,4 +1,4 @@
-var Terrain = require('terrain.js');
+var Terrain = require('terrain');
 
 /**
  * @param source Source

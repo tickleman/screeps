@@ -1,4 +1,4 @@
-var Source = require('source.js');
+var Source = require('source');
 
 module.exports =
 {

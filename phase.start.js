@@ -1,4 +1,4 @@
-var sources = require('sources.js');
+var sources = require('sources');
 
 module.exports.run = function()
 {
@@ -8,4 +8,5 @@ module.exports.run = function()
 		role: 'harvester', source: closest_source
 	});
 	Memory.sources[closest_source][0].creep = creep.id;
+	Memory.phase = 'harvest';
 };

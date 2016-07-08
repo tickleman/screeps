@@ -8,7 +8,7 @@ var spawner       = require('my.spawner');
 var tower         = require('tower');
 */
 
-var start = require('phase.start.js');
+var start = require('phase.start');
 
 module.exports.loop = function ()
 {
