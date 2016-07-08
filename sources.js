@@ -4,6 +4,23 @@ module.exports =
 {
 
 	/**
+	 * Affects a creep to the first available access terrain of its source
+	 *
+s	 * @param creep Creep
+	 */
+	affect: function(creep)
+	{
+		var source = Memory.sources[creep.memory.source];
+		for (var terrain in source.terrains) {
+			terrain = source.terrains[terrain];
+			if (!terrain.creep) {
+				terrain.creep = creep.id;
+				break;
+			}
+		}
+	},
+
+	/**
 	 * @return string the id of the first source with at least one available access terrain
 	 */
 	availableSourceId: function()
@@ -28,7 +45,12 @@ module.exports =
 		var available_terrains_count = 0;
 		for (var source in Memory.sources) {
 			source = Memory.sources[source];
-			available_terrains_count += source.availableTerrainsCount();
+			for (var terrain in source.terrains) {
+				terrain = source.terrains[terrain];
+				if (!terrain.creep) {
+					available_terrains_count++;
+				}
+			}
 		}
 	  return available_terrains_count;
 	},
@@ -54,7 +76,7 @@ module.exports =
 			for (var creep_name in Game.creeps) {
 				var creep = Game.creeps[creep_name];
 				if (Memory.sources[creep.source]) {
-					Memory.sources[creep.source].affect(creep);
+					this.affect(creep);
 				}
 			}
 		}
