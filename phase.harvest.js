@@ -5,7 +5,7 @@ var harvester = require('role.harvester');
 var repairer  = require('role.repairer');
 var upgrader  = require('role.upgrader');
 
-module.exports.run =
+module.exports.run = function()
 {
 	for (var name in Game.creeps) {
 		var creep = Game.creeps[name];
