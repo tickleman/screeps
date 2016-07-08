@@ -1,3 +1,4 @@
+/*
 var myCreep       = require('my.creep');
 var roleBuilder   = require('role.builder');
 var roleHarvester = require('role.harvester');
@@ -5,9 +6,16 @@ var roleRepairer  = require('role.repairer');
 var roleUpgrader  = require('role.upgrader');
 var spawner       = require('my.spawner');
 var tower         = require('tower');
+*/
+
+var start = require('phase.start.js');
 
 module.exports.loop = function ()
 {
+	if (!Game.creeps) Memory.phase = 'start';
+	if (Memory.phase == 'start') start.run();
+
+	/*
 	if (_.filter(Game.creeps, (creep) => true).length < spawner.population) {
 		spawner.autoSpawn();
 	}
@@ -32,5 +40,5 @@ module.exports.loop = function ()
 			tower.run(structure);
 		}
 	}
-
+	*/
 };
