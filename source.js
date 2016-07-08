@@ -1,5 +1,8 @@
 var Terrain = require('terrain');
 
+const TERRAIN_PLAIN = 'plain';
+const TERRAIN_SWAMP = 'swamp';
+
 /**
  * @param source Source
  */
