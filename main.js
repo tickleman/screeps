@@ -8,7 +8,7 @@ var tower         = require('tower');
 */
 
 var start   = require('phase.start');
-var harvest = require('harvest.start');
+var harvest = require('phase.harvest');
 
 module.exports.loop = function ()
 {
