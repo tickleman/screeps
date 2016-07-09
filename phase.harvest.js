@@ -1,8 +1,8 @@
 
-var Creep = require('creep');
+var Creep   = require('creep');
+var sources = require('sources');
 
 var harvester = require('role.harvester.simple');
-var sources   = require('sources');
 var upgrader  = require('role.upgrader.simple');
 
 /**
@@ -29,10 +29,10 @@ module.exports =
 			}
 			count[creep.memory.role] ++;
 		}
-		if (count['harvester'] < sources.terrainsCount() / 2) {
+		if (count['harvester'] < Math.min(sources.terrainsCount(), 2)) {
 			this.spawnHarvester();
 		}
-		else if (count['upgrader'] < sources.terrainsCount() / 2) {
+		else if (count['upgrader'] < (sources.terrainsCount() - count['harvester']) * 1.5) {
 			this.spawnUpgrader();
 		}
 	},
