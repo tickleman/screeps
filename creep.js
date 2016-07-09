@@ -1,54 +1,54 @@
 
-module.exports =
+/**
+ * Move to source / fill of energy
+ *
+ * @param creep Creep
+ * @param reset_target boolean
+ **/
+module.exports.fill = function(creep, reset_target)
 {
-
-	/**
-	 * @param creep Creep
-	 * @param reset_target boolean
-	 **/
-	fill: function(creep, reset_target)
-	{
-		if (!this.full(creep, reset_target)) {
-			var source = Game.getObjectById(creep.memory.source);
-			if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-				creep.moveTo(source);
-			}
-			return true;
+	if (!this.isFull(creep, reset_target)) {
+		var source = Game.getObjectById(creep.memory.source);
+		if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+			creep.moveTo(source);
 		}
-		return false;
-	},
+		return true;
+	}
+	return false;
+};
 
-	/**
-	 * @param creep Creep
-	 * @param reset_target boolean
-	 */
-	full: function(creep, reset_target)
-	{
-		if (creep.memory.full) {
-			if (!creep.carry.energy) {
-				creep.memory.full = false;
-				if (reset_target) {
-					delete creep.memory.target;
-				}
-			}
+/**
+ * Free memory from dead creeps
+ */
+module.exports.freeMemory = function()
+{
+	for (var creep in Memory.creeps) {
+		if (Memory.creeps[creep]._move && !Game.creeps[creep]) {
+			delete Memory.creeps[creep];
+			console.log('prune creep ' + creep);
 		}
-		else if (creep.carry.energy == creep.carryCapacity) {
-			creep.memory.full = true;
-		}
-		return creep.memory.full;
-	},
+	}
+};
 
-	/**
-	 * Free memory from dead creeps
-	 */
-	free: function()
-	{
-		for (var creep in Memory.creeps) {
-			if (Memory.creeps[creep]._move && !Game.creeps[creep]) {
-				delete Memory.creeps[creep];
-				console.log('prune creep ' + creep);
+/**
+ * Returns true if the creep is full of energy
+ * Store the full information into its memory
+ *
+ * @param creep Creep
+ * @param reset_target boolean
+ */
+module.exports.isFull = function(creep, reset_target)
+{
+	if (creep.memory.full) {
+		if (!creep.carry.energy) {
+			creep.memory.full = false;
+			if (reset_target) {
+				delete creep.memory.target;
 			}
 		}
 	}
-
+	else if (creep.carry.energy == creep.carryCapacity) {
+		creep.memory.full = true;
+	}
+	return creep.memory.full;
 };
