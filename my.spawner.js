@@ -1,15 +1,14 @@
 var roleBuilder   = require('role.builder');
 var roleHarvester = require('role.harvester');
 var roleRepairer  = require('role.repairer');
-var roleUpgrader  = require('role.upgrader');
 
 module.exports =
 {
 
 	builders:   1,
 	harvesters: 4,
-	population: 9,
-	repairers:  2,
+	population: 12,
+	repairers:  5,
 	upgraders:  2,
 
 	autoSpawn: function()

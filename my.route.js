@@ -1,12 +1,12 @@
 /**
- * @param creep       Creep
- * @param destination Structure
+ * @param source
+ * @param destination
  **/
-module.exports = function(creep, destination)
+module.exports = function(source, destination)
 {
 
 	var path = PathFinder.search(
-		creep.pos,
+		source.pos,
 		{ pos: destination.pos, range: 1 },
 		{
 			plainCost: 2,
