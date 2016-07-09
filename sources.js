@@ -34,7 +34,7 @@ module.exports =
 				}
 			}
 		}
-		return null;
+		return source_id;
 	},
 
 	/**
