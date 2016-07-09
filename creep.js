@@ -36,6 +36,19 @@ module.exports =
 			creep.memory.full = true;
 		}
 		return creep.memory.full;
+	},
+
+	/**
+	 * Free memory from dead creeps
+	 */
+	free: function()
+	{
+		for (var creep in Memory.creeps) {
+			if (Memory.creeps[creep]._move && !Game.creeps[creep]) {
+				delete Memory.creeps[creep];
+				console.log('prune creep ' + creep);
+			}
+		}
 	}
 
 };

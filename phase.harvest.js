@@ -52,6 +52,7 @@ module.exports =
 			});
 			// cleanup memory (remove dead harvesters, add new harvester)
 			sources.memorize(true);
+			Creep.free();
 		}
 	},
 
@@ -70,6 +71,7 @@ module.exports =
 			});
 			// cleanup memory (remove dead harvesters, add new harvester)
 			sources.memorize(true);
+			Creep.free();
 		}
 	}
 
