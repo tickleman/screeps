@@ -38,24 +38,6 @@ s	 * @param creep Creep
 	},
 
 	/**
-	 * @return integer The number of available terrains
-	 */
-	availableTerrainsCount: function()
-	{
-		var available_terrains_count = 0;
-		for (var source in Memory.sources) {
-			source = Memory.sources[source];
-			for (var terrain in source.terrains) {
-				terrain = source.terrains[terrain];
-				if (!terrain.creep) {
-					available_terrains_count++;
-				}
-			}
-		}
-	  return available_terrains_count;
-	},
-
-	/**
 	 * List all available sources
 	 * List all accessible points to these sources (capacity)
 	 * Affect existing creeps to their source access terrain
@@ -80,6 +62,18 @@ s	 * @param creep Creep
 				}
 			}
 		}
+	},
+
+	/**
+	 * @return integer The number of available terrains
+	 */
+	terrainsCount: function()
+	{
+		var terrains_count = 0;
+		for (var source in Memory.sources) {
+			terrains_count += Memory.sources[source].terrains.length;
+		}
+		return terrains_count;
 	}
 
 };

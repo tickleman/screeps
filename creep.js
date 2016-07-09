@@ -1,4 +1,3 @@
-var getRoute = require('my.route');
 
 module.exports =
 {
@@ -13,7 +12,6 @@ module.exports =
 			var source = Game.getObjectById(creep.memory.source);
 			if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
 				creep.moveTo(source);
-				//getRoute(creep, source);
 			}
 			return true;
 		}
@@ -27,10 +25,10 @@ module.exports =
 	full: function(creep, reset_target)
 	{
 		if (creep.memory.full) {
-			if (creep.carry.energy == 0) {
+			if (!creep.carry.energy) {
 				creep.memory.full = false;
 				if (reset_target) {
-					creep.memory.target = 0;
+					delete creep.memory.target;
 				}
 			}
 		}
