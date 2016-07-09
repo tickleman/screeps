@@ -8,8 +8,9 @@ var upgrader  = require('role.upgrader.simple');
 /**
  * The harvest phase :
  * - needs at least initialized sources (phase.start)
- * - spawn harvesters until all the sources access terrains capacity is used
+ * - spawn harvesters and upgraders until all the sources access terrains capacity is used
  * - harvesters work on sources and bring the energy back to the spawn
+ * - upgraders work on sources and bring the energy to the room controller
  */
 module.exports =
 {
@@ -28,10 +29,10 @@ module.exports =
 			}
 			count[creep.memory.role] ++;
 		}
-		if (count['harvester'] < sources.terrainsCount() - 1) {
+		if (count['harvester'] < sources.terrainsCount() / 2) {
 			this.spawnHarvester();
 		}
-		if (count['upgrader'] < 1) {
+		if (count['upgrader'] < sources.terrainsCount() / 2) {
 			this.spawnUpgrader();
 		}
 	},
@@ -65,7 +66,7 @@ module.exports =
 			}
 			// spawn a new upgrader
 			Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], undefined, {
-				role: 'upgrader', source: source_id, target: Game.spawns.Spawn.room.controller
+				role: 'upgrader', source: source_id, target: Game.spawns.Spawn.room.controller.id
 			});
 			// cleanup memory (remove dead harvesters, add new harvester)
 			sources.memorize(true);
