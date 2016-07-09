@@ -16,7 +16,7 @@ module.exports =
 
 	run: function()
 	{
-		var count = [];
+		var count = { harvester: 0, upgrader: 0 };
 		var creeps = _.filter(Game.creeps, creep =>
 			creep.memory.role == 'harvester' || creep.memory.role == 'upgrader'
 		);
@@ -28,7 +28,7 @@ module.exports =
 			}
 			count[creep.memory.role] ++;
 		}
-		if (count['harvester'] < sources.terrainsCount()) {
+		if (count['harvester'] < sources.terrainsCount() - 1) {
 			this.spawnHarvester();
 		}
 		if (count['upgrader'] < 1) {
@@ -57,10 +57,18 @@ module.exports =
 	spawnUpgrader: function()
 	{
 		if (!Game.spawns.Spawn.canCreateCreep([CARRY, MOVE, WORK])) {
+			var source_id = sources.availableSourceId();
+			// no available source id ? they must be at least one affected to a dead creep : cleanup
+			if (!source_id) {
+				sources.memorize(true);
+				source_id = sources.availableSourceId();
+			}
 			// spawn a new upgrader
 			Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], undefined, {
 				role: 'upgrader', source: source_id, target: Game.spawns.Spawn.room.controller
 			});
+			// cleanup memory (remove dead harvesters, add new harvester)
+			sources.memorize(true);
 		}
 	}
 
