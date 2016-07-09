@@ -12,7 +12,7 @@ module.exports.affect = function(creep)
 	for (var terrain in source.terrains) {
 		terrain = source.terrains[terrain];
 		if (!terrain.creeps) {
-			console.log('creep ' + creep_name + ' in terrain ' + creep.memory.source + ' : ' + terrain.x + ',' + terrain.y);
+			console.log('creep ' + creep.name + ' in terrain ' + creep.memory.source + ' : ' + terrain.x + ',' + terrain.y);
 			terrain.creeps = terrain.creeps ? (terrain.creeps + 1) : 1;
 			break;
 		}
