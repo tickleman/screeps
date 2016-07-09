@@ -12,15 +12,20 @@ module.exports.use_names = ['bappli', 'fightclub'];
 module.exports.chooseName = function()
 {
 	var name;
+	var creeps_count = _.filter(Game.creeps).length;
 	for (var i = 0; i < this.use_names.length; i ++) {
-		console.log('are there available names for ' + this.use_names[i] + ' ?');
-		if (Game.creeps.length < this[this.use_names[i]].length) {
-			console.log('yes');
-			for (; !name || Game.creeps[name]; name = this.names[Math.floor(Math.random() * this.names.length)]) {}
-			console.log('choose name ' + name);
-			return name;
+		var names = this.use_names[i];
+		if (creeps_count < this[names].length) {
+			var retry = 100;
+			for (;
+				retry && (!name || Game.creeps[name]);
+				name = this[names][Math.floor(Math.random() * this[names].length)], retry --
+			) {}
+			if (!Game.creeps[name]) {
+				return name;
+			}
 		}
+		creeps_count -= this[names].length;
 	}
-	console.log('no available name');
 	return undefined;
 };
