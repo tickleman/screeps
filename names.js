@@ -1,6 +1,7 @@
 
 module.exports.bappli = [
-	'Baptiste', 'Benoît', 'Géraldine', 'Gilles', 'Hoel', 'Olivier', 'Philippe', 'Pierrick', 'Rémi', 'Sébastien', 'Thomas', 'Zhuo'
+	'Baptiste', 'Benoit', 'David', 'Geraldine', 'Gilles', 'Hoel', 'Michel', 'Olivier', 'Philippe', 'Pierrick', 'Remi',
+	'Sebastien', 'Thomas', 'Zhuo'
 ];
 
 module.exports.fightclub = [
