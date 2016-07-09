@@ -1,7 +1,7 @@
 
 var sources = require('sources');
 
-module.exports = require('creep');
+module.exports.__proto__ = require('creep');
 
 /**
  * The base harvester creep :

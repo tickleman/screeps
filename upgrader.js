@@ -1,7 +1,7 @@
 
 var harvester = require('harvester');
 
-module.exports = require('creep');
+module.exports.__proto__ = require('creep');
 
 /**
  * Simple upgraders work like harvesters : their target are the main room controller

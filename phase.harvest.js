@@ -1,6 +1,7 @@
 
 var harvester = require('harvester');
 var upgrader  = require('upgrader');
+var sources   = require('sources');
 
 /**
  * The harvest phase :
@@ -19,10 +20,10 @@ module.exports.run = function()
 		if (creep.memory.role == 'upgrader')  upgrader.work(creep);
 		count[creep.memory.role] ++;
 	}
-	if (count['harvester'] < Math.min(Sources.terrainsCount(), 2)) {
+	if (count['harvester'] < Math.min(sources.terrainsCount(), 2)) {
 		harvester.spawn();
 	}
-	else if (count['upgrader'] < (Sources.terrainsCount() - count['harvester']) * 1.5) {
+	else if (count['upgrader'] < (sources.terrainsCount() - count['harvester']) * 1.5) {
 		upgrader.spawn();
 	}
 };
