@@ -31,11 +31,12 @@ module.exports.spawn = function(role, target)
 			source = sources.availableSourceId(true);
 		}
 		// spawn a new harvester
-		Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], undefined, {
+		var creep_name = Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], undefined, {
 			role:   role ? role : 'harvester',
 			source: source,
 			target: target ? target : Game.spawns.Spawn.id
 		});
+		console.log('spawns ' + role + ' ' + creep_name);
 		// cleanup memory (remove dead harvesters, add new harvester)
 		sources.memorize(true);
 		this.freeMemory();
