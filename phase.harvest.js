@@ -32,7 +32,7 @@ module.exports =
 		if (count['harvester'] < sources.terrainsCount() / 2) {
 			this.spawnHarvester();
 		}
-		if (count['upgrader'] < sources.terrainsCount() / 2) {
+		else if (count['upgrader'] < sources.terrainsCount() / 2) {
 			this.spawnUpgrader();
 		}
 	},
