@@ -23,7 +23,7 @@ module.exports =
 	/**
 	 * @return string the id of the first source with at least one available access terrain
 	 */
-	availableSourceId: function()
+	availableSourceId: function(return_last_source)
 	{
 		for (var source_id in Memory.sources) {
 			var source = Memory.sources[source_id];
@@ -34,7 +34,7 @@ module.exports =
 				}
 			}
 		}
-		return source_id;
+		return return_last_source ? source_id : null;
 	},
 
 	/**

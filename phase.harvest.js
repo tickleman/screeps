@@ -30,48 +30,10 @@ module.exports =
 			count[creep.memory.role] ++;
 		}
 		if (count['harvester'] < Math.min(sources.terrainsCount(), 2)) {
-			this.spawnHarvester();
+			harvester.spawn();
 		}
 		else if (count['upgrader'] < (sources.terrainsCount() - count['harvester']) * 1.5) {
-			this.spawnUpgrader();
-		}
-	},
-
-	spawnHarvester: function()
-	{
-		if (!Game.spawns.Spawn.canCreateCreep([CARRY, MOVE, WORK])) {
-			var source_id = sources.availableSourceId();
-			// no available source id ? they must be at least one affected to a dead creep : cleanup
-			if (!source_id) {
-				sources.memorize(true);
-				source_id = sources.availableSourceId();
-			}
-			// spawn a new harvester
-			Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], undefined, {
-				role: 'harvester', source: source_id, target: Game.spawns.Spawn.id
-			});
-			// cleanup memory (remove dead harvesters, add new harvester)
-			sources.memorize(true);
-			Creep.free();
-		}
-	},
-
-	spawnUpgrader: function()
-	{
-		if (!Game.spawns.Spawn.canCreateCreep([CARRY, MOVE, WORK])) {
-			var source_id = sources.availableSourceId();
-			// no available source id ? they must be at least one affected to a dead creep : cleanup
-			if (!source_id) {
-				sources.memorize(true);
-				source_id = sources.availableSourceId();
-			}
-			// spawn a new upgrader
-			Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], undefined, {
-				role: 'upgrader', source: source_id, target: Game.spawns.Spawn.room.controller.id
-			});
-			// cleanup memory (remove dead harvesters, add new harvester)
-			sources.memorize(true);
-			Creep.free();
+			harvester.span('upgrader', Game.spawns.Spawn.room.controller.id);
 		}
 	}
 
