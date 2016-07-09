@@ -44,16 +44,24 @@ module.exports.spawn = function(role, target)
 };
 
 /**
- * Finds an available target for the harvester : the first not filled-in spawn
+ * Finds an available target for the harvester : the first not filled-in extension / spawn
  *
  * @param creep Creep
  **/
 module.exports.targets = function(creep)
 {
-	return creep.room.find(FIND_STRUCTURES, { filter: structure =>
+	// priority to extensions
+	var targets = creep.room.find(FIND_STRUCTURES, { filter: structure =>
 		structure.energy < structure.energyCapacity
-		&& structure.structureType == STRUCTURE_SPAWN
+		&& structure.structureType == STRUCTURE_EXTENSION
 	});
+	// if no extensions or all extensions are already filled in : go to spawn
+	if (!targets.length) {
+		targets = creep.room.find(FIND_STRUCTURES, { filter: structure =>
+			structure.energy < structure.energyCapacity
+			&& structure.structureType == STRUCTURE_SPAWN
+		});
+	}
 };
 
 /**
