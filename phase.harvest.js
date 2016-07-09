@@ -1,4 +1,5 @@
 
+var builder   = require('builder');
 var harvester = require('harvester');
 var upgrader  = require('upgrader');
 var sources   = require('sources');
@@ -25,5 +26,8 @@ module.exports.run = function()
 	}
 	else if (count['upgrader'] < (sources.terrainsCount() - count['harvester']) * 1.5) {
 		upgrader.spawn();
+	}
+	else if (count['builder'] < Game.spawns.Spawn.room.find(FIND_CONSTRUCTION_SITES).length) {
+		builder.spawn(Game.spawns.Spawn.room.find(FIND_CONSTRUCTION_SITES)[count['builder']].id);
 	}
 };
