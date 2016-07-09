@@ -1,6 +1,6 @@
 
 var Creep   = require('creep');
-var sources = require('sources');
+var Sources = require('sources');
 
 var harvester = require('role.harvester.simple');
 var upgrader  = require('role.upgrader.simple');
@@ -29,10 +29,10 @@ module.exports =
 			}
 			count[creep.memory.role] ++;
 		}
-		if (count['harvester'] < Math.min(sources.terrainsCount(), 2)) {
+		if (count['harvester'] < Math.min(Sources.terrainsCount(), 2)) {
 			harvester.spawn();
 		}
-		else if (count['upgrader'] < (sources.terrainsCount() - count['harvester']) * 1.5) {
+		else if (count['upgrader'] < (Sources.terrainsCount() - count['harvester']) * 1.5) {
 			harvester.span('upgrader', Game.spawns.Spawn.room.controller.id);
 		}
 	}

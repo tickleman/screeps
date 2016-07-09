@@ -8,7 +8,7 @@ module.exports =
 	spawn: function(role, target)
 	{
 		if (!Game.spawns.Spawn.canCreateCreep([CARRY, MOVE, WORK])) {
-			var source = sources.availableSourceId();
+			var source = Sources.availableSourceId();
 			// no available source id ? they must be at least one affected to a dead creep : cleanup
 			if (!source) {
 				Sources.memorize(true);
