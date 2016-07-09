@@ -13,8 +13,10 @@ var sources   = require('sources');
  */
 module.exports.run = function()
 {
-	var count = { harvester: 0, upgrader: 0 };
-	var creeps = _.filter(Game.creeps, creep => ((creep.memory.role == 'harvester') || (creep.memory.role == 'upgrader')));
+	var count = { builder: 0, harvester: 0, upgrader: 0 };
+	var creeps = _.filter(Game.creeps, creep => (
+		(creep.memory.role == 'builder') || (creep.memory.role == 'harvester') || (creep.memory.role == 'upgrader')
+	));
 	for (var name in creeps) {
 		var creep = creeps[name];
 		if (creep.memory.role == 'harvester') harvester.work(creep);
