@@ -1,4 +1,5 @@
 
+var names   = require('names');
 var sources = require('sources');
 
 module.exports.__proto__ = require('creep');
@@ -31,7 +32,7 @@ module.exports.spawn = function(role, target)
 			source = sources.availableSourceId(true);
 		}
 		// spawn a new harvester
-		var creep_name = Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], undefined, {
+		var creep_name = Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], names.chooseName(), {
 			role:   role ? role : 'harvester',
 			source: source,
 			target: target ? target : Game.spawns.Spawn.id
