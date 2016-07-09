@@ -15,7 +15,7 @@ module.exports =
 
 	run: function()
 	{
-		var harvesters = _.filter(Game.creeps, { filter: creep => creep.memory.role == 'harvester' });
+		var harvesters = _.filter(Game.creeps, creep => creep.memory.role == 'harvester' );
 		if (harvesters.length < sources.terrainsCount()) {
 			this.spawnHarvester();
 		}
