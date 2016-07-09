@@ -62,6 +62,7 @@ module.exports.targets = function(creep)
 			&& structure.structureType == STRUCTURE_SPAWN
 		});
 	}
+	return targets;
 };
 
 /**
