@@ -3,6 +3,7 @@ var Creep = require('creep');
 
 var harvester = require('role.harvester.simple');
 var sources   = require('sources');
+var upgrader  = require('role.upgrader.simple');
 
 /**
  * The harvest phase :
@@ -15,15 +16,23 @@ module.exports =
 
 	run: function()
 	{
-		var harvesters = _.filter(Game.creeps, creep => creep.memory.role == 'harvester' );
-		if (harvesters.length < sources.terrainsCount()) {
+		var count = [];
+		var creeps = _.filter(Game.creeps, creep =>
+			creep.memory.role == 'harvester' || creep.memory.role == 'upgrader'
+		);
+		for (var name in creeps) {
+			var creep = creeps[name];
+			if (!Creep.fill(creep)) {
+				if (creep.memory.role == 'harvester') harvester.run(creep);
+				if (creep.memory.role == 'upgrader')  upgrader.run(creep);
+			}
+			count[creep.memory.role] ++;
+		}
+		if (count['harvester'] < sources.terrainsCount()) {
 			this.spawnHarvester();
 		}
-		for (var name in harvesters) {
-			var creep = harvesters[name];
-			if (!Creep.fill(creep)) {
-				harvester.run(creep);
-			}
+		if (count['upgrader'] < 1) {
+			this.spawnUpgrader();
 		}
 	},
 
@@ -42,6 +51,16 @@ module.exports =
 			});
 			// cleanup memory (remove dead harvesters, add new harvester)
 			sources.memorize(true);
+		}
+	},
+
+	spawnUpgrader: function()
+	{
+		if (!Game.spawns.Spawn.canCreateCreep([CARRY, MOVE, WORK])) {
+			// spawn a new upgrader
+			Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], undefined, {
+				role: 'upgrader', source: source_id, target: Game.spawns.Spawn.room.controller
+			});
 		}
 	}
 

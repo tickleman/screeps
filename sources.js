@@ -6,7 +6,7 @@ module.exports =
 	/**
 	 * Affects a creep to the first available access terrain of its source
 	 *
-s	 * @param creep Creep
+	 * @param creep Creep
 	 */
 	affect: function(creep)
 	{
@@ -26,7 +26,7 @@ s	 * @param creep Creep
 	availableSourceId: function()
 	{
 		for (var source_id in Memory.sources) {
-			source = Memory.sources[source_id];
+			var source = Memory.sources[source_id];
 			for (var terrain in source.terrains) {
 				terrain = source.terrains[terrain];
 				if (!terrain.creep) {
