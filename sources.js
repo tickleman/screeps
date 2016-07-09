@@ -11,9 +11,9 @@ module.exports.affect = function(creep)
 	var source = Memory.sources[creep.memory.source];
 	for (var terrain in source.terrains) {
 		terrain = source.terrains[terrain];
-		if (!terrain.creep) {
+		if (!terrain.creeps) {
 			console.log('creep ' + creep_name + ' in terrain ' + creep.memory.source + ' : ' + terrain.x + ',' + terrain.y);
-			terrain.creep = creep.id;
+			terrain.creeps = terrain.creeps ? (terrain.creeps + 1) : 1;
 			break;
 		}
 	}
@@ -28,7 +28,7 @@ module.exports.availableSourceId = function(return_last_source)
 		var source = Memory.sources[source_id];
 		for (var terrain in source.terrains) {
 			terrain = source.terrains[terrain];
-			if (!terrain.creep) {
+			if (!terrain.creeps) {
 				return source_id;
 			}
 		}
