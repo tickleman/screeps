@@ -13,23 +13,36 @@ var sources   = require('sources');
  */
 module.exports.run = function()
 {
-	var count = { builder: 0, harvester: 0, upgrader: 0 };
 	var creeps = _.filter(Game.creeps, creep => (
 		(creep.memory.role == 'builder') || (creep.memory.role == 'harvester') || (creep.memory.role == 'upgrader')
 	));
+	var count = { builder: 0, harvester: 0, upgrader: 0 };
+	// make creeps work, and count them
 	for (var name in creeps) {
 		var creep = creeps[name];
+		if (creep.memory.role == 'builder')   builder.work(creep);
 		if (creep.memory.role == 'harvester') harvester.work(creep);
 		if (creep.memory.role == 'upgrader')  upgrader.work(creep);
 		count[creep.memory.role] ++;
 	}
+	// priority : 2 harvesters
 	if (count['harvester'] < Math.min(sources.terrainsCount(), 2)) {
 		harvester.spawn();
 	}
-	else if (count['upgrader'] < (sources.terrainsCount() - count['harvester']) * 1.5) {
-		upgrader.spawn();
-	}
-	else if (count['builder'] < Game.spawns.Spawn.room.find(FIND_CONSTRUCTION_SITES).length) {
-		builder.spawn(Game.spawns.Spawn.room.find(FIND_CONSTRUCTION_SITES)[count['builder']].id);
+	else {
+		// if there are construction sites : builders : 1 per construction site
+		var construction_sites = Game.spawns.Spawn.room.find(FIND_CONSTRUCTION_SITES);
+		if (count['builder'] < construction_sites.length) {
+			builder.spawn(Game.spawns.Spawn.room.find(FIND_CONSTRUCTION_SITES)[count['builder']].id);
+		}
+		// and last, upgraders : only if they are not replaced by builders
+		else {
+			// if there is no construction sites : 1.5x more upgraders than free construction sites
+			var more_upgraders = !construction_sites.length ? 1.5 : 1;
+			var need_upgraders = Math.max(1, sources.terrainsCount() - count['harvester'] - count['builder']) * more_upgraders;
+			if (count['upgrader'] < need_upgraders) {
+				upgrader.spawn();
+			}
+		}
 	}
 };
