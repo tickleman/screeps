@@ -38,7 +38,9 @@ module.exports.run = function()
 		// - cost 250 energy units only instead of 550
 		// - harvests 4 energy units per tick instead of 10
 		if (!count['harvester'] && (Game.spawns.Spawn.room.energyAvailable < 550)) {
-			harvester.body_parts = [MOVE, WORK, WORK];
+			harvester.body_parts = (Game.spawns.Spawn.room.energyAvailable >= 250)
+				? [MOVE, WORK, WORK]
+				: [MOVE, WORK];
 		}
 		harvester.spawn();
 	}
@@ -48,7 +50,9 @@ module.exports.run = function()
 		// - costs 300 energy units only instead of 550
 		// - moves 150 energy units per tick instead of 250
 		if (!count['carrier'] && (Game.spawns.Spawn.room.energyAvailable < 550)) {
-			carrier.body_parts = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
+			carrier.body_parts = (Game.spawns.Spawn.room.energyAvailable >= 300)
+				? [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
+				: [CARRY, MOVE];
 		}
 		carrier.spawn();
 	}
