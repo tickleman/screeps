@@ -21,9 +21,10 @@ module.exports.role = 'carrier';
 /**
  * The carrier source work is to pickup the dropped energy
  *
- * @param creep Creep
+ * @param creep  Creep
+ * @param source energy
  */
-module.exports.sourceJob = function(creep)
+module.exports.sourceJob = function(creep, source)
 {
 	return creep.pickup(source);
 };

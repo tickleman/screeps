@@ -286,7 +286,7 @@ module.exports.work = function(creep)
 {
 	if (!this.fill(creep)) {
 		var target = Game.getObjectById(creep.memory.target);
-		if (this.targetJobDone(creep, target)) {
+		if (!target || this.targetJobDone(creep, target)) {
 			this.findTarget(creep);
 		}
 		else if (this.targetJob(creep, target) == ERR_NOT_IN_RANGE) {
