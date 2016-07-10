@@ -82,10 +82,16 @@ module.exports.findSource = function(creep)
 		if (typeof source == 'string') {
 			source = Game.getObjectById(source);
 		}
-		if (creep instanceof Creep) creep.memory.source = source.id;
+		if (creep instanceof Creep) {
+			creep.memory.source = source.id;
+			creep.say('source found');
+		}
 		return source;
 	}
-	if (creep instanceof Creep) delete creep.memory.source;
+	if (creep instanceof Creep) {
+		delete creep.memory.source;
+		creep.say('no source');
+	}
 	return undefined;
 };
 
@@ -113,10 +119,16 @@ module.exports.findTarget = function(creep)
 {
 	var targets = this.targets(creep);
 	if (targets.length) {
-		if (creep instanceof Creep) creep.memory.target = targets[0].id;
+		if (creep instanceof Creep) {
+			creep.memory.target = targets[0].id;
+			creep.say('target found');
+		}
 		return targets[0];
 	}
-	if (creep instanceof Creep) delete creep.memory.target;
+	if (creep instanceof Creep) {
+		delete creep.memory.target;
+		creep.say('no target');
+	}
 	return undefined;
 };
 
