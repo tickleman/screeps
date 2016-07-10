@@ -1,5 +1,5 @@
 
-var Terrain = require('terrain');
+var Terrain = require('source.terrain');
 
 const TERRAIN_PLAIN = 'plain';
 const TERRAIN_SWAMP = 'swamp';
@@ -9,9 +9,6 @@ const TERRAIN_SWAMP = 'swamp';
  */
 module.exports = function(source)
 {
-
-	/** @var id string */
-	this.id = source.id;
 
 	/** @var terrains Terrain[] */
 	var terrains = [];

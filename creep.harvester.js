@@ -14,6 +14,12 @@ module.exports.__proto__ = require('creep');
  */
 
 /**
+ * Body parts for a simple harvester
+ * CARRY, MOVE, WORK Consume 200 energy units
+ */
+module.exports.body_parts = [CARRY, MOVE, WORK];
+
+/**
  * Spawns a simple harvester
  * - has CARRY, MOVE, WORK
  * - go to a source with an available terrain
@@ -24,7 +30,7 @@ module.exports.__proto__ = require('creep');
  */
 module.exports.spawn = function(role, target)
 {
-	if (!Game.spawns.Spawn.canCreateCreep([CARRY, MOVE, WORK])) {
+	if (!Game.spawns.Spawn.canCreateCreep(this.body_parts)) {
 		var source = sources.availableSourceId();
 		// no available source id ? they must be at least one affected to a dead creep : cleanup
 		if (!source) {
@@ -35,7 +41,7 @@ module.exports.spawn = function(role, target)
 		var creep_name = Game.spawns.Spawn.createCreep([CARRY, MOVE, WORK], names.chooseName(), {
 			role:   role ? role : 'harvester',
 			source: source,
-			target: target ? target : Game.spawns.Spawn.id
+			target: (target !== undefined) ? target : Game.spawns.Spawn.id
 		});
 		console.log('spawns ' + role + ' ' + creep_name);
 		// cleanup memory (remove dead harvesters, add new harvester)

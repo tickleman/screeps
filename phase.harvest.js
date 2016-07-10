@@ -1,7 +1,7 @@
 
-var builder   = require('builder');
-var harvester = require('harvester');
-var upgrader  = require('upgrader');
+var builder   = require('creep.builder');
+var harvester = require('creep.harvester');
+var upgrader  = require('creep.upgrader');
 var sources   = require('sources');
 
 /**
@@ -10,10 +10,11 @@ var sources   = require('sources');
  * - spawn harvesters and upgraders until all the sources access terrains capacity is used
  * - harvesters work on sources and bring the energy back to the spawn
  * - upgraders work on sources and bring the energy to the room controller
+ *
+ * TODO Phase specialization if 5 built and filled-in extensions
  */
 module.exports.run = function()
 {
-
 	var creeps = _.filter(Game.creeps, creep => (
 		(creep.memory.role == 'builder') || (creep.memory.role == 'harvester') || (creep.memory.role == 'upgrader')
 	));
@@ -48,6 +49,17 @@ module.exports.run = function()
 			var need_upgraders = Math.max(1, sources.terrainsCount() - count['harvester'] - count['builder']) * more_upgraders;
 			if (count['upgrader'] < need_upgraders) {
 				upgrader.spawn();
+			}
+			else {
+
+				// if there is at least 1 harvester and 1 upgrader, and if there are 5 filled in extensions : next phase
+				var extensions = Game.spawns.Spawn.room.find(FIND_MY_STRUCTURES, { filter: structure =>
+					(structure.structureType == STRUCTURE_EXTENSION)
+					&& (structure.energy == structure.energyCapacity)
+				});
+				if (extensions.length >= 5) {
+					Memory.phase = 'specialization';
+				}
 			}
 		}
 

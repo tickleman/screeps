@@ -1,5 +1,5 @@
 
-var harvester = require('harvester');
+var harvester = require('creep.harvester');
 
 module.exports.__proto__ = require('creep');
 
