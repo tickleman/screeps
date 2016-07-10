@@ -9,10 +9,10 @@ module.exports.__proto__ = require('creep.builder');
 
 /**
  * Body parts for a heavy builder
- * MOVE, WORK x 5
+ * CARRY x 2, MOVE, WORK x 4
  * - consume 550 energy units
  */
-module.exports.body_parts = [MOVE, WORK, WORK, WORK, WORK, WORK];
+module.exports.body_parts = [CARRY, CARRY, MOVE, WORK, WORK, WORK, WORK];
 
 /**
  * Always full : we never fill the heavy builder : a carrier will bring him energy

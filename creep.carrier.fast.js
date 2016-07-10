@@ -57,12 +57,13 @@ module.exports.targets = function(creep)
 		return targets;
 	}
 	// next target : builders
-	targets = creep.room.find(FIND_MY_CREEPS, { filter: creep =>
+	var room = creep ? creep.room : Game.spawns.Spawn.room;
+	targets = room.find(FIND_MY_CREEPS, { filter: creep =>
 		(creep.memory.role == 'builder') && (creep.carry.energy < creep.carryCapacity)
 	});
 	// next target : the upgrader
 	if (!targets.length) {
-		targets = creep.room.find(FIND_MY_CREEPS, { filter: creep =>
+		targets = room.find(FIND_MY_CREEPS, { filter: creep =>
 			(creep.memory.role == 'upgrader') && (creep.carry.energy < creep.carryCapacity)
 		});
 	}

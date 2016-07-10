@@ -61,7 +61,7 @@ module.exports.run = function()
 	// then : 1 builder per construction site, if needed
 	else {
 		var construction_sites = Game.spawns.Spawn.room.find(FIND_CONSTRUCTION_SITES);
-		if (count['builder'] < construction_sites.length) {
+		if (count['builder'] < construction_sites.length && count['builder'] < 3) {
 			builder.spawn();
 		}
 	}
