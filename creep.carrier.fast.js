@@ -53,6 +53,12 @@ module.exports.targets = function(creep)
 {
 	// priority to harvester's target : extensions, then spawn, that need energy
 	var targets = this.__proto__.targets(creep);
+	// next target : builders
+	if (!targets.length) {
+		targets = creep.room.find(FIND_MY_CREEPS, { filter: creep =>
+		(creep.memory.role == 'builder') && (creep.carry.energy < creep.carryCapacity)
+		});
+	}
 	// next target : the upgrader
 	if (!targets.length) {
 		targets = creep.room.find(FIND_MY_CREEPS, { filter: creep =>

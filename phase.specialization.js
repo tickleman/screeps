@@ -1,4 +1,5 @@
 
+var builder   = require('creep.builder.heavy');
 var carrier   = require('creep.carrier.fast');
 var harvester = require('creep.harvester.heavy');
 var upgrader  = require('creep.upgrader.heavy');
@@ -13,17 +14,21 @@ var sources   = require('sources');
 module.exports.run = function()
 {
 	var creeps = _.filter(Game.creeps, creep => (
-		(creep.memory.role == 'carrier') || (creep.memory.role == 'harvester') || (creep.memory.role == 'upgrader')
+		(creep.memory.role == 'builder')
+		|| (creep.memory.role == 'carrier')
+		|| (creep.memory.role == 'harvester')
+		|| (creep.memory.role == 'upgrader')
 	));
-	var count = { carrier: 0, harvester: 0, upgrader: 0 };
+	var count = { builder: 0, carrier: 0, harvester: 0, upgrader: 0 };
 
 	// make creeps work, and count them
 	for (var name in creeps) {
 		var creep = creeps[name];
-		if (creep.memory.role == 'carrier')   carrier.work(creep);
+		if      (creep.memory.role == 'builder')   builder.work(creep);
+		else if (creep.memory.role == 'carrier')   carrier.work(creep);
 		else if (creep.memory.role == 'harvester') harvester.work(creep);
 		else if (creep.memory.role == 'upgrader')  upgrader.work(creep);
-		// don't count initial harvesters
+		// don't count initial builders / harvesters
 		if ((creep.body.length > 3) || (creep.memory.role == 'upgrader')) {
 			count[creep.memory.role]++;
 		}
@@ -57,7 +62,7 @@ module.exports.run = function()
 	else {
 		var construction_sites = Game.spawns.Spawn.room.find(FIND_CONSTRUCTION_SITES);
 		if (count['builder'] < construction_sites.length) {
-			builder.spawn(Game.spawns.Spawn.room.find(FIND_CONSTRUCTION_SITES)[count['builder']].id);
+			builder.spawn();
 		}
 	}
 
