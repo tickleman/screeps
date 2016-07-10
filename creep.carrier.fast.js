@@ -9,9 +9,9 @@ module.exports.__proto__ = require('creep.harvester');
 
 /**
  * Body parts for a fast carrier
- * CARRY x 6, MOVE x5, consumes 550 energy units, moves 250 energy / tick
+ * CARRY x 5, MOVE x5, consumes 500 energy units, moves 250 energy / tick
  */
-module.exports.body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
+module.exports.body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
 
 /**
  * Finds a new target each time it finishes filling in
