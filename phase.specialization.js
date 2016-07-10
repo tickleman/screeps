@@ -21,8 +21,8 @@ module.exports.run = function()
 	for (var name in creeps) {
 		var creep = creeps[name];
 		if (creep.memory.role == 'carrier')   carrier.work(creep);
-		if (creep.memory.role == 'harvester') harvester.work(creep);
-		if (creep.memory.role == 'upgrader')  upgrader.work(creep);
+		else if (creep.memory.role == 'harvester') harvester.work(creep);
+		else if (creep.memory.role == 'upgrader')  upgrader.work(creep);
 		// don't count initial harvesters
 		if ((creep.body.length > 3) || (creep.memory.role == 'upgrader')) {
 			count[creep.memory.role]++;
