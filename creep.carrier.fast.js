@@ -53,17 +53,26 @@ module.exports.targets = function(creep)
 {
 	// priority to harvester's target : extensions, then spawn, that need energy
 	var targets = this.__proto__.targets(creep);
-	// next target : builders
-	if (!targets.length) {
-		targets = creep.room.find(FIND_MY_CREEPS, { filter: creep =>
-		(creep.memory.role == 'builder') && (creep.carry.energy < creep.carryCapacity)
-		});
+	if (targets.length) {
+		return targets;
 	}
+	// next target : builders
+	targets = creep.room.find(FIND_MY_CREEPS, { filter: creep =>
+		(creep.memory.role == 'builder') && (creep.carry.energy < creep.carryCapacity)
+	});
 	// next target : the upgrader
 	if (!targets.length) {
 		targets = creep.room.find(FIND_MY_CREEPS, { filter: creep =>
 			(creep.memory.role == 'upgrader') && (creep.carry.energy < creep.carryCapacity)
 		});
 	}
+	// the creep that have the less energy first
+	targets.sort(function(creep1, creep2) {
+		var fill1 = creep1.carry.energy / creep1.carryCapacity;
+		var fill2 = creep2.carry.energy / creep2.carryCapacity;
+		if (fill1 < fill2) return -1;
+		if (fill1 > fill2) return 1;
+		return 0;
+	});
 	return targets;
 };
