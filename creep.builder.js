@@ -1,50 +1,36 @@
 
-var harvester = require('creep.harvester');
-
 module.exports.__proto__ = require('creep');
 
 /**
- * Simple upgraders work like harvesters : their target are the main room controller
- *
- * @param construction_site string constrictuion site id
+ * @type string
  */
-module.exports.spawn = function(construction_site)
+module.exports.role = 'builder';
+
+/**
+ * The target job is to build the target
+ *
+ * @param creep  Creep
+ * @param target StructureController
+ * @return integer
+ */
+module.exports.targetJob = function(creep, target)
 {
-	return harvester.spawn('builder', construction_site);
+	return creep.build(target);
 };
 
 /**
+ * Targets are construction sites
+ * If there are no construction sites : the builder becomes an upgrader
+ *
  * @param creep Creep
+ * @return ConstructionSite[]
  **/
 module.exports.targets = function(creep)
 {
-	return creep.room.find(FIND_CONSTRUCTION_SITES);
-};
-
-/**
- * @param creep Creep
- **/
-module.exports.work = function(creep)
-{
-	if (!this.fill(creep, true)) {
-		var target = Game.getObjectById(creep.memory.target);
-		// build
-		if (target) {
-			if (creep.build(target) == ERR_NOT_IN_RANGE) {
-				creep.moveTo(target);
-			}
-		}
-		// find target
-		else {
-			var targets = this.targets(creep);
-			if (targets.length) {
-				creep.memory.target = targets[0].id;
-			}
-			// nothing more to build : become an upgrader
-			else {
-				creep.memory.role = 'upgrader';
-				creep.memory.target = creep.room.controller;
-			}
-		}
+	var room = creep ? creep.room : Game.spawns.Spawn.room;
+	var targets = room.find(FIND_CONSTRUCTION_SITES);
+	if (!targets.length) {
+		creep.memory.role = 'upgrader';
 	}
+	return targets;
 };

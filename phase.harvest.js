@@ -10,8 +10,6 @@ var sources   = require('sources');
  * - spawn harvesters and upgraders until all the sources access terrains capacity is used
  * - harvesters work on sources and bring the energy back to the spawn
  * - upgraders work on sources and bring the energy to the room controller
- *
- * TODO Phase specialization if 5 built and filled-in extensions
  */
 module.exports.run = function()
 {

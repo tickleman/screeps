@@ -1,25 +1,38 @@
-
-var harvester = require('creep.harvester');
+/**
+ * The base controller upgrader creep :
+ * - CARRY, MOVE, WORK body parts
+ * - associated to an energy source access terrain
+ * - targets extensions then spawn that need energy
+ *
+ * It will go to the source, get energy, go to the target and transfer the energy, until it dies.
+ * This is the first creep that starts the colony.
+ */
 
 module.exports.__proto__ = require('creep');
 
 /**
- * Simple upgraders work like harvesters : their target are the main room controller
+ * @type string
  */
-module.exports.spawn = function()
+module.exports.role = 'upgrader';
+
+/**
+ * The target job is to upgrade the controller
+ *
+ * @param creep  Creep
+ * @param target StructureController
+ * @returns integer
+ */
+module.exports.targetJob = function(creep, target)
 {
-	return harvester.spawn('upgrader', Game.spawns.Spawn.room.controller.id);
+	return creep.upgradeController(target);
 };
 
 /**
- * @param creep Creep
- **/
-module.exports.work = function(creep)
+ * Targets are the room controller
+ *
+ * @return StructureController[]
+ */
+module.exports.targets = function()
 {
-	if (!this.fill(creep)) {
-		var controller = Game.getObjectById(creep.memory.target);
-		if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE) {
-			creep.moveTo(controller);
-		}
-	}
+	return [Game.spawns.Spawn.room.controller];
 };

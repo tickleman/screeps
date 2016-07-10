@@ -1,22 +1,35 @@
+/**
+ * The heavy harvester :
+ * - goes (slowly) to a free source
+ * - stays near it for its all live
+ * - it harvests the energy (10 / tick) and throw it on the ground
+ */
 
 module.exports.__proto__ = require('creep.harvester');
 
 /**
  * Body parts for a heavy harvester
- * MOVE, WORK x 9, consume 550 energy units
+ * MOVE, WORK x 5
+ * - consume 550 energy units
  */
-module.exports.body_parts = [MOVE, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK];
+module.exports.body_parts = [MOVE, WORK, WORK, WORK, WORK, WORK];
 
 /**
- * Fill returns always false (no carry part : energy is thrown on the ground)
+ * Always return false : we never fill the heavy harvester : energy is thrown on the ground
  *
- * @param creep Creep
+ * @return boolean false
  **/
-module.exports.fill = function(creep)
+module.exports.isFull = function()
 {
-	var source = Game.getObjectById(creep.memory.source);
-	if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-		creep.moveTo(source);
-	}
 	return false;
+};
+
+/**
+ * This creep has no target
+ *
+ * @returns array []
+ */
+module.exports.targets = function()
+{
+	return [];
 };

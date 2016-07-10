@@ -1,5 +1,5 @@
 
-var carrier   = require('creep.carrier.light');
+var carrier   = require('creep.carrier.fast');
 var harvester = require('creep.harvester.heavy');
 var upgrader  = require('creep.upgrader');
 var sources   = require('sources');
@@ -23,18 +23,21 @@ module.exports.run = function()
 		if (creep.memory.role == 'carrier')   carrier.work(creep);
 		if (creep.memory.role == 'harvester') harvester.work(creep);
 		if (creep.memory.role == 'upgrader')  upgrader.work(creep);
-		count[creep.memory.role] ++;
+		// don't count initial harvesters
+		if ((creep.body.length > 3) || (creep.memory.role == 'upgrader')) {
+			count[creep.memory.role]++;
+		}
 	}
 
-	// priority : 1 harvester
+	// priority : 1 heavy harvester
 	if (!count['harvester']) {
 		harvester.spawn();
 	}
-	// then : 1 carrier
+	// then : 1 light carrier
 	else if (!count['carrier']) {
 		carrier.spawn();
 	}
-	// then : 1 upgrader
+	// then : 1 standard upgrader
 	else if (!count['upgrader']) {
 		upgrader.spawn();
 	}
