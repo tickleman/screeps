@@ -84,7 +84,7 @@ module.exports.findSource = function(creep)
 		}
 		if (creep instanceof Creep) {
 			creep.memory.source = source.id;
-			creep.say('source found');
+			creep.say('source');
 		}
 		return source;
 	}
@@ -121,7 +121,7 @@ module.exports.findTarget = function(creep)
 	if (targets.length) {
 		if (creep instanceof Creep) {
 			creep.memory.target = targets[0].id;
-			creep.say('target found');
+			creep.say('target');
 		}
 		return targets[0];
 	}
