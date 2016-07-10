@@ -2,10 +2,10 @@
  * The fast carrier :
  * - is as fast as it can (outside of swamps)
  * - goes to energy dropped on the ground by heavy harvesters
- * - bring this energy to the spawn
+ * - bring this energy to extensions and spawn
  */
 
-module.exports.__proto__ = require('creep');
+module.exports.__proto__ = require('creep.harvester');
 
 /**
  * Body parts for a fast carrier
