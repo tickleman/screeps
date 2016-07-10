@@ -73,10 +73,10 @@ module.exports.findSource = function(creep)
 {
 	var sources = this.sources(creep);
 	if (sources.length) {
-		creep.memory.source = sources[0].id;
+		if (creep instanceof Creep) creep.memory.source = sources[0].id;
 		return sources[0];
 	}
-	delete creep.memory.source;
+	if (creep instanceof Creep) delete creep.memory.source;
 	return undefined;
 };
 
@@ -104,10 +104,10 @@ module.exports.findTarget = function(creep)
 {
 	var targets = this.targets(creep);
 	if (targets.length) {
-		creep.memory.target = targets[0].id;
+		if (creep instanceof Creep) creep.memory.target = targets[0].id;
 		return targets[0];
 	}
-	delete creep.memory.target;
+	if (creep instanceof Creep) delete creep.memory.target;
 	return undefined;
 };
 
@@ -165,10 +165,11 @@ module.exports.isFull = function(creep, find_next_target)
  * The work the creep must do at its source
  * Or how it gets its energy from source
  *
- * @param creep Creep
+ * @param creep  Creep
+ * @param source Source
  * @return integer
  */
-module.exports.sourceJob = function(creep)
+module.exports.sourceJob = function(creep, source)
 {
 	return creep.harvest(source);
 };
