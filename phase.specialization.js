@@ -31,15 +31,21 @@ module.exports.run = function()
 
 	// priority : 1 heavy harvester
 	if (!count['harvester']) {
+		// if there is not enough energy, we need a light harvester :
+		// - cost 250 energy units only instead of 550
+		// - harvests 4 energy units per tick instead of 10
+		if (Game.spawns.Spawn.room.energyAvailable < 550) {
+			harvester.body_parts = [MOVE, WORK, WORK];
+		}
 		harvester.spawn();
 	}
 	// then : 1 light carrier
 	else if (!count['carrier']) {
-		if (Game.spawns.Spawn.room.energyAvailable == 300) {
-			// if there is not enough energy, we need a light carrier :
-			// - costs 300 energy units only
-			// - moves 150 energy units per tick
-			carrier.body_part = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
+		// if there is not enough energy, we need a light carrier :
+		// - costs 300 energy units only instead of 550
+		// - moves 150 energy units per tick instead of 250
+		if (Game.spawns.Spawn.room.energyAvailable < 550) {
+			carrier.body_parts = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
 		}
 		carrier.spawn();
 	}
