@@ -19,6 +19,16 @@ module.exports.targetJob = function(creep, target)
 };
 
 /**
+ * Job is done when the target does not exist anymore : so it is not done until it is replaced with the built structure
+ *
+ * @return boolean
+ */
+module.exports.targetJobDone = function()
+{
+	return false;
+};
+
+/**
  * Targets are construction sites
  * If there are no construction sites : the builder becomes an upgrader
  *
