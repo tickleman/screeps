@@ -54,8 +54,13 @@ module.exports.fill = function(creep, find_next_target)
 {
 	if (!this.isFull(creep, find_next_target)) {
 		var source = Game.getObjectById(creep.memory.source);
-		if (this.sourceJob(creep) == ERR_NOT_IN_RANGE) {
-			creep.moveTo(source);
+		if (!source) {
+			source = this.findSource(creep);
+		}
+		if (source) {
+			if (this.sourceJob(creep) == ERR_NOT_IN_RANGE) {
+				creep.moveTo(source);
+			}
 		}
 		return true;
 	}
