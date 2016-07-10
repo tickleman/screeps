@@ -13,6 +13,21 @@ var sources = require('sources');
 module.exports.AUTO = 'AUTO';
 
 /**
+ * Body parts costs
+ *
+ * @type int[]
+ */
+module.exports.COST = [];
+module.exports.COST[ATTACK]        = 80;
+module.exports.COST[CARRY]         = 50;
+module.exports.COST[CLAIM]         = 50;
+module.exports.COST[HEAL]          = 150;
+module.exports.COST[MOVE]          = 50;
+module.exports.COST[RANGED_ATTACK] = 150;
+module.exports.COST[TOUGH]         = 10;
+module.exports.COST[WORK]          = 100;
+
+/**
  * This value for spawn() enables the automatic available source terrain finder
  *
  * @type string
@@ -49,6 +64,83 @@ module.exports.find_next_target = false;
  * @type string
  */
 module.exports.role = 'creep';
+
+/**
+ * Calculate body parts you can build immediately
+ *
+ * @param from_body_parts integer[] @default this.body_parts
+ * @param available_energy integer @default Game.spawns.Spawn.room.energyAvailable
+ * @return integer[] null if the minimum body parts count costs too much energy
+ */
+module.exports.bodyParts = function(from_body_parts, available_energy)
+{
+	if (from_body_parts == undefined) {
+		from_body_parts = this.body_parts;
+	}
+	if (available_energy == undefined) {
+		available_energy = Game.spawns.Spawn.room.energyAvailable;
+	}
+	var cost = this.cost(from_body_parts);
+	if (cost >= available_energy) {
+		return from_body_parts;
+	}
+	// parts count and ratio = 1 for each body part type
+	var body_parts = [];
+	var can_remove = 0;
+	var parts = [];
+	var ratios = [];
+	for (var i in this.body_parts) if (this.body_parts.hasOwnProperty(i)) {
+		var body_part = this.body_parts[i];
+		body_parts.push(body_part);
+		if (parts[body_part]) {
+			can_remove ++;
+			parts[body_part] ++;
+		}
+		else {
+			parts[body_part] = 1;
+		}
+		ratios[body_part] = 1;
+	}
+	// remove body parts until there is enough available energy to spawn the creep
+	while (can_remove && (this.cost(body_parts) > available_energy)) {
+		// choose the body part with quantity > 1 and with the greater ratio
+		var chosen;
+		for (body_part in parts) if (parts.hasOwnProperty(body_part)) {
+			var quantity = parts[body_part];
+			if ((quantity > 1) && (!chosen || (ratios[body_part] > ratios[chosen]))) {
+				chosen = body_part;
+			}
+		}
+		// remove the chosen body part
+		for (i in body_parts) if (body_parts.hasOwnProperty(i) && (body_parts[i] === chosen)) {
+			delete body_parts[i];
+			break;
+		}
+		parts[chosen] --;
+		ratios[chosen] = ratios[chosen] * parts[chosen] / (parts[chosen] + 1);
+		can_remove --;
+	}
+	// got it
+	return (this.cost(body_parts) >= available_energy) ? body_parts : null;
+};
+
+/**
+ * Calculate the energy cost to spawn a creep with these body parts
+ *
+ * @param body_parts int[] if not set, this.body_parts will be used for this calculation
+ * @return int energy cost
+ */
+module.exports.cost = function(body_parts)
+{
+	if (!body_parts) {
+		body_parts = this.body_parts;
+	}
+	var cost = 0;
+	for (var i in this.body_parts) if (this.body_parts.hasOwnProperty(i)) {
+		cost += this.COST[this.body_parts[i]];
+	}
+	return cost;
+};
 
 /**
  * Move to source / fill of energy
