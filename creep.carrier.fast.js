@@ -40,3 +40,24 @@ module.exports.sources = function(creep)
 	var source = position.findClosestByRange(FIND_DROPPED_ENERGY);
 	return (source ? [source] : []);
 };
+
+/**
+ * The targets are :
+ * - the simple harvesters targets (extensions, then spawn), that need energy)
+ * - upgraders
+ *
+ * @param creep
+ * @returns Creep[]|StructureExtension[]|StructureSpawn[]
+ */
+module.exports.targets = function(creep)
+{
+	// priority to harvester's target : extensions, then spawn, that need energy
+	var targets = this.__proto__.targets(creep);
+	// next target : the upgrader
+	if (!targets.length) {
+		targets = creep.room.find(FIND_MY_CREEPS, { filter: creep =>
+			(creep.role == 'upgrader') && (creep.energy < creep.energyCapacity)
+		});
+	}
+	return targets;
+};
