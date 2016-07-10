@@ -73,8 +73,12 @@ module.exports.findSource = function(creep)
 {
 	var sources = this.sources(creep);
 	if (sources.length) {
-		if (creep instanceof Creep) creep.memory.source = sources[0].id;
-		return sources[0];
+		var source = sources[0];
+		if (typeof source == 'string') {
+			source = Game.getObjectById(source);
+		}
+		if (creep instanceof Creep) creep.memory.source = source.id;
+		return source;
 	}
 	if (creep instanceof Creep) delete creep.memory.source;
 	return undefined;
@@ -178,8 +182,9 @@ module.exports.sourceJob = function(creep, source)
  * A simple sources selector :
  * Default is energy sources.
  * This dispatches creeps to available sources access terrains.
+ * You may return sources id or sources object here.
  *
- * @return Source[]
+ * @return string[] Sources id
  */
 module.exports.sources = function()
 {
@@ -189,7 +194,7 @@ module.exports.sources = function()
 		sources.memorize(true);
 		source = sources.availableSourceId(true);
 	}
-	return source;
+	return [source];
 };
 
 /**
