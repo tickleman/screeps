@@ -56,7 +56,7 @@ module.exports.targets = function(creep)
 	// next target : the upgrader
 	if (!targets.length) {
 		targets = creep.room.find(FIND_MY_CREEPS, { filter: creep =>
-			(creep.role == 'upgrader') && (creep.carry.energy < creep.carryCapacity)
+			(creep.memory.role == 'upgrader') && (creep.carry.energy < creep.carryCapacity)
 		});
 	}
 	return targets;
