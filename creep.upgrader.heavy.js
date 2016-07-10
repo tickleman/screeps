@@ -1,11 +1,11 @@
 /**
- * The heavy harvester :
- * - goes (slowly) to a free source
+ * The heavy upgrader :
+ * - goes (slowly) to the room controller
  * - stays near it for its all its life
  * - it harvests the energy (10 / tick) and throw it on the ground
  */
 
-module.exports.__proto__ = require('creep.harvester');
+module.exports.__proto__ = require('creep.upgrader');
 
 /**
  * Body parts for a heavy harvester
@@ -15,21 +15,21 @@ module.exports.__proto__ = require('creep.harvester');
 module.exports.body_parts = [MOVE, WORK, WORK, WORK, WORK, WORK];
 
 /**
- * Never full : we never fill the heavy harvester : energy is thrown on the ground
+ * Always full : we never fill the heavy upgrader : a carrier will bring him energy
  *
  * @return boolean false
  **/
 module.exports.isFull = function()
 {
-	return false;
+	return true;
 };
 
 /**
- * This creep has no target
+ * This creep has no source
  *
  * @returns array []
  */
-module.exports.targets = function()
+module.exports.sources = function()
 {
 	return [];
 };

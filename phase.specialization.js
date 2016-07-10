@@ -1,7 +1,7 @@
 
 var carrier   = require('creep.carrier.fast');
 var harvester = require('creep.harvester.heavy');
-var upgrader  = require('creep.upgrader');
+var upgrader  = require('creep.upgrader.heavy');
 var sources   = require('sources');
 
 /**
