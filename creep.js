@@ -58,7 +58,7 @@ module.exports.fill = function(creep, find_next_target)
 			source = this.findSource(creep);
 		}
 		if (source) {
-			if (this.sourceJob(creep) == ERR_NOT_IN_RANGE) {
+			if (this.sourceJob(creep, source) == ERR_NOT_IN_RANGE) {
 				creep.moveTo(source);
 			}
 		}
