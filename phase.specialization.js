@@ -35,6 +35,12 @@ module.exports.run = function()
 	}
 	// then : 1 light carrier
 	else if (!count['carrier']) {
+		if (Game.spawns.Spawn.room.energyAvailable == 300) {
+			// if there is not enough energy, we need a light carrier :
+			// - costs 300 energy units only
+			// - moves 150 energy units per tick
+			carrier.body_part = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
+		}
 		carrier.spawn();
 	}
 	// then : 1 standard upgrader
