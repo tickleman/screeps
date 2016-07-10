@@ -29,24 +29,22 @@ module.exports.run = function()
 		else if (creep.memory.role == 'harvester') harvester.work(creep);
 		else if (creep.memory.role == 'upgrader')  upgrader.work(creep);
 		// don't count initial builders / harvesters
-		if ((creep.body.length > 3) || (creep.memory.role == 'upgrader')) {
-			count[creep.memory.role]++;
-		}
+		count[creep.memory.role]++;
 	}
 
 	// priority : 1 heavy harvester
 	if (!count['harvester']) {
-		// if there is not enough energy, we need a light harvester :
+		// if there is not enough energy, we need one light harvester :
 		// - cost 250 energy units only instead of 550
 		// - harvests 4 energy units per tick instead of 10
-		if (Game.spawns.Spawn.room.energyAvailable < 550) {
+		if (!count['harvester'] && (Game.spawns.Spawn.room.energyAvailable < 550)) {
 			harvester.body_parts = [MOVE, WORK, WORK];
 		}
 		harvester.spawn();
 	}
 	// then : 2 light carriers
 	else if (count['carrier'] < 2) {
-		// if there is not enough energy, we need a light carrier :
+		// if there is not enough energy, we need one light carrier :
 		// - costs 300 energy units only instead of 550
 		// - moves 150 energy units per tick instead of 250
 		if (!count['carrier'] && (Game.spawns.Spawn.room.energyAvailable < 550)) {
