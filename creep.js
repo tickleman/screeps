@@ -37,6 +37,13 @@ module.exports.JOB_DONE = 'JOB_DONE';
 module.exports.body_parts = [CARRY, MOVE, WORK];
 
 /**
+ * When true, find a new target each time the creep finishes filling in
+ *
+ * @type boolean
+ */
+module.exports.find_next_target = false;
+
+/**
  * The default role when this creep is spawned
  *
  * @type string
@@ -293,7 +300,7 @@ module.exports.targets = function(creep)
  **/
 module.exports.work = function(creep)
 {
-	if (!this.fill(creep)) {
+	if (!this.fill(creep, this.find_next_target)) {
 		var target = Game.getObjectById(creep.memory.target);
 		if (!target || this.targetJobDone(creep, target)) {
 			this.findTarget(creep);

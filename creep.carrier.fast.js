@@ -14,6 +14,13 @@ module.exports.__proto__ = require('creep.harvester');
 module.exports.body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
 
 /**
+ * Finds a new target each time it finishes filling in
+ *
+ * @type boolean
+ */
+module.exports.find_next_target = true;
+
+/**
  * Its role : specialized in energy transportation
  */
 module.exports.role = 'carrier';
