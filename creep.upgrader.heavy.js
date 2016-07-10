@@ -17,7 +17,7 @@ module.exports.body_parts = [MOVE, WORK, WORK, WORK, WORK, WORK];
 /**
  * Always full : we never fill the heavy upgrader : a carrier will bring him energy
  *
- * @return boolean false
+ * @return boolean true
  **/
 module.exports.isFull = function()
 {
