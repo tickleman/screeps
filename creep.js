@@ -225,11 +225,7 @@ module.exports.sources = function()
  */
 module.exports.spawn = function(target, source, role, name)
 {
-	var create_error = Game.spawns.Spawn.canCreateCreep(this.body_parts);
-	if (create_error) {
-		console.log('Cannot create ' + role + ' : ' + create_error);
-	}
-	else {
+	if (!Game.spawns.Spawn.canCreateCreep(this.body_parts)) {
 		if (!name) name = names.chooseName();
 		// prepare creep memory
 		var memory = { role: role ? role : this.role };
