@@ -28,6 +28,16 @@ module.exports.targetJob = function(creep, target)
 };
 
 /**
+ * The job is never done : controllers can always be upgraded
+ *
+ * @return boolean false
+ */
+module.exports.targetJobDone = function()
+{
+	return false;
+};
+
+/**
  * Targets are the room controller
  *
  * @return StructureController[]
