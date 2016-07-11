@@ -1,5 +1,7 @@
 /**
  * Unit tests
+ *
+ * Run them from the console with require('tests').run();
  */
 
 /**
@@ -87,7 +89,7 @@ module.exports.run = function()
 	return Math.ceil(this.passed / (this.errors + this.passed) * 100) + '%';
 };
 
-//--------------------------------------------------------------------------------------------------------------- creep
+//--------------------------------------------------------------------------------------------------------------- body
 
 var body = require('body');
 
