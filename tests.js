@@ -82,31 +82,31 @@ module.exports.equals = function(test, assume)
  */
 module.exports.run = function()
 {
-	this.creep();
+	this.body();
 	console.log((this.errors + this.passed) + ' tests - ' + this.passed + ' passed - ' + this.errors + ' errors');
 	return Math.ceil(this.passed / (this.errors + this.passed) * 100) + '%';
 };
 
 //--------------------------------------------------------------------------------------------------------------- creep
 
-var creep = require('creep');
+var body = require('body');
 
 /**
- * Creep unit tests
+ * Body unit tests
  */
-module.exports.creep = function()
+module.exports.body = function()
 {
-	this.prefix = 'creep.cost';
-	this.assert('initial',       creep.cost([CARRY, MOVE, WORK]), 200);
-	this.assert('harvester',     creep.cost([MOVE, WORK, WORK, WORK, WORK, WORK]), 550);
-	this.assert('carrier.plain', creep.cost([CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]), 500);
-	this.assert('carrier.road',  creep.cost([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]), 500);
-	this.prefix = 'creep.bodyParts';
-	this.assert('initial',       creep.bodyParts([CARRY, MOVE, WORK], 200), [CARRY, MOVE, WORK]);
-	this.assert('notEnough',     creep.bodyParts([CARRY, MOVE, WORK], 199), null);
-	this.assert('reduce',        creep.bodyParts([CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, WORK, WORK], 200), [CARRY, MOVE, WORK]);
-	this.assert('equilibrium',   creep.bodyParts([CARRY, MOVE, MOVE, WORK, WORK, WORK, WORK], 300), [CARRY, MOVE, WORK, WORK]);
-	this.assert('harvester',     creep.bodyParts([MOVE, WORK, WORK, WORK, WORK, WORK], 300), [MOVE, WORK, WORK]);
-	this.assert('carrier.plain', creep.bodyParts([CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], 300), [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]);
-	this.assert('carrier.road',  creep.bodyParts([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 300), [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE]);
+	this.prefix = 'body.cost';
+	this.assert('initial',       body.cost([CARRY, MOVE, WORK]), 200);
+	this.assert('harvester',     body.cost([MOVE, WORK, WORK, WORK, WORK, WORK]), 550);
+	this.assert('carrier.plain', body.cost([CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]), 500);
+	this.assert('carrier.road',  body.cost([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]), 500);
+	this.prefix = 'body.parts';
+	this.assert('initial',       body.parts([CARRY, MOVE, WORK], 200), [CARRY, MOVE, WORK]);
+	this.assert('notEnough',     body.parts([CARRY, MOVE, WORK], 199), null);
+	this.assert('reduce',        body.parts([CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, WORK, WORK], 200), [CARRY, MOVE, WORK]);
+	this.assert('equilibrium',   body.parts([CARRY, MOVE, MOVE, WORK, WORK, WORK, WORK], 300), [CARRY, MOVE, WORK, WORK]);
+	this.assert('harvester',     body.parts([MOVE, WORK, WORK, WORK, WORK, WORK], 300), [MOVE, WORK, WORK]);
+	this.assert('carrier.plain', body.parts([CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], 300), [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]);
+	this.assert('carrier.road',  body.parts([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 300), [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE]);
 };
