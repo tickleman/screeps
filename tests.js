@@ -108,5 +108,7 @@ module.exports.body = function()
 	this.assert('equilibrium',   body.parts([CARRY, MOVE, MOVE, WORK, WORK, WORK, WORK], 300), [CARRY, MOVE, WORK, WORK]);
 	this.assert('harvester',     body.parts([MOVE, WORK, WORK, WORK, WORK, WORK], 300), [MOVE, WORK, WORK]);
 	this.assert('carrier.plain', body.parts([CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], 300), [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]);
-	this.assert('carrier.road',  body.parts([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 300), [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE]);
+	var body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
+	this.assert('carrier.road',  body.parts(body_parts, 300), [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE]);
+	this.assert('noLoose',       body_parts, [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]);
 };
