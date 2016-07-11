@@ -15,6 +15,24 @@ module.exports.COST[TOUGH]         = 10;
 module.exports.COST[WORK]          = 100;
 
 /**
+ * Calculate the energy cost to spawn a creep with these body parts
+ *
+ * @param body_parts int[] if not set, this.body_parts will be used for this calculation
+ * @return int energy cost
+ */
+module.exports.cost = function(body_parts)
+{
+	if (!body_parts) {
+		body_parts = this.body_parts;
+	}
+	var cost = 0;
+	for (var i in body_parts) if (body_parts.hasOwnProperty(i)) {
+		cost += this.COST[body_parts[i]];
+	}
+	return cost;
+};
+
+/**
  * Calculate body parts you can build immediately
  *
  * @param from_parts integer[] @default this.body_parts

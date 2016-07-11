@@ -51,24 +51,6 @@ module.exports.find_next_target = false;
 module.exports.role = 'creep';
 
 /**
- * Calculate the energy cost to spawn a creep with these body parts
- *
- * @param body_parts int[] if not set, this.body_parts will be used for this calculation
- * @return int energy cost
- */
-module.exports.cost = function(body_parts)
-{
-	if (!body_parts) {
-		body_parts = this.body_parts;
-	}
-	var cost = 0;
-	for (var i in body_parts) if (body_parts.hasOwnProperty(i)) {
-		cost += this.COST[body_parts[i]];
-	}
-	return cost;
-};
-
-/**
  * Move to source / fill of energy
  *
  * @param creep            Creep
