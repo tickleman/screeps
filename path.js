@@ -17,7 +17,7 @@
  * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 2)
  *
  * Cleanup test flags :
- * Game.spawns.Spawn.room.find(FIND_FLAGS).forEach(flag => !isNaN(flag.name) ? flag.remove() : null)
+ * for (let flag of Game.spawns.Spawn.room.find(FIND_FLAGS)) if (!isNaN(flag.name)) flag.remove()
  */
 
 /**
@@ -58,10 +58,10 @@ module.exports.road_cost = 1;
 module.exports.swamp_cost = 10;
 
 /**
- * @param source           object the source point
- * @param destination      object the destination point
- * @param range            int range from the destination @default 0
- * @param cumulate_exclude boolean if true, this.exclude will get the new path
+ * @param source             object the source point
+ * @param destination        object the destination point
+ * @param [range]            number range from the destination @default 0
+ * @param [cumulate_exclude] boolean if true, this.exclude will get the new path
  * @return Array [{x, y}]
  **/
 module.exports.calculate = function(source, destination, range, cumulate_exclude)
@@ -127,7 +127,7 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 /**
  * @param source      object
  * @param destination object
- * @param range       int
+ * @param [range]     number
  * @returns Array [{x, y}]
  */
 module.exports.calculateTwoWay = function(source, destination, range)
@@ -164,8 +164,10 @@ module.exports.calculateTwoWay = function(source, destination, range)
  */
 module.exports.first = function(path)
 {
-	var keys = Object.keys(path);
-	return path[keys[0]];
+	//noinspection LoopStatementThatDoesntLoopJS
+	for (let element of path) {
+		return element;
+	}
 };
 
 /**
@@ -188,6 +190,8 @@ module.exports.flag = function(name)
  */
 module.exports.last = function(path)
 {
-	var keys = Object.keys(path);
-	return path[keys[keys.length - 1]];
+	//noinspection LoopStatementThatDoesntLoopJS
+	for (let element of path.slice(-1)) {
+		return element;
+	}
 };
