@@ -61,7 +61,7 @@ module.exports.swamp_cost = 10;
  * @param source             object the source point
  * @param destination        object the destination point
  * @param [range]            number range from the destination @default 0
- * @param [cumulate_exclude] boolean if true, this.exclude will get the new path
+ * @param [cumulate_exclude] boolean if true, the new path will append to this.exclude
  * @return Array [{x, y}]
  **/
 module.exports.calculate = function(source, destination, range, cumulate_exclude)
@@ -132,6 +132,7 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
  */
 module.exports.calculateTwoWay = function(source, destination, range)
 {
+	var exclude = this.exclude.slice(0);
 	if (this.flags) {
 		for (let flag of source.room.find(FIND_FLAGS)) {
 			if (!isNaN(flag.name)) {
@@ -153,6 +154,7 @@ module.exports.calculateTwoWay = function(source, destination, range)
 			}
 		}
 	}
+	this.exclude = exclude;
 	return path;
 };
 

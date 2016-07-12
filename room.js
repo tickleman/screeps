@@ -29,7 +29,6 @@ module.exports.prepareRoutes = function()
 	nearest_distance = 999999;
 	for (let source of sources) {
 		path = Path.calculateTwoWay(source, spawn);
-		Path.exclude = [];
 		path.splice(0, 1);
 		path.splice(-1);
 		paths[source.id] = {};
@@ -46,7 +45,6 @@ module.exports.prepareRoutes = function()
 	nearest_distance = 999999;
 	for (let source of sources) {
 		path = Path.calculateTwoWay(source, controller, 1);
-		Path.exclude = [];
 		path.splice(0, 1);
 		path.splice(-1);
 		paths[source.id][controller.id] = path;
