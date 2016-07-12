@@ -2,12 +2,12 @@
 // store terrain near sources into memory
 // sources[id][x,y] = { terrain: lava|plain|swamp }
 Memory.sources = {};
-for (var room_key in Game.rooms) {
-	Game.rooms[room_key].find(FIND_SOURCES_ACTIVE).forEach(function(source) {
+for (let room of Game.rooms) {
+	for (let source of room.find(FIND_SOURCES_ACTIVE)) {
 		Memory.sources[source.id] = [];
-		source.room.lookForAtArea(
+		for (let terrain of source.room.lookForAtArea(
 			LOOK_TERRAIN, source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true
-		).forEach(function(terrain) {
+		)) {
 			if (
 				((terrain.x != source.pos.x) || (terrain.y != source.pos.y))
 				&& ((terrain.terrain == 'plain') || (terrain.terrain == 'swamp'))
@@ -16,6 +16,6 @@ for (var room_key in Game.rooms) {
 					room: source.room.name, terrain: terrain.terrain, x: terrain.x, y: terrain.y
 				});
 			}
-		});
-	});
+		}
+	}
 }

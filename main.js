@@ -1,7 +1,7 @@
 
-var start          = require('phase.start');
-var harvest        = require('phase.harvest');
-var specialization = require('phase.specialization');
+var start          = require('./phase.start');
+var harvest        = require('./phase.harvest');
+var specialization = require('./phase.specialization');
 
 module.exports.loop = function ()
 {

@@ -8,7 +8,7 @@
  * This is the first creep that starts the colony.
  */
 
-module.exports.__proto__ = require('creep');
+module.exports.__proto__ = require('./creep');
 
 /**
  * @type string

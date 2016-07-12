@@ -1,5 +1,5 @@
 
-module.exports.__proto__ = require('creep');
+module.exports.__proto__ = require('./creep');
 
 /**
  * @type string

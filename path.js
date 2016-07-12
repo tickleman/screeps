@@ -17,13 +17,20 @@
  * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 2)
  *
  * Cleanup test flags :
- * Game.spawns.Spawn.room.find(FIND_FLAGS).forEach(flag => !isNaN(flag.name) ? flag.remove() : null);
+ * Game.spawns.Spawn.room.find(FIND_FLAGS).forEach(flag => !isNaN(flag.name) ? flag.remove() : null)
  */
 
 /**
  * @type Array [{x, y}]
  */
 module.exports.exclude = [];
+
+/**
+ * Valorized ways (eg future roads, etc.)
+ *
+ * @type object [cost: [{x, y}]]
+ */
+module.exports.valorize = [];
 
 /**
  * @type boolean|string
@@ -55,12 +62,13 @@ module.exports.swamp_cost = 10;
  * @param destination      object the destination point
  * @param range            int range from the destination @default 0
  * @param cumulate_exclude boolean if true, this.exclude will get the new path
- * @return array [{x, y}]
+ * @return Array [{x, y}]
  **/
 module.exports.calculate = function(source, destination, range, cumulate_exclude)
 {
 	var calculator = this;
 
+	//noinspection JSUnusedGlobalSymbols Used by search()
 	var path = PathFinder.search(
 		source.pos ? source.pos : source,
 		{ pos: destination.pos ? destination.pos : destination, range: range ? range : 0 },
@@ -68,11 +76,11 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 			plainCost: calculator.plain_cost,
 			swampCost: calculator.swamp_cost,
 			roomCallback: function(room_name) {
-				let room = Game.rooms[room_name];
+				var room = Game.rooms[room_name];
 				if (!room) return;
-				let costs = new PathFinder.CostMatrix;
+				var costs = new PathFinder.CostMatrix;
 
-				room.find(FIND_STRUCTURES).forEach(function(structure) {
+				for (let structure of room.find(FIND_STRUCTURES)) {
 					if (structure.structureType === STRUCTURE_ROAD) {
 						costs.set(structure.pos.x, structure.pos.y, calculator.road_cost);
 					}
@@ -82,18 +90,23 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 					) {
 						costs.set(structure.pos.x, structure.pos.y, 0xff);
 					}
-				});
+				}
 
 				if (!calculator.ignore_creeps) {
-					room.find(FIND_CREEPS).forEach(function (creep) {
+					for (let creep of room.find(FIND_CREEPS)) {
 						costs.set(creep.pos.x, creep.pos.y, 0xff);
-					});
+					}
 				}
 
-				for (let key in calculator.exclude) if (calculator.exclude.hasOwnProperty(key)) {
-					var pos = calculator.exclude[key];
+				for (let pos of calculator.exclude) {
 					costs.set(pos.x, pos.y, 0xff);
 				}
+
+				calculator.valorize.forEach(function(valorize, cost) {
+					for (let pos of valorize) {
+						costs.set(pos.x, pos.y, cost);
+					}
+				});
 
 				return costs;
 			}
@@ -101,8 +114,7 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 	);
 
 	var result = [];
-	for (var key in path.path) if (path.path.hasOwnProperty(key)) {
-		var pos = path.path[key];
+	for (let pos of path.path) {
 		result.push({ x: pos.x, y: pos.y });
 		if (cumulate_exclude) {
 			this.exclude.push({ x: pos.x, y: pos.y });
@@ -116,34 +128,44 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
  * @param source      object
  * @param destination object
  * @param range       int
- * @returns array [{x, y}]
+ * @returns Array [{x, y}]
  */
 module.exports.calculateTwoWay = function(source, destination, range)
 {
 	if (this.flags) {
-		source.room.find(FIND_FLAGS).forEach(function(flag) {
+		for (let flag of source.room.find(FIND_FLAGS)) {
 			if (!isNaN(flag.name)) {
 				flag.remove();
 			}
-		});
+		}
 	}
 	var path = this.calculate(source, destination, range + 1, true);
-	var keys = Object.keys(path);
-	var pos  = path[keys[keys.length - 1 ]];
-	var back = destination.room.getPositionAt(pos.x, pos.y);
+	var last = this.last(path);
+	var back = destination.room.getPositionAt(last.x, last.y);
 	path.push('step');
 	path = path.concat(this.calculate(back, source, 1));
 	if (this.flags) {
 		var counter = 0;
-		for (var key in path) if (path.hasOwnProperty(key)) {
-			pos = path[key];
+		for (let pos of path) {
 			if (pos != 'step') {
-				source.room.createFlag(pos.x, pos.y, ++counter);
+				source.room.createFlag(pos.x, pos.y, (++counter).toString());
 				console.log(counter + ' : ' + pos.x + ', ' + pos.y);
 			}
 		}
 	}
 	return path;
+};
+
+/**
+ * Returns the first position of the path
+ *
+ * @param path
+ * @returns object {x, y}
+ */
+module.exports.first = function(path)
+{
+	var keys = Object.keys(path);
+	return path[keys[0]];
 };
 
 /**
@@ -156,4 +178,16 @@ module.exports.flag = function(name)
 {
 	this.flags = name ? name : true;
 	return this;
+};
+
+/**
+ * Returns the last position of the path
+ *
+ * @param path
+ * @returns object {x, y}
+ */
+module.exports.last = function(path)
+{
+	var keys = Object.keys(path);
+	return path[keys[keys.length - 1]];
 };

@@ -5,7 +5,7 @@
  * - it harvests the energy (10 / tick) and throw it on the ground
  */
 
-module.exports.__proto__ = require('creep.upgrader');
+module.exports.__proto__ = require('./creep.upgrader');
 
 /**
  * Body parts for a heavy harvester

@@ -1,8 +1,8 @@
 
-var builder   = require('creep.builder');
-var harvester = require('creep.harvester');
-var upgrader  = require('creep.upgrader');
-var sources   = require('sources');
+var builder   = require('./creep.builder');
+var harvester = require('./creep.harvester');
+var upgrader  = require('./creep.upgrader');
+var sources   = require('./sources');
 
 /**
  * The harvest phase :
@@ -19,8 +19,7 @@ module.exports.run = function()
 	var count = { builder: 0, harvester: 0, upgrader: 0 };
 
 	// make creeps work, and count them
-	for (var name in creeps) {
-		var creep = creeps[name];
+	for (let creep of creeps) {
 		if (creep.memory.role == 'builder')   builder.work(creep);
 		if (creep.memory.role == 'harvester') harvester.work(creep);
 		if (creep.memory.role == 'upgrader')  upgrader.work(creep);

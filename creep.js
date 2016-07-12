@@ -2,8 +2,8 @@
  * The creep library : how to manage creeps with basic features that you can override
  */
 
-var names   = require('names');
-var sources = require('sources');
+var names   = require('./names');
+var sources = require('./sources');
 
 /**
  * Use sources() / targets() to find its initial source / target
@@ -157,10 +157,10 @@ module.exports.findTargetId = function(creep)
  */
 module.exports.freeMemory = function()
 {
-	for (var creep in Memory.creeps) if (Memory.creeps.hasOwnProperty(creep)) {
-		if (Memory.creeps[creep]._move && !Game.creeps[creep]) {
-			delete Memory.creeps[creep];
-			console.log('prune creep ' + creep);
+	for (let creep_name in Memory.creeps) if (Memory.creeps.hasOwnProperty(creep_name)) {
+		if (Memory.creeps[creep_name].hasOwnProperty('_move') && !Game.creeps[creep_name]) {
+			delete Memory.creeps[creep_name];
+			console.log('prune creep ' + creep_name);
 		}
 	}
 };
@@ -195,7 +195,7 @@ module.exports.isFull = function(creep, find_next_target)
  *
  * @param creep  Creep
  * @param source Source
- * @return integer
+ * @return number
  */
 module.exports.sourceJob = function(creep, source)
 {
@@ -257,7 +257,7 @@ module.exports.spawn = function(target, source, role, name)
  *
  * @param creep  Creep
  * @param target object
- * @return integer
+ * @return number
  */
 module.exports.targetJob = function(creep, target)
 {

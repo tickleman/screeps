@@ -60,12 +60,12 @@ module.exports.equals = function(test, assume)
 		return false;
 	}
 	if (typeof test === 'object') {
-		for (var i in test) if (test.hasOwnProperty(i)) {
+		for (let i in test) if (test.hasOwnProperty(i)) {
 			if (!this.equals(test[i], assume[i])) {
 				return false;
 			}
 		}
-		for (i in assume) if (assume.hasOwnProperty(i)) {
+		for (let i in assume) if (assume.hasOwnProperty(i)) {
 			if (test[i] !== assume[i]) {
 				return false;
 			}

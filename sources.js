@@ -1,5 +1,5 @@
 
-var Source = require('source');
+var Source = require('./source');
 
 /**
  * Affects a creep to the first available access terrain of its source
@@ -9,8 +9,7 @@ var Source = require('source');
 module.exports.affect = function(creep)
 {
 	var source = Memory.sources[creep.memory.source];
-	for (var terrain in source.terrains) {
-		terrain = source.terrains[terrain];
+	for (let terrain of source.terrains) {
 		if (!terrain.creeps) {
 			console.log('creep ' + creep.name + ' in terrain ' + creep.memory.source + ' : ' + terrain.x + ',' + terrain.y);
 			terrain.creeps = terrain.creeps ? (terrain.creeps + 1) : 1;
@@ -20,14 +19,14 @@ module.exports.affect = function(creep)
 };
 
 /**
- * @return string the id of the first source with at least one available access terrain
+ * @param return_last_source boolean
+ * @return string|null the id of the first source with at least one available access terrain
  */
 module.exports.availableSourceId = function(return_last_source)
 {
-	for (var source_id in Memory.sources) {
-		var source = Memory.sources[source_id];
-		for (var terrain in source.terrains) {
-			terrain = source.terrains[terrain];
+	for (let source_id in Memory.sources) if (Memory.sources.hasOwnProperty(source_id)) {
+		let source = Memory.sources[source_id];
+		for (let terrain of source.terrains) {
 			if (!terrain.creeps) {
 				return source_id;
 			}
@@ -48,14 +47,13 @@ module.exports.memorize = function(force)
 	if (force || !Memory.sources) {
 		// reset memory sources
 		Memory.sources = {};
-		for (var room_key in Game.rooms) {
-			Game.rooms[room_key].find(FIND_SOURCES_ACTIVE).forEach(function (source) {
+		for (let room of Game.rooms) {
+			for (let source of room.find(FIND_SOURCES_ACTIVE)) {
 				Memory.sources[source.id] = new Source(source);
-			});
+			}
 		}
 		// affects creeps
-		for (var creep_name in Game.creeps) {
-			var creep = Game.creeps[creep_name];
+		for (let creep of Game.creeps) {
 			if (Memory.sources[creep.memory.source]) {
 				this.affect(creep);
 			}
@@ -64,13 +62,13 @@ module.exports.memorize = function(force)
 };
 
 /**
- * @return integer The number of available terrains
+ * @return number The number of available terrains
  */
 module.exports.terrainsCount = function()
 {
 	var terrains_count = 0;
-	for (var source in Memory.sources) {
-		terrains_count += Memory.sources[source].terrains.length;
+	for (let source of Memory.sources) {
+		terrains_count += source.terrains.length;
 	}
 	return terrains_count;
 };

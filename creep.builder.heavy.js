@@ -5,7 +5,7 @@
  * - it builds the construction site as fast as it cans
  */
 
-module.exports.__proto__ = require('creep.builder');
+module.exports.__proto__ = require('./creep.builder');
 
 /**
  * Body parts for a heavy builder

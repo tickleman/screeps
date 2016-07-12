@@ -1,3 +1,4 @@
+
 /**
  * @param room    string
  * @param terrain object A found terrain object : terrain = lava|plain|swamp, type = 'terrain', x, y

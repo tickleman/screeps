@@ -14,10 +14,9 @@ module.exports.chooseName = function()
 {
 	var name;
 	var creeps_count = _.filter(Game.creeps).length;
-	for (var i = 0; i < this.use_names.length; i ++) {
-		var names = this.use_names[i];
+	for (let names of this.use_names) {
 		if (creeps_count < this[names].length) {
-			var retry = 100;
+			let retry = 100;
 			for (;
 				retry && (!name || Game.creeps[name]);
 				name = this[names][Math.floor(Math.random() * this[names].length)], retry --

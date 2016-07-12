@@ -1,6 +1,6 @@
 
-var harvester = require('creep.harvester');
-var sources   = require('sources');
+var harvester = require('./creep.harvester');
+var sources   = require('./sources');
 
 /**
  * Initial start phase :

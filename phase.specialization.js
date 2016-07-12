@@ -1,9 +1,8 @@
 
-var builder   = require('creep.builder.heavy');
-var carrier   = require('creep.carrier.fast');
-var harvester = require('creep.harvester.heavy');
-var upgrader  = require('creep.upgrader.heavy');
-var sources   = require('sources');
+var builder   = require('./creep.builder.heavy');
+var carrier   = require('./creep.carrier.fast');
+var harvester = require('./creep.harvester.heavy');
+var upgrader  = require('./creep.upgrader.heavy');
 
 /**
  * The specialization phase :
@@ -22,8 +21,7 @@ module.exports.run = function()
 	var count = { builder: 0, carrier: 0, harvester: 0, upgrader: 0 };
 
 	// make creeps work, and count them
-	for (var name in creeps) {
-		var creep = creeps[name];
+	for (let creep of creeps) {
 		if      (creep.memory.role == 'builder')   builder.work(creep);
 		else if (creep.memory.role == 'carrier')   carrier.work(creep);
 		else if (creep.memory.role == 'harvester') harvester.work(creep);

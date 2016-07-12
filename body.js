@@ -26,8 +26,8 @@ module.exports.cost = function(body_parts)
 		body_parts = this.body_parts;
 	}
 	var cost = 0;
-	for (var i in body_parts) if (body_parts.hasOwnProperty(i)) {
-		cost += this.COST[body_parts[i]];
+	for (let body_part of body_parts) {
+		cost += this.COST[body_part];
 	}
 	return cost;
 };
@@ -56,8 +56,7 @@ module.exports.parts = function(from_parts, available_energy)
 	var can_remove = 0;
 	var parts = [];
 	var ratios = [];
-	for (var i in from_parts) if (from_parts.hasOwnProperty(i)) {
-		var body_part = from_parts[i];
+	for (let body_part of from_parts) {
 		body_parts.push(body_part);
 		if (parts[body_part]) {
 			can_remove ++;
@@ -71,15 +70,15 @@ module.exports.parts = function(from_parts, available_energy)
 	// remove body parts until there is enough available energy to spawn the creep
 	while (can_remove && (this.cost(body_parts) > available_energy)) {
 		// choose the body part with quantity > 1 and with the greater ratio
-		var chosen;
-		for (body_part in parts) if (parts.hasOwnProperty(body_part)) {
-			var quantity = parts[body_part];
+		let chosen;
+		for (let body_part in parts) if (parts.hasOwnProperty(body_part)) {
+			let quantity = parts[body_part];
 			if ((quantity > 1) && (!chosen || (ratios[body_part] > ratios[chosen]))) {
 				chosen = body_part;
 			}
 		}
 		// remove the chosen body part
-		for (i in body_parts) if (body_parts.hasOwnProperty(i) && (body_parts[i] === chosen)) {
+		for (let i in body_parts) if (body_parts.hasOwnProperty(i) && (body_parts[i] === chosen)) {
 			body_parts.splice(i, 1);
 			break;
 		}

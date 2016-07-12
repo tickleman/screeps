@@ -5,7 +5,7 @@
  * - bring this energy to extensions and spawn
  */
 
-module.exports.__proto__ = require('creep.harvester');
+module.exports.__proto__ = require('./creep.harvester');
 
 /**
  * Body parts for a fast carrier
