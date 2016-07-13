@@ -2,7 +2,8 @@
 // store terrain near sources into memory
 // sources[id][x,y] = { terrain: lava|plain|swamp }
 Memory.sources = {};
-for (let room of Game.rooms) {
+for (let room in Game.rooms) if (Game.rooms.hasOwnProperty(room)) {
+	room = Game.rooms[room];
 	for (let source of room.find(FIND_SOURCES_ACTIVE)) {
 		Memory.sources[source.id] = [];
 		for (let terrain of source.room.lookForAtArea(

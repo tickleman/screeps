@@ -47,13 +47,15 @@ module.exports.memorize = function(force)
 	if (force || !Memory.sources) {
 		// reset memory sources
 		Memory.sources = {};
-		for (let room of Game.rooms) {
+		for (let room in Game.rooms) if (Game.rooms.hasOwnProperty(room)) {
+			room = Game.rooms[room];
 			for (let source of room.find(FIND_SOURCES_ACTIVE)) {
 				Memory.sources[source.id] = new Source(source);
 			}
 		}
 		// affects creeps
-		for (let creep of Game.creeps) {
+		for (let creep in Game.creeps) if (Game.creeps.hasOwnProperty(creep)) {
+			creep = Game.creeps[creep];
 			if (Memory.sources[creep.memory.source]) {
 				this.affect(creep);
 			}
