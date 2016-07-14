@@ -1,105 +1,150 @@
+/**
+ * Room preparation. Call these, one after each other :
+ * - prepareSourcesToSpawn
+ * - prepareSourcesToController
+ * - prepareSpawnToSources
+ * - prepareCreeps
+ */
 
 var Path = require('./path');
 
 module.exports.room = Game.spawns.Spawn.room;
 
 /**
- * Prepare routes and creeps and store them into memory
+ * Prepare creeps
  */
-module.exports.prepare = function()
+module.exports.prepareCreeps = function()
 {
-	// init
-	var controller = null;
-	var sources    = this.room.find(FIND_SOURCES_ACTIVE);
-	for (let structure of this.room.find(FIND_STRUCTURES)) {
-		if (structure.structureType == STRUCTURE_CONTROLLER) {
-			controller = structure;
-		}
-		else if (structure.structureType === STRUCTURE_SPAWN) {
-			spawn = structure;
-		}
-	}
-
-	var nearest_distance;
-	var paths = {};
-	var path;
-
-	// sources to spawn (harvester position) : keep only the nearest
-	var nearest_to_spawn = null;
-	nearest_distance = 999999;
-	for (let source of sources) {
-		path = Path.calculateTwoWay(source, spawn, 1);
-		Path.unshift(path);
-		paths[source.id] = {};
-		paths[source.id][spawn.id] = path;
-		console.log('source ' + source.id + ' to spawn ' + spawn.id + ' = ' + path.length);
-		if (!nearest_to_spawn || (paths.length < nearest_distance)) {
-			nearest_distance = paths.length;
-			nearest_to_spawn = source;
-		}
-	}
-
-	// sources to controller (upgrader position) : the nearest too
-	var nearest_to_controller = null;
-	nearest_distance = 999999;
-	for (let source of sources) {
-		path = Path.calculateTwoWay(source, controller, 3);
-		Path.unshift(path);
-		paths[source.id][controller.id] = path;
-		console.log('source ' + source.id + ' to controller ' + controller.id + ' = ' + path.length);
-		if (!nearest_to_controller || (paths.length < nearest_distance)) {
-			nearest_distance      = paths.length;
-			nearest_to_controller = source;
-		}
-	}
-
-	// spawn to sources (harvester position)
-	{
-		path = Path.calculate(spawn, nearest_to_spawn, 1);
-		paths[spawn.id] = {};
-		paths[spawn.id][nearest_to_spawn.id] = path;
-		console.log('spawn ' + spawn.id + ' to spawn source ' + nearest_to_spawn.id + ' = ' + path.length);
-		if (nearest_to_controller.id !== nearest_to_spawn.id) {
-			path = Path.calculate(spawn, nearest_to_controller, 1);
-			console.log('spawn ' + spawn.id + ' to controller source ' + nearest_to_controller.id + ' = ' + path.length);
-			paths[spawn.id][nearest_to_controller.id] = path;
-		}
-	}
-
-	// creeps
+	this.init();
 	var creeps = [];
 
 	// harvester : source-to-spawn
 	creeps.push({
 		role: 'harvester',
-		init: paths[spawn.id][nearest_to_spawn.id]
+		init: Memory.room.paths[this.spawn.id][this.nearest_to_spawn.id]
 	});
 	// harvester : source-to-controller (if not the same)
-	if (nearest_to_spawn.id != nearest_to_controller.id) {
+	if (this.nearest_to_spawn.id != this.nearest_to_controller.id) {
 		creeps.push({
 			role: 'harvester',
-			init: paths[spawn.id][nearest_to_controller.id]
+			init: Memory.room.paths[this.spawn.id][this.nearest_to_controller.id]
 		});
 	}
 	// upgrader
 	creeps.push({
 		role: 'upgrader',
-		init: Path.last(Path.calculate(spawn, paths[nearest_to_controller.id][controller.id]))
+		init: Path.calculate(
+			this.spawn, Path.waypointRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id])
+		)
 	});
 	// carrier : source-to-spawn
 	creeps.push({
 		role: 'carrier',
-		init: path.pop(paths[spawn.id][nearest_to_spawn.id]),
-		path: path.unshift(paths[nearest_to_spawn.id][spawn.id])
+		init: Path.calculate(
+			this.spawn, Path.startRoomPosition(Memory.room.paths[this.nearest_to_spawn.id][this.spawn.id])
+		),
+		path: Path.unshift(Memory.room.paths[this.nearest_to_spawn.id][this.spawn.id])
 	});
 	// carrier : source-to-controller
 	creeps.push({
 		role: 'carrier',
-		init: path.pop(paths[spawn.id][nearest_to_controller.id]),
-		path: Path.unshift(paths[nearest_to_controller.id][controller.id])
+		init: Path.calculate(
+			this.spawn, Path.startRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id])
+		),
+		path: Path.unshift(Memory.room.paths[this.nearest_to_controller.id][this.controller.id])
 	});
 
-	// memorize creeps
-	Memory.creeps = creeps;
+	console.log(require('./tests').dump(paths));
 
+	// memorize creeps as tasks
+	Memory.tasks = creeps;
+};
+
+/**
+ * Init
+ */
+module.exports.init = function()
+{
+	this.controller = null;
+	this.sources    = this.room.find(FIND_SOURCES_ACTIVE);
+	for (let structure of this.room.find(FIND_STRUCTURES)) {
+		if (structure.structureType == STRUCTURE_CONTROLLER) {
+			this.controller = structure;
+		}
+		else if (structure.structureType === STRUCTURE_SPAWN) {
+			this.spawn = structure;
+		}
+	}
+	if (!Memory.room)       Memory.room = {};
+	if (!Memory.room.paths) Memory.room.paths = {};
+	if (Memory.room.nearest_to_controller) {
+		this.nearest_to_controller = Game.getObjectById(Memory.room.nearest_to_controller).pos;
+	}
+	if (Memory.room.nearest_to_spawn) {
+		this.nearest_to_spawn = Game.getObjectById(Memory.room.nearest_to_spawn).pos;
+	}
+};
+
+/**
+ * Sources to controller (upgrader position) : the nearest too
+ */
+module.exports.prepareSourcesToController = function()
+{
+	this.init();
+	var nearest_to_controller = null;
+	var nearest_distance = 999999;
+	var path;
+	for (let source of this.sources) {
+		path = Path.calculateTwoWay(source, this.controller, 3);
+		Path.unshift(path);
+		paths[source.id][this.controller.id] = path;
+		console.log('source ' + source.id + ' to controller ' + this.controller.id + ' = ' + Path.length(path));
+		if (!nearest_to_controller || (paths.length < nearest_distance)) {
+			nearest_distance      = paths.length;
+			nearest_to_controller = source;
+		}
+	}
+	Memory.room.nearest_to_controlle = source.id;
+};
+
+/**
+ * Sources to spawn (harvester position) : keep only the nearest
+ */
+module.exports.prepareSourcesToSpawn = function()
+{
+	this.init();
+	var nearest_to_spawn = null;
+	var nearest_distance = 999999;
+	var path;
+	for (let source of this.sources) {
+		path = Path.calculateTwoWay(source, this.spawn, 1);
+		Path.unshift(path);
+		if (!Memory.room.paths[source.id]) Memory.room.paths[source.id] = {};
+		Memory.room.paths[source.id][this.spawn.id] = path;
+		console.log('source ' + source.id + ' to spawn ' + this.spawn.id + ' = ' + Path.length(path));
+		if (!nearest_to_spawn || (paths.length < nearest_distance)) {
+			nearest_distance = paths.length;
+			nearest_to_spawn = source;
+		}
+	}
+	Memory.room.nearest_to_spawn = source.id;
+};
+
+/**
+ * Spawn to sources (harvester position)
+ */
+module.exports.prepareSpawnToSources = function()
+{
+	this.init();
+	var path;
+	path = Path.calculate(this.spawn, this.nearest_to_spawn, 1);
+	Memory.paths[this.spawn.id][this.nearest_to_spawn.id] = path;
+	console.log('spawn ' + this.spawn.id + ' to spawn source ' + this.nearest_to_spawn.id + ' = ' + Path.length(path));
+	if (this.nearest_to_controller.id !== this.nearest_to_spawn.id) {
+		path = Path.calculate(this.spawn, this.nearest_to_controller, 1);
+		console.log(
+			'spawn ' + this.spawn.id + ' to controller source ' + this.nearest_to_controller.id + ' = ' + Path.length(path)
+		);
+		Memory.paths[this.spawn.id][this.nearest_to_controller.id] = path;
+	}
 };
