@@ -5,30 +5,31 @@ var sources = require('./sources');
 
 /**
  * Initial start phase :
- * Create the first creep : a harvest that will work at the nearest source
+ * Prepare fix paths cache
+ * Prepare creeps plan
  */
 module.exports.run = function()
 {
-	if (!Memory.step) {
+	if (!Memory.phase_step) {
 		sources.memorize();
 		room.prepareSourcesToSpawn();
-		Memory.step = 1;
+		Memory.phase_step = 1;
 	}
-	else if (Memory.step == 1) {
+	else if (Memory.phase_step == 1) {
 		room.prepareSourcesToController();
-		Memory.step = 2;
+		Memory.phase_step = 2;
 	}
-	else if (Memory.step == 2) {
+	else if (Memory.phase_step == 2) {
 		room.prepareSpawnToSources();
-		Memory.step = 3;
+		Memory.Memory.phase_step = 3;
 	}
-	else if (Memory.step == 3) {
+	else if (Memory.phase_step == 3) {
 		room.prepareCreeps();
-		Memory.step = 4;
+		Memory.phase_step = 4;
 	}
-	else if (Memory.step == 4) {
+	else if (Memory.phase_step == 4) {
 		roads.build();
-		delete Memory.step;
+		delete Memory.phase_step;
 		Memory.phase = 'harvest';
 	}
 };

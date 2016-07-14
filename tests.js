@@ -196,4 +196,5 @@ module.exports.path = function()
 		path.unserialize(test), [{x: 10, y: 10}, {x: 11, y: 10}, {x: 12, y: 10}, path.WAYPOINT, {x: 11, y: 9}]
 	);
 	this.assert('unshift', path.unshift(test), '11103w8');
+	this.assert('waypoint', path.waypoint(test), {x: 12, y: 10});
 };

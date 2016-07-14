@@ -480,6 +480,7 @@ module.exports.waypoint = function(path, count = 1)
 		else {
 			pos = this.move(pos, Number(path[i]));
 		}
+		i ++;
 	}
 	return undefined;
 };
