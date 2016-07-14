@@ -1,20 +1,21 @@
 /**
  * Unit tests
  *
- * Run them from the console with require('tests').run();
+ * Run them from the console with :
+ * require('tests').run()
  */
 
 /**
  * Tests with errors counter
  *
- * @type int
+ * @type number
  */
 module.exports.errors = 0;
 
 /**
  * Passed tests counter
  *
- * @type int
+ * @type number
  */
 module.exports.passed = 0;
 
@@ -171,23 +172,25 @@ module.exports.path = function()
 	this.assert('bottom',       path.move(source, BOTTOM),       {x: 1, y: 2});
 
 	this.prefix = 'path.step';
-	this.assert('0',  path.step(test, 0), {x: 10, y: 10});
-	this.assert('1',  path.step(test, 1), {x: 11, y: 10});
-	this.assert('2',  path.step(test, 2), {x: 12, y: 10});
-	this.assert('3',  path.step(test, 3), path.WAYPOINT);
+	this.assert('0',  path.step(test, 0),       {x: 10, y: 10});
+	this.assert('1',  path.step(test, 1),       {x: 11, y: 10});
+	this.assert('2',  path.step(test, 2),       {x: 12, y: 10});
+	this.assert('3',  path.step(test, 3),       path.WAYPOINT);
 	this.assert('3p', path.step(test, 3, true), {x: 12, y: 10});
-	this.assert('4',  path.step(test, 4), {x: 11, y: 9});
-	this.assert('5',  path.step(test, 5), {x: 11, y: 9});
-	this.assert('6',  path.step(test, 6), {x: 11, y: 9});
+	this.assert('4',  path.step(test, 4),       {x: 11, y: 9});
+	this.assert('5',  path.step(test, 5),       {x: 11, y: 9});
+	this.assert('6',  path.step(test, 6),       {x: 11, y: 9});
 
 	this.prefix = 'path';
-	this.assert('last',      path.last(test), {x: 11, y: 9});
-	this.assert('length',    path.length(test), 4);
+	this.assert('last',      path.last(test),              {x: 11, y: 9});
+	this.assert('length',    path.length(test),            4);
 	this.assert('move',      path.move(source, TOP_RIGHT), {x: 2, y: 0});
-	this.assert('pop',       path.pop(test), '101033w');
+	this.assert('pop',       path.pop(test),               '101033w');
+	this.assert('push',      path.push(test,               {x: 11, y: 10}), test + '5');
 	this.assert('serialize',
 		path.serialize([{x: 10, y: 10}, {x: 11, y: 10}, {x: 12, y: 10}, path.WAYPOINT, {x: 11, y: 9}]), test
 	);
+	this.assert('shift',     path.shift(test,  {x: 10, y: 9}), '1009533w8');
 	this.assert('start',     path.start(test), {x: 10, y: 10});
 	this.assert('unserialize',
 		path.unserialize(test), [{x: 10, y: 10}, {x: 11, y: 10}, {x: 12, y: 10}, path.WAYPOINT, {x: 11, y: 9}]

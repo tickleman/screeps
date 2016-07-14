@@ -14,11 +14,16 @@
  *
  * Want to test ? This draw flags
  * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn)
- * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 1)
+ * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 2)
  *
  * Cleanup test flags :
  * for (let flag of Game.spawns.Spawn.room.find(FIND_FLAGS)) if (!isNaN(flag.name)) flag.remove()
  */
+
+/**
+ * @type boolean
+ */
+module.exports.DEBUG = false;
 
 /**
  * @type string
@@ -71,12 +76,15 @@ module.exports.swamp_cost = 10;
  **/
 module.exports.calculate = function(source, destination, range, cumulate_exclude)
 {
+	if (source.pos)      source      = source.pos;
+	if (destination.pos) destination = destination.pos;
+	if (!range)          range       = 0;
 	var calculator = this;
-
+	if (this.DEBUG) console.log('calculate.range is ' + range);
 	//noinspection JSUnusedGlobalSymbols Used by search()
 	var path = PathFinder.search(
-		source.pos ? source.pos : source,
-		{ pos: destination.pos ? destination.pos : destination, range: range ? range : 0 },
+		source,
+		{ pos: destination, range: range },
 		{
 			plainCost: calculator.plain_cost,
 			swampCost: calculator.swamp_cost,
@@ -110,7 +118,7 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 				});
 
 				for (let pos of calculator.exclude) {
-console.log('~ ' + pos.x + ', ' + pos.y);
+					if (calculator.DEBUG) console.log('~ ' + pos.x + ', ' + pos.y);
 					costs.set(pos.x, pos.y, 0xff);
 				}
 
@@ -134,9 +142,9 @@ module.exports.calculateTwoWay = function(source, destination, range)
 	if (destination.pos) destination = destination.pos;
 	if (!range)          range       = 0;
 	var exclude = this.exclude.slice(0);
-console.log('source = ' + source.x + ', ' + source.y);
-console.log('destination = ' + destination.x + ', ' + destination.y);
-console.log('range = ' + range);
+	if (this.DEBUG) console.log('source = ' + source.x + ', ' + source.y);
+	if (this.DEBUG) console.log('destination = ' + destination.x + ', ' + destination.y);
+	if (this.DEBUG) console.log('range = ' + range);
 	// remove flags
 	if (this.flags) {
 		for (let flag of Game.rooms[source.roomName].find(FIND_FLAGS)) {
@@ -146,24 +154,26 @@ console.log('range = ' + range);
 		}
 	}
 	// calculate path
-	var path = this.calculate(source, destination, range + 1, true);
-	var last = this.last(path);
-	var back = Game.rooms[destination.roomName].getPositionAt(last.x, last.y);
+	var path             = this.calculate(source, destination, range + 1, true);
+	var back_source      = this.last(path);
+	var back_destination = this.start(path);
+	back_source      = Game.rooms[destination.roomName].getPositionAt(back_source.x, back_source.y);
+	back_destination = Game.rooms[destination.roomName].getPositionAt(back_destination.x, back_destination.y);
 	this.exclude.pop();
-console.log('back = ' + back.x + ', ' + back.y);
-	path = path.concat(this.WAYPOINT, this.calculate(back, source).substr(4));
-//console.log('last = ' + this.last(path).x + ', ' + this.last(path).y);
-//path = path.concat(this.direction(this.last(path), source));
+	if (this.DEBUG) console.log('back_source = '      + back_source.x      + ', ' + back_source.y);
+	if (this.DEBUG) console.log('back_destination = ' + back_destination.x + ', ' + back_destination.y);
+	var back_path = this.calculate(back_source, back_destination);
+	path = path.concat(this.WAYPOINT, this.shift(back_path, back_source).substr(4));
 	// show flags
 	if (this.flags) {
 		var counter = 0;
 		for (let pos of this.unserialize(path)) {
 			if (pos == this.WAYPOINT) {
-				console.log('flag ' + counter + ' : WAYPOINT');
+				if (this.DEBUG) console.log('flag ' + counter + ' : WAYPOINT');
 			}
 			else {
 				Game.rooms[source.roomName].createFlag(pos.x, pos.y, (++counter).toString());
-				console.log('flag ' + counter + ' : ' + pos.x + ', ' + pos.y);
+				if (this.DEBUG) console.log('flag ' + counter + ' : ' + pos.x + ', ' + pos.y);
 			}
 		}
 	}
@@ -267,6 +277,26 @@ module.exports.pop = function(path)
 };
 
 /**
+ * Returns a new path with a new pushed position
+ * The position must be one of the 8 positions near the existing path last position
+ * The pushed position may be :
+ * - this.WAYPOINT
+ * - a new starting point
+ *
+ * @param path string
+ * @param pos  object|string|number {x, y}|this.WAYPOINT|direction
+ */
+module.exports.push = function(path, pos)
+{
+	if (pos === this.WAYPOINT) {
+		return path.concat(this.WAYPOINT);
+	}
+	else {
+		return path.concat(this.direction(this.last(path), pos));
+	}
+};
+
+/**
  *
  * @param path         object[] [{x, y}]
  * @param [to_exclude] boolean
@@ -275,6 +305,7 @@ module.exports.pop = function(path)
 module.exports.serialize = function(path, to_exclude)
 {
 	var pos = path[Object.keys(path)[0]];
+	if (this.DEBUG) console.log('SERIALIZE');
 
 	var xx = pos.x.toString();
 	if (xx.length < 2) xx = '0' + xx;
@@ -283,20 +314,42 @@ module.exports.serialize = function(path, to_exclude)
 	var result = xx.concat(yy);
 
 	var last_pos = pos;
+	if (this.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + result);
 	for (pos of path.slice(1)) {
 		if (pos == this.WAYPOINT) {
 			result = result.concat(pos);
+			if (this.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + this.WAYPOINT);
 		}
 		else {
 			if (to_exclude) {
 				this.exclude.push(pos);
 			}
 			result = result.concat(this.direction(last_pos, pos));
+			if (this.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + this.direction(last_pos, pos));
 			last_pos = pos;
 		}
 	}
 
+	if (this.DEBUG) console.log('SERIALIZE = ' + result);
 	return result;
+};
+
+/**
+ * Returns a new path with a new shifted start point
+ * The position must be one of the 8 positions near the existing path start position
+ * The shifted position may be :
+ * - this.WAYPOINT
+ * - a new starting point
+ *
+ * @param path string
+ * @param pos  object|string|number {x, y}|this.WAYPOINT|direction
+ */
+module.exports.shift = function(path, pos)
+{
+	if (pos == this.WAYPOINT) {
+		return path.substr(0, 4).concat(this.WAYPOINT, path.substr(4));
+	}
+	return this.serialize([pos]).concat(this.direction(pos, this.start(path)), path.substr(4));
 };
 
 /**
@@ -362,7 +415,7 @@ module.exports.unserialize = function(path)
  */
 module.exports.unshift = function(path)
 {
-	var pos = this.start(path);
+	var pos       = this.start(path);
 	var direction = path.substr(4, 1);
 	if (direction != this.WAYPOINT) {
 		pos = this.move(pos, Number(direction));
