@@ -20,6 +20,8 @@
  * for (let flag of Game.spawns.Spawn.room.find(FIND_FLAGS)) if (!isNaN(flag.name)) flag.remove()
  */
 
+var room = Game.spawns.Spawn.room;
+
 /**
  * @type boolean
  */
@@ -159,8 +161,8 @@ module.exports.calculateTwoWay = function(source, destination, range)
 	var path             = this.calculate(source, destination, range, true);
 	var back_source      = this.last(path);
 	var back_destination = this.start(path);
-	back_source      = Game.rooms[destination.roomName].getPositionAt(back_source.x, back_source.y);
-	back_destination = Game.rooms[destination.roomName].getPositionAt(back_destination.x, back_destination.y);
+	back_source      = this.toRoomPosition(back_source);
+	back_destination = this.toRoomPosition(back_destination);
 	this.exclude.pop();
 	if (this.DEBUG) console.log('back_source = '      + back_source.x      + ', ' + back_source.y);
 	if (this.DEBUG) console.log('back_destination = ' + back_destination.x + ', ' + back_destination.y);
@@ -229,6 +231,17 @@ module.exports.flag = function(name)
 module.exports.last = function(path)
 {
 	return this.step(path, this.length(path));
+};
+
+/**
+ * Returns the last position of the path (arrival position) as a RoomPosition
+ *
+ * @param path @example 'xxyy123x456'
+ * @returns RoomPosition
+ */
+module.exports.lastRoomPosition = function(path)
+{
+	return this.toRoomPosition(this.last(path));
 };
 
 /**
@@ -355,7 +368,7 @@ module.exports.shift = function(path, pos)
 };
 
 /**
- * Returns the first step of the path (position or WAYPOINT)
+ * Returns the first step of the path
  *
  * @param path @example 'xxyy123w456'
  * @returns object {x, y}
@@ -363,6 +376,17 @@ module.exports.shift = function(path, pos)
 module.exports.start = function(path)
 {
 	return {x: Number(path.substr(0, 2)), y: Number(path.substr(2, 2))};
+};
+
+/**
+ * Returns the first step of the path (start position) as a RoomPosition
+ *
+ * @param path @example 'xxyy123x456'
+ * @returns RoomPosition
+ */
+module.exports.startRoomPosition = function(path)
+{
+	return this.toRoomPosition(this.start(path));
 };
 
 /**
@@ -386,6 +410,15 @@ module.exports.step = function(path, step, position)
 		step --;
 	}
 	return pos;
+};
+
+/**
+ * @param pos object {x, y}
+ * @return RoomPosition
+ */
+module.exports.toRoomPosition = function(pos)
+{
+	return Game.rooms[room.name].getPositionAt(pos.x, pos.y);
 };
 
 /**
@@ -423,4 +456,42 @@ module.exports.unshift = function(path)
 		pos = this.move(pos, Number(direction));
 	}
 	return this.serialize([pos]).concat(path.substr(5));
+};
+
+/**
+ * Returns the waypoint position
+ *
+ * @param path string @example 'xxyy123w456'
+ * @param count number the waypoint number (0 for start position, 1 for first waypoint, etc)
+ * @returns object {x, y}
+ */
+module.exports.waypoint = function(path, count = 1)
+{
+	var pos = this.start(path);
+	if (!this.waypoint) return pos;
+	var i = 4;
+	while (i < path.length) {
+		if (path[i] == this.WAYPOINT) {
+			count --;
+			if (count <= 0) {
+				return pos;
+			}
+		}
+		else {
+			pos = this.move(pos, Number(path[i]));
+		}
+	}
+	return undefined;
+};
+
+/**
+ * Returns the waypoint position as a RoomPosition
+ *
+ * @param path string @example 'xxyy123w456'
+ * @param count number the waypoint number (0 for start position, 1 for first waypoint, etc)
+ * @returns RoomPosition
+ */
+module.exports.waypointRoomPosition = function (path, count = 1)
+{
+	return this.toRoomPosition(this.waypoint(path, count));
 };
