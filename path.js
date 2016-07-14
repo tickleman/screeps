@@ -67,8 +67,7 @@ module.exports.swamp_cost = 10;
  * @param destination        object the destination point
  * @param [range]            number range from the destination @default 0
  * @param [cumulate_exclude] boolean if true, the new path will append to this.exclude
- * @return string xxyy123s456... where xx and yy are the start coordinates and 123 are the moves and w a waypoint
- * each move is a BOTTOM, LEFT, RIGHT, TOP constant value
+ * @return string 'xxyy123' where xx and yy are the start coordinates and 123 are the moves
  **/
 module.exports.calculate = function(source, destination, range, cumulate_exclude)
 {
@@ -119,24 +118,14 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 		}
 	);
 
-	var result = this.serialize(source.pos);
-	var last_pos = source.pos;
-	for (let pos of path.path) {
-		result += this.direction(last_pos, pos);
-		if (cumulate_exclude) {
-			this.exclude.push(pos);
-		}
-		last_pos = pos;
-	}
-
-	return result;
+	return this.serialize(path.path, cumulate_exclude);
 };
 
 /**
  * @param source      object
  * @param destination object
  * @param [range]     number
- * @returns Array [{x, y}]
+ * @returns string @example 'xx123w456'
  */
 module.exports.calculateTwoWay = function(source, destination, range)
 {
@@ -151,12 +140,11 @@ module.exports.calculateTwoWay = function(source, destination, range)
 	var path = this.calculate(source, destination, range + 1, true);
 	var last = this.last(path);
 	var back = destination.room.getPositionAt(last.x, last.y);
-	path.push('step');
-	path = path.concat(this.calculate(back, source, 1));
+	path = path.concat(this.WAYPOINT, this.calculate(back, source, 1));
 	if (this.flags) {
 		var counter = 0;
-		for (let pos of path) {
-			if (pos != 'step') {
+		for (let pos of this.unserialize(path)) {
+			if (pos != this.WAYPOINT) {
 				source.room.createFlag(pos.x, pos.y, (++counter).toString());
 				console.log(counter + ' : ' + pos.x + ', ' + pos.y);
 			}
@@ -263,16 +251,35 @@ module.exports.pop = function(path)
 
 /**
  *
- * @param pos object {x, y}
- * @return string 'xxyy'
+ * @param path         object[] [{x, y}]
+ * @param [to_exclude] boolean
+ * @return string 'xxyy123'
  */
-module.exports.serialize = function(pos)
+module.exports.serialize = function(path, to_exclude)
 {
+	var pos = path[Object.keys(path)[0]];
+
 	var xx = pos.x.toString();
 	if (xx.length < 2) xx = '0' + xx;
 	var yy = pos.y.toString();
 	if (yy.length < 2) yy = '0' + yy;
-	return xx + yy;
+	var result = xx.concat(yy);
+
+	var last_pos = pos;
+	for (pos of path.slice(1)) {
+		if (pos == this.WAYPOINT) {
+			result = result.concat(pos);
+		}
+		else {
+			result = result.concat(this.direction(last_pos, pos));
+			last_pos = pos;
+		}
+		if (to_exclude) {
+			this.exclude.push(pos);
+		}
+	}
+
+	return result;
 };
 
 /**
@@ -310,6 +317,27 @@ module.exports.step = function(path, step, position)
 };
 
 /**
+ * Unserialize a path to gets all the successive positions / waypoints
+ * @param path string
+ * @return Array [{x, y}|this.WAYPOINT]
+ */
+module.exports.unserialize = function(path)
+{
+	var pos    = this.start(path);
+	var result = [pos];
+	var i      = 4;
+	while (i < path.length) {
+		result.push(
+			(path[i] == this.WAYPOINT)
+				? this.WAYPOINT
+				: (pos = this.move(pos, Number(path[i])))
+		);
+		i ++;
+	}
+	return result;
+};
+
+/**
  * Removes the first step from the path
  *
  * @param path string
@@ -317,7 +345,10 @@ module.exports.step = function(path, step, position)
  */
 module.exports.unshift = function(path)
 {
-	var start = this.start(path);
+	var pos = this.start(path);
 	var direction = path.substr(4, 1);
-	return this.serialize(this.move(start, direction)). path.substr(5);
+	if (direction != this.WAYPOINT) {
+		pos = this.move(pos, Number(direction));
+	}
+	return this.serialize([pos]).concat(path.substr(5));
 };
