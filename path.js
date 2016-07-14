@@ -8,13 +8,13 @@
  *   this exclude list is modifie by calculateTwoWay (the first path is added to exclude)
  * - default is to ignore creeps, but you can set ignore_creeps to false
  *
- * Use :
- * require('path').calculate(Game.spawns.Spawn, Game.spawns.Spawn.room.controller, 2)
- * require('path').calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn)
- *
- * Want to test ? This draw flags
- * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn)
- * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 2)
+ * Want to test ? This draw flags :
+ * - a creep goes from the spawn to the source, in order to stay here
+ * require('path').flag().calculate(Game.spawns.Spawn, Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), 1)
+ * - a creep goes from a source to the spawn, then back
+ * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn, 1)
+ * - a creep goes from a source to the upgrader, then back
+ * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 3)
  *
  * Cleanup test flags :
  * for (let flag of Game.spawns.Spawn.room.find(FIND_FLAGS)) if (!isNaN(flag.name)) flag.remove()
@@ -80,7 +80,9 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 	if (destination.pos) destination = destination.pos;
 	if (!range)          range       = 0;
 	var calculator = this;
-	if (this.DEBUG) console.log('calculate.range is ' + range);
+	if (this.DEBUG) console.log('calculate.source = ' + source.x + ', ' + source.y);
+	if (this.DEBUG) console.log('calculate.destination = ' + destination.x + ', ' + destination.y);
+	if (this.DEBUG) console.log('calculate.range = ' + range);
 	//noinspection JSUnusedGlobalSymbols Used by search()
 	var path = PathFinder.search(
 		source,
@@ -154,7 +156,7 @@ module.exports.calculateTwoWay = function(source, destination, range)
 		}
 	}
 	// calculate path
-	var path             = this.calculate(source, destination, range + 1, true);
+	var path             = this.calculate(source, destination, range, true);
 	var back_source      = this.last(path);
 	var back_destination = this.start(path);
 	back_source      = Game.rooms[destination.roomName].getPositionAt(back_source.x, back_source.y);
