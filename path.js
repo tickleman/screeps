@@ -13,7 +13,7 @@
  * require('path').calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn)
  *
  * Want to test ? This draw flags
- * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn)
+ * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn, 1)
  * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 2)
  *
  * Cleanup test flags :
@@ -129,24 +129,33 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
  */
 module.exports.calculateTwoWay = function(source, destination, range)
 {
+	if (source.pos)      source      = source.pos;
+	if (destination.pos) destination = destination.pos;
+	if (!range)          range       = 0;
 	var exclude = this.exclude.slice(0);
+	// remove flags
 	if (this.flags) {
-		for (let flag of source.room.find(FIND_FLAGS)) {
+		for (let flag of Game.rooms[source.roomName].find(FIND_FLAGS)) {
 			if (!isNaN(flag.name)) {
 				flag.remove();
 			}
 		}
 	}
+	// calculate path
 	var path = this.calculate(source, destination, range + 1, true);
 	var last = this.last(path);
-	var back = destination.room.getPositionAt(last.x, last.y);
-	path = path.concat(this.WAYPOINT, this.calculate(back, source, 1));
+	var back = Game.rooms[destination.roomName].getPositionAt(last.x, last.y);
+	path = path.concat(this.WAYPOINT, this.calculate(back, source).substr(4));
+	path = path.concat(this.direction(this.last(path), source));
 	if (this.flags) {
 		var counter = 0;
 		for (let pos of this.unserialize(path)) {
-			if (pos != this.WAYPOINT) {
-				source.room.createFlag(pos.x, pos.y, (++counter).toString());
-				console.log(counter + ' : ' + pos.x + ', ' + pos.y);
+			if (pos == this.WAYPOINT) {
+				console.log('flag ' + counter + ' : WAYPOINT');
+			}
+			else {
+				Game.rooms[source.roomName].createFlag(pos.x, pos.y, (++counter).toString());
+				console.log('flag ' + counter + ' : ' + pos.x + ', ' + pos.y);
 			}
 		}
 	}
@@ -271,11 +280,11 @@ module.exports.serialize = function(path, to_exclude)
 			result = result.concat(pos);
 		}
 		else {
+			if (to_exclude) {
+				this.exclude.push(pos);
+			}
 			result = result.concat(this.direction(last_pos, pos));
 			last_pos = pos;
-		}
-		if (to_exclude) {
-			this.exclude.push(pos);
 		}
 	}
 
