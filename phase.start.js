@@ -1,6 +1,7 @@
 
-var harvester = require('./creep.harvester');
-var sources   = require('./sources');
+var roads   = require('./roads');
+var room    = require('./room');
+var sources = require('./sources');
 
 /**
  * Initial start phase :
@@ -8,10 +9,8 @@ var sources   = require('./sources');
  */
 module.exports.run = function()
 {
-	if (Game.spawns.Spawn) {
-		if (!_.filter(Game.creeps).length) {
-			harvester.spawn(undefined, undefined, undefined, 'Dawn');
-		}
-		Memory.phase = 'harvest';
-	}
+	sources.memorize();
+	room.prepareRoutes();
+	roads.build();
+	Memory.phase = 'harvest';
 };
