@@ -13,8 +13,8 @@
  * require('path').calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn)
  *
  * Want to test ? This draw flags
- * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn, 1)
- * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 2)
+ * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn)
+ * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 1)
  *
  * Cleanup test flags :
  * for (let flag of Game.spawns.Spawn.room.find(FIND_FLAGS)) if (!isNaN(flag.name)) flag.remove()
@@ -103,15 +103,16 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 					}
 				}
 
-				for (let pos of calculator.exclude) {
-					costs.set(pos.x, pos.y, 0xff);
-				}
-
 				calculator.valorize.forEach(function(valorize, cost) {
 					for (let pos of valorize) {
 						costs.set(pos.x, pos.y, cost);
 					}
 				});
+
+				for (let pos of calculator.exclude) {
+console.log('~ ' + pos.x + ', ' + pos.y);
+					costs.set(pos.x, pos.y, 0xff);
+				}
 
 				return costs;
 			}
@@ -133,6 +134,9 @@ module.exports.calculateTwoWay = function(source, destination, range)
 	if (destination.pos) destination = destination.pos;
 	if (!range)          range       = 0;
 	var exclude = this.exclude.slice(0);
+console.log('source = ' + source.x + ', ' + source.y);
+console.log('destination = ' + destination.x + ', ' + destination.y);
+console.log('range = ' + range);
 	// remove flags
 	if (this.flags) {
 		for (let flag of Game.rooms[source.roomName].find(FIND_FLAGS)) {
@@ -145,8 +149,12 @@ module.exports.calculateTwoWay = function(source, destination, range)
 	var path = this.calculate(source, destination, range + 1, true);
 	var last = this.last(path);
 	var back = Game.rooms[destination.roomName].getPositionAt(last.x, last.y);
+	this.exclude.pop();
+console.log('back = ' + back.x + ', ' + back.y);
 	path = path.concat(this.WAYPOINT, this.calculate(back, source).substr(4));
-	path = path.concat(this.direction(this.last(path), source));
+//console.log('last = ' + this.last(path).x + ', ' + this.last(path).y);
+//path = path.concat(this.direction(this.last(path), source));
+	// show flags
 	if (this.flags) {
 		var counter = 0;
 		for (let pos of this.unserialize(path)) {
