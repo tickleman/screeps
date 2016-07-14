@@ -38,9 +38,27 @@ module.exports.assert = function(name, test, assume)
 		this.passed ++;
 	}
 	else {
-		console.log('! ' + this.prefix + '.' + name + ' : ' + test + ' / ' + assume);
+		console.log('! ' + this.prefix + '.' + name + ' : ' + this.dump(test) + ' / ' + this.dump(assume));
 		this.errors ++;
 	}
+};
+
+/**
+ * @param value mixed
+ * @return string
+ */
+module.exports.dump = function(value)
+{
+	if (typeof value != 'object') {
+		return value.toString();
+	}
+	var result = Array.isArray(value) ? '[' : '{';
+	var already = false;
+	for (let i in value) if (value.hasOwnProperty(i)) {
+		if (already) result = result.concat(', '); else already = true;
+		result = result.concat(i.toString(), ': ', this.dump(value[i]));
+	}
+	return result.concat(Array.isArray(value) ? ']' : '}');
 };
 
 /**
@@ -85,17 +103,17 @@ module.exports.equals = function(test, assume)
 module.exports.run = function()
 {
 	this.body();
+	this.path();
 	console.log((this.errors + this.passed) + ' tests - ' + this.passed + ' passed - ' + this.errors + ' errors');
 	return Math.ceil(this.passed / (this.errors + this.passed) * 100) + '%';
 };
 
 //--------------------------------------------------------------------------------------------------------------- body
 
-var body = require('body');
-
 /**
  * Body unit tests
  */
+var body = require('./body');
 module.exports.body = function()
 {
 	this.prefix = 'body.cost';
@@ -103,6 +121,7 @@ module.exports.body = function()
 	this.assert('harvester',     body.cost([MOVE, WORK, WORK, WORK, WORK, WORK]), 550);
 	this.assert('carrier.plain', body.cost([CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]), 500);
 	this.assert('carrier.road',  body.cost([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]), 500);
+
 	this.prefix = 'body.parts';
 	this.assert('initial',       body.parts([CARRY, MOVE, WORK], 200), [CARRY, MOVE, WORK]);
 	this.assert('notEnough',     body.parts([CARRY, MOVE, WORK], 199), null);
@@ -113,4 +132,41 @@ module.exports.body = function()
 	var body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
 	this.assert('carrier.road',  body.parts(body_parts, 300), [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE]);
 	this.assert('noLoose',       body_parts, [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]);
+};
+
+/**
+ * Path calculation tests
+ */
+var path = require('./path');
+module.exports.path = function()
+{
+	this.prefix = 'path.direction';
+	var source = {x: 1, y: 1};
+	this.assert('top-left',     path.direction(source, {x: 0, y: 0}), TOP_LEFT);
+	this.assert('left',         path.direction(source, {x: 0, y: 1}), LEFT);
+	this.assert('bottom-left',  path.direction(source, {x: 0, y: 2}), BOTTOM_LEFT);
+	this.assert('top-right',    path.direction(source, {x: 2, y: 0}), TOP_RIGHT);
+	this.assert('right',        path.direction(source, {x: 2, y: 1}), RIGHT);
+	this.assert('bottom-right', path.direction(source, {x: 2, y: 2}), BOTTOM_RIGHT);
+	this.assert('top',          path.direction(source, {x: 1, y: 0}), TOP);
+	this.assert('bottom',       path.direction(source, {x: 1, y: 2}), BOTTOM);
+
+	this.prefix = 'path';
+	var test = '101033w8';
+	this.assert('last',      path.last(test), {x: 11, y: 9});
+	this.assert('length',    path.length(test), 4);
+	this.assert('move',      path.move(source, TOP_RIGHT), {x: 2, y: 0});
+	this.assert('pop',       path.pop(test), '101033w');
+	this.assert('serialize', path.serialize({x: 5, y: 9}), '0509');
+	this.assert('start',     path.start(test), {x: 10, y: 10});
+
+	this.prefix = 'path.step';
+	this.assert('0',  path.step(test, 0), {x: 10, y: 10});
+	this.assert('1',  path.step(test, 1), {x: 11, y: 10});
+	this.assert('2',  path.step(test, 2), {x: 12, y: 10});
+	this.assert('3',  path.step(test, 3), path.WAYPOINT);
+	this.assert('3p', path.step(test, 3, true), {x: 12, y: 10});
+	this.assert('4',  path.step(test, 4), {x: 11, y: 9});
+	this.assert('5',  path.step(test, 5), {x: 11, y: 9});
+	this.assert('6',  path.step(test, 6), {x: 11, y: 9});
 };

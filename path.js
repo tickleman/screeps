@@ -1,5 +1,5 @@
 /**
- * Permanent path generator
+ * Path generator
  *
  * - calculate calculates the path from source to destination, with a distance of range to the destination
  * - calculateTwoWay calculates the path from source to destination, then back to source, using a different path
@@ -19,6 +19,11 @@
  * Cleanup test flags :
  * for (let flag of Game.spawns.Spawn.room.find(FIND_FLAGS)) if (!isNaN(flag.name)) flag.remove()
  */
+
+/**
+ * @type string
+ */
+module.exports.WAYPOINT = 'w';
 
 /**
  * @type Array [{x, y}]
@@ -43,17 +48,17 @@ module.exports.flags = false;
 module.exports.ignore_creeps = true;
 
 /**
- * @type int
+ * @type number
  */
 module.exports.plain_cost = 2;
 
 /**
- * @type int
+ * @type number
  */
 module.exports.road_cost = 1;
 
 /**
- * @type int
+ * @type number
  */
 module.exports.swamp_cost = 10;
 
@@ -62,7 +67,8 @@ module.exports.swamp_cost = 10;
  * @param destination        object the destination point
  * @param [range]            number range from the destination @default 0
  * @param [cumulate_exclude] boolean if true, the new path will append to this.exclude
- * @return Array [{x, y}]
+ * @return string xxyy123s456... where xx and yy are the start coordinates and 123 are the moves and w a waypoint
+ * each move is a BOTTOM, LEFT, RIGHT, TOP constant value
  **/
 module.exports.calculate = function(source, destination, range, cumulate_exclude)
 {
@@ -113,12 +119,14 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 		}
 	);
 
-	var result = [];
+	var result = this.serialize(source.pos);
+	var last_pos = source.pos;
 	for (let pos of path.path) {
-		result.push({ x: pos.x, y: pos.y });
+		result += this.direction(last_pos, pos);
 		if (cumulate_exclude) {
-			this.exclude.push({ x: pos.x, y: pos.y });
+			this.exclude.push(pos);
 		}
+		last_pos = pos;
 	}
 
 	return result;
@@ -159,17 +167,28 @@ module.exports.calculateTwoWay = function(source, destination, range)
 };
 
 /**
- * Returns the first position of the path
+ * Calculates the direction from the position from to the position to
  *
- * @param path
- * @returns object {x, y}
+ * @param from object {x, y}
+ * @param to   object {x, y}
  */
-module.exports.first = function(path)
+module.exports.direction = function(from, to)
 {
-	//noinspection LoopStatementThatDoesntLoopJS
-	for (let element of path) {
-		return element;
+	if (to.x < from.x) {
+		if      (to.y < from.y) return TOP_LEFT;
+		else if (to.y > from.y) return BOTTOM_LEFT;
+		else                    return LEFT;
 	}
+	else if (to.x > from.x) {
+		if      (to.y < from.y) return TOP_RIGHT;
+		else if (to.y > from.y) return BOTTOM_RIGHT;
+		else                    return RIGHT;
+	}
+	else {
+		if      (to.y < from.y) return TOP;
+		else if (to.y > from.y) return BOTTOM;
+	}
+	return '';
 };
 
 /**
@@ -185,15 +204,120 @@ module.exports.flag = function(name)
 };
 
 /**
- * Returns the last position of the path
+ * Returns the last step of the path (arrival point)
  *
- * @param path
+ * @param path @example 'xxyy123w456'
  * @returns object {x, y}
  */
 module.exports.last = function(path)
 {
-	//noinspection LoopStatementThatDoesntLoopJS
-	for (let element of path.slice(-1)) {
-		return element;
+	return this.step(path, this.length(path));
+};
+
+/**
+ * Returns the length of the path : number of steps in it
+ * - the first position is not counted as a step
+ * - each move is considered as a step
+ * - waypoints 'w' are considered as steps too
+ *
+ * @param path string @example 'xxyy123w456'
+ * @return number
+ */
+module.exports.length = function(path)
+{
+	return path.substr(4).length;
+};
+
+/**
+ * Returns the destination after move from source to direction
+ *
+ * @param source    object {x, y}
+ * @param direction number a direction constant value
+ * @return object {x, y}
+ */
+module.exports.move = function(source, direction)
+{
+	switch (direction) {
+		case TOP_LEFT:     return {x: source.x - 1, y: source.y - 1};
+		case BOTTOM_LEFT:  return {x: source.x - 1, y: source.y + 1};
+		case LEFT:         return {x: source.x - 1, y: source.y};
+		case TOP_RIGHT:    return {x: source.x + 1, y: source.y - 1};
+		case BOTTOM_RIGHT: return {x: source.x + 1, y: source.y + 1};
+		case RIGHT:        return {x: source.x + 1, y: source.y};
+		case TOP:          return {x: source.x, y: source.y - 1};
+		case BOTTOM:       return {x: source.x, y: source.y + 1};
 	}
+	return source;
+};
+
+/**
+ * Removes the last step from the path
+ *
+ * @param path string
+ * @return string
+ */
+module.exports.pop = function(path)
+{
+	return path.substr(0, Math.max(4, path.length - 1));
+};
+
+/**
+ *
+ * @param pos object {x, y}
+ * @return string 'xxyy'
+ */
+module.exports.serialize = function(pos)
+{
+	var xx = pos.x.toString();
+	if (xx.length < 2) xx = '0' + xx;
+	var yy = pos.y.toString();
+	if (yy.length < 2) yy = '0' + yy;
+	return xx + yy;
+};
+
+/**
+ * Returns the first step of the path (position or WAYPOINT)
+ *
+ * @param path @example 'xxyy123w456'
+ * @returns object {x, y}
+ */
+module.exports.start = function(path)
+{
+	return {x: Number(path.substr(0, 2)), y: Number(path.substr(2, 2))};
+};
+
+/**
+ * Extracts the position at the given step, or WAYPOINT if the step is a waypoint
+ *
+ * @param path       string @example 'xxyy123w456'
+ * @param step       number
+ * @param [position] boolean if true, will not return WAYPOINT but the last position at this step
+ * @return object|number {x, y} or this.WAYPOINT
+ */
+module.exports.step = function(path, step, position)
+{
+	if (!position && ((path.substr(3 + step, 1) == this.WAYPOINT))) {
+		return this.WAYPOINT;
+	}
+	var pos = this.start(path);
+	var i = 4;
+	while (step) {
+		pos = this.move(pos, Number(path.substr(i, 1)));
+		i ++;
+		step --;
+	}
+	return pos;
+};
+
+/**
+ * Removes the first step from the path
+ *
+ * @param path string
+ * @returns string
+ */
+module.exports.unshift = function(path)
+{
+	var start = this.start(path);
+	var direction = path.substr(4, 1);
+	return this.serialize(this.move(start, direction)). path.substr(5);
 };
