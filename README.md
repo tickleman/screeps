@@ -1,6 +1,18 @@
 # screeps
 My screeps code
 
+## Algorithm
+
+### Phase.start
+
+* prepare path to their start position and work paths for :
+    * harvester : get energy from source, drop it on the ground
+    * carrier : get energy from harvesters, transport it to extensions, spawn, then upgraders
+    * upgrader : wait for energy, upgrade the controller
+* calculate optimal routes for return routes
+    * carriers : one for the upgrader, one for the extensions and spawn (upgrader when has nothing else to do)
+    * others creeps do not move
+
 ## Development environment
 
 I am using PhpStorm under Linux Mint (/Ubuntu/Debian).
