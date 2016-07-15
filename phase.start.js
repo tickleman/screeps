@@ -30,6 +30,7 @@ module.exports.run = function()
 	else if (Memory.phase_step == 4) {
 		roads.build();
 		delete Memory.phase_step;
+		delete Memory.room;
 		Memory.phase = 'harvest';
 	}
 };
