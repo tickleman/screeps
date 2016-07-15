@@ -12,5 +12,5 @@ Download from nodejs.org, untar with tarxz, move folder into /opt/, ln -s folder
 Search nodejs into settings
 
 * Add those external libraries :
-** lodash : from PhpStorm javascript typescript community stubs downloads
-** ScreepsAutocomplete : git clone https://github.com/tickleman/ScreepsAutocomplete
+    * lodash : from PhpStorm javascript typescript community stubs downloads
+    * ScreepsAutocomplete : git clone https://github.com/tickleman/ScreepsAutocomplete
