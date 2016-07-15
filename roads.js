@@ -14,7 +14,7 @@ module.exports.build = function()
 			let path = paths[destination_id];
 			let i = path.indexOf(Path.WAYPOINT);
 			if (i > -1) {
-				this.buildRoad(path.substr(0, i));
+				this.buildRoad(path.unshift(path.substr(0, i)));
 			}
 		}
 	}
