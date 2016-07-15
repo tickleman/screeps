@@ -42,8 +42,8 @@ module.exports.run = function()
 		}
 		harvester.spawn();
 	}
-	// then : 2 light carriers
-	else if (count['carrier'] < 2) {
+	// then : 3 light carriers
+	else if (count['carrier'] < 3) {
 		// if there is not enough energy, we need one light carrier :
 		// - costs 300 energy units only instead of 550
 		// - moves 150 energy units per tick instead of 250
@@ -58,7 +58,7 @@ module.exports.run = function()
 	else if (!count['upgrader']) {
 		upgrader.spawn();
 	}
-	// then : 1 builder per construction site, if needed
+	// then : 1 builder per construction site, if needed (limit to 3)
 	else {
 		var construction_sites = Game.spawns.Spawn.room.find(FIND_CONSTRUCTION_SITES);
 		if (count['builder'] < construction_sites.length && count['builder'] < 3) {
