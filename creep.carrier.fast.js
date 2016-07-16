@@ -53,8 +53,8 @@ module.exports.sources = function(creep)
  * - the simple harvesters targets (extensions, then spawn), that need energy)
  * - upgraders
  *
- * @param creep
- * @returns Creep[]|StructureExtension[]|StructureSpawn[]
+ * @param [creep] Creep
+ * @returns Creep[]|StructureExtension[]|StructureSpawn[]|StructureTower[]
  */
 module.exports.targets = function(creep)
 {

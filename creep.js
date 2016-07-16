@@ -52,7 +52,7 @@ module.exports.role = 'creep';
 
 /**
  * Move to source / fill of energy
- *
+* *
  * @param creep            Creep
  * @param find_next_target boolean if false, the target stays the same
  * @return boolean true if the creeps needs to fill, false if it is full
@@ -280,7 +280,7 @@ module.exports.targetJobDone = function(creep, target)
 /**
  * Find an available target for the harvester : the first not filled-in spawn
  *
- * @param creep Creep
+ * @param [creep] Creep
  * @return StructureSpawn[]
  **/
 module.exports.targets = function(creep)

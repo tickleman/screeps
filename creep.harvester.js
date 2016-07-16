@@ -18,7 +18,7 @@ module.exports.role = 'harvester';
 /**
  * Targets are the not filled-in extensions, or the spawn if there are none of them
  *
- * @param creep Creep
+ * @param [creep] Creep
  * @return StructureExtension[]|StructureSpawn[]
  **/
 module.exports.targets = function(creep)
@@ -30,7 +30,7 @@ module.exports.targets = function(creep)
 		&& (structure.structureType == STRUCTURE_EXTENSION)
 	});
 	// if no extensions or all extensions are already filled in : go to spawn
-	if (!targets.length) {
+	if (creep && !targets.length) {
 		targets = this.__proto__.targets(creep);
 	}
 	return targets;

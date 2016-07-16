@@ -4,7 +4,7 @@ module.exports.__proto__ = require('./creep');
 /**
  * @type string
  */
-module.exports.role = 'builder';
+module.exports.role = 'repairer';
 
 /**
  * The target job is to build the target
@@ -15,17 +15,19 @@ module.exports.role = 'builder';
  */
 module.exports.targetJob = function(creep, target)
 {
-	return creep.build(target);
+	return creep.repair(target);
 };
 
 /**
- * Job is done when the target does not exist anymore : so it is not done until it is replaced with the built structure
+ * Job is done when the target is repaired
  *
+ * @param creep  Creep
+ * @param target Structure
  * @return boolean
  */
-module.exports.targetJobDone = function()
+module.exports.targetJobDone = function(creep, target)
 {
-	return false;
+	return target.hits == target.hitsMax;
 };
 
 /**
@@ -38,9 +40,8 @@ module.exports.targetJobDone = function()
 module.exports.targets = function(creep)
 {
 	var room = creep ? creep.room : Game.spawns.Spawn.room;
-	var targets = room.find(FIND_CONSTRUCTION_SITES);
-	if (creep && !targets.length) {
-		creep.memory.role = 'upgrader';
-	}
+	var targets = room.find(FIND_MY_STRUCTURES, { filter:
+		structure => structure.hits < structure.hitsMax
+	});
 	return targets;
 };
