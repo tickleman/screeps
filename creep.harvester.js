@@ -23,14 +23,22 @@ module.exports.role = 'harvester';
  **/
 module.exports.targets = function(creep)
 {
-	var room = creep ? creep.room : Game.spawns.Spawn.room;
-	// priority to extensions
-	var targets = room.find(FIND_STRUCTURES, { filter: structure =>
-		(structure.energy < structure.energyCapacity)
-		&& (structure.structureType == STRUCTURE_EXTENSION)
-	});
+	// priority to the nearest extension
+	var targets;
+	if (creep) {
+		targets = [creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: structure =>
+			(structure.energy < structure.energyCapacity)
+			&& (structure.structureType == STRUCTURE_EXTENSION)
+		})];
+	}
+	else {
+		targets = _.filter(Game.spawns.Spawn.room.find(FIND_STRUCTURES), structure =>
+			(structure.energy < structure.energyCapacity)
+			&& (structure.structureType == STRUCTURE_EXTENSION)
+		);
+	}
 	// if no extensions or all extensions are already filled in : go to spawn
-	if (creep && !targets.length) {
+	if (!targets.length) {
 		targets = this.__proto__.targets(creep);
 	}
 	return targets;
