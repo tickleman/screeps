@@ -58,8 +58,13 @@ module.exports.sources = function(creep)
  */
 module.exports.targets = function(creep)
 {
+	// the very highest priority is for towers
+	var targets = _.filter(Game.structures, structure => structure.structureType == STRUCTURE_TOWER);
+	if (targets.length) {
+		return targets;
+	}
 	// priority to harvester's target : extensions, then spawn, that need energy
-	var targets = this.__proto__.targets(creep);
+	targets = this.__proto__.targets(creep);
 	if (targets.length) {
 		return targets;
 	}
