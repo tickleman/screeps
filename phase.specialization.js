@@ -20,7 +20,7 @@ module.exports.run = function()
 		|| (creep.memory.role == 'repairer')
 		|| (creep.memory.role == 'upgrader')
 	));
-	var count = { builder: 0, carrier: 0, harvester: 0, upgrader: 0 };
+	var count = { builder: 0, carrier: 0, harvester: 0, repairer: 0, upgrader: 0 };
 
 	// make creeps work, and count them
 	for (let creep of creeps) {

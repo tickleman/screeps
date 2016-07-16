@@ -9,6 +9,29 @@ module.exports.body_parts = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, WORK, 
 module.exports.role = 'repairer';
 
 /**
+ * The carrier source work is to pickup the dropped energy
+ *
+ * @param creep  Creep
+ * @param source energy
+ */
+module.exports.sourceJob = function(creep, source)
+{
+	return creep.pickup(source);
+};
+
+/**
+ * The carrier source is the nearest dropped energy
+ *
+ * @param creep Creep optional
+ */
+module.exports.sources = function(creep)
+{
+	var position = creep ? creep.pos : Game.spawns.Spawn.pos;
+	var source = position.findClosestByRange(FIND_DROPPED_ENERGY);
+	return (source ? [source] : []);
+};
+
+/**
  * The target job is to build the target
  *
  * @param creep  Creep
@@ -42,7 +65,7 @@ module.exports.targetJobDone = function(creep, target)
 module.exports.targets = function(creep)
 {
 	var room = creep ? creep.room : Game.spawns.Spawn.room;
-	var targets = room.find(FIND_MY_STRUCTURES, { filter:
+	var targets = room.find(FIND_STRUCTURES, { filter:
 		structure => structure.hits < structure.hitsMax
 	});
 	return targets;
