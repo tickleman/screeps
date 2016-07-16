@@ -8,6 +8,14 @@
 
 var Path = require('./path');
 
+/**
+ * @type boolean
+ */
+module.exports.DEBUG = true;
+
+/**
+ * @type RoomObject
+ */
 module.exports.room = Game.spawns.Spawn.room;
 
 /**
@@ -32,7 +40,7 @@ module.exports.init = function()
 	}
 	if (Memory.room.nearest_to_spawn && !this.nearest_to_spawn) {
 		this.nearest_to_spawn = Game.getObjectById(Memory.room.nearest_to_spawn);
-		console.log('- load nearest_to_spawn ' + Memory.room.nearest_to_spawn);
+		if (this.DEBUG) console.log('- load nearest_to_spawn ' + Memory.room.nearest_to_spawn);
 	}
 };
 
@@ -70,9 +78,9 @@ module.exports.prepareCreeps = function()
 		});
 	}
 	// upgrader
-	console.log('- ' + this.spawn.pos.x + ', ' + this.spawn.pos.y + ' @ ' + this.spawn.pos.roomName);
+	if (this.DEBUG) console.log('- ' + this.spawn.pos.x + ', ' + this.spawn.pos.y + ' @ ' + this.spawn.pos.roomName);
 	var way = Path.waypointRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id]);
-	console.log('- ' + way.x + ', ' + way.y + ' @ ' + way.roomName);
+	if (this.DEBUG) console.log('- ' + way.x + ', ' + way.y + ' @ ' + way.roomName);
 	creeps.push({
 		role: 'upgrader',
 		init: Path.calculate(
@@ -110,11 +118,19 @@ module.exports.prepareSourcesToController = function()
 	var nearest_distance = 999999;
 	var path;
 	for (let source of this.sources) {
-		path = Path.calculateTwoWay(source, this.controller, 3);
-		Path.unshift(path);
-		if (!Memory.room.paths[source.id]) Memory.room.paths[source.id] = {};
+		if (Memory.room.paths[source.id] && Memory.room.paths[source.id][this.spawn.id]) {
+			if (this.DEBUG) console.log('same start point for controller source and spawn source');
+			var start = Path.startRoomPosition(Memory.room.paths[source.id][this.spawn.id]);
+			path = Path.calculateTwoWay(start, this.controller, 3);
+		}
+		else {
+			path = Path.unshift(Path.calculateTwoWay(source, this.controller, 3));
+			Memory.room.paths[source.id] = {};
+		}
 		Memory.room.paths[source.id][this.controller.id] = path;
-		console.log('source ' + source.id + ' to controller ' + this.controller.id + ' = ' + Path.length(path));
+		if (this.DEBUG) console.log(
+			'source ' + source.id + ' to controller ' + this.controller.id + ' = ' + Path.length(path)
+		);
 		if (!nearest_to_controller || (path.length < nearest_distance)) {
 			nearest_distance      = path.length;
 			nearest_to_controller = source;
@@ -134,10 +150,11 @@ module.exports.prepareSourcesToSpawn = function()
 	var path;
 	for (let source of this.sources) {
 		path = Path.calculateTwoWay(source, this.spawn, 1);
-		Path.unshift(path);
 		if (!Memory.room.paths[source.id]) Memory.room.paths[source.id] = {};
 		Memory.room.paths[source.id][this.spawn.id] = path;
-		console.log('source ' + source.id + ' to spawn ' + this.spawn.id + ' = ' + Path.length(path));
+		if (this.DEBUG) console.log(
+			'source ' + source.id + ' to spawn ' + this.spawn.id + ' = ' + Path.length(path)
+		);
 		if (!nearest_to_spawn || (path.length < nearest_distance)) {
 			nearest_distance = path.length;
 			nearest_to_spawn = source;
@@ -152,16 +169,16 @@ module.exports.prepareSourcesToSpawn = function()
 module.exports.prepareSpawnToSources = function()
 {
 	this.init();
-	console.log(this.nearest_to_spawn);
+	if (this.DEBUG) console.log(this.nearest_to_spawn);
 	var path;
 	path = Path.calculate(this.spawn, this.nearest_to_spawn, 1);
 	if (!Memory.room.paths[this.spawn.id]) Memory.room.paths[this.spawn.id] = {};
 	Memory.room.paths[this.spawn.id][this.nearest_to_spawn.id] = path;
-	console.log('spawn ' + this.spawn.id + ' to spawn source ' + this.nearest_to_spawn.id + ' = ' + Path.length(path));
+	if (this.DEBUG) console.log('spawn ' + this.spawn.id + ' to spawn source ' + this.nearest_to_spawn.id + ' = ' + Path.length(path));
 	if (this.nearest_to_controller.id !== this.nearest_to_spawn.id) {
 		path = Path.calculate(this.spawn, this.nearest_to_controller, 1);
 		Memory.room.paths[this.spawn.id][this.nearest_to_controller.id] = path;
-		console.log(
+		if (this.DEBUG) console.log(
 			'spawn ' + this.spawn.id + ' to controller source ' + this.nearest_to_controller.id + ' = ' + Path.length(path)
 		);
 	}
