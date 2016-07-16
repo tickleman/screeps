@@ -44,7 +44,7 @@ module.exports.targetJob = function(creep, target)
 };
 
 /**
- * Job is done when the target is repaired
+ * Job is done each time the creep energy is zero (new target) and if the target is fully repaired
  *
  * @param creep  Creep
  * @param target Structure
@@ -52,7 +52,7 @@ module.exports.targetJob = function(creep, target)
  */
 module.exports.targetJobDone = function(creep, target)
 {
-	return target.hits == target.hitsMax;
+	return (target.hits == target.hitsMax) || !creep.carry.energy;
 };
 
 /**
@@ -67,6 +67,13 @@ module.exports.targets = function(creep)
 	var room = creep ? creep.room : Game.spawns.Spawn.room;
 	var targets = room.find(FIND_STRUCTURES, { filter:
 		structure => structure.hits < structure.hitsMax
+	});
+	targets.sort(function(s1, s2) {
+		let r1 = s1.hits / s1.hitsMax;
+		let r2 = s2.hits / s2.hitsMax;
+		if (r1 < r2) return -1;
+		if (r1 > r2) return 1;
+		return 0;
 	});
 	return targets;
 };
