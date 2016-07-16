@@ -90,14 +90,14 @@ module.exports.findSource = function(creep)
 			source = Game.getObjectById(source);
 		}
 		if (creep instanceof Creep) {
-			creep.memory.source = source.id;
 			creep.say('source');
+			creep.memory.source = source.id;
 		}
 		return source;
 	}
 	if (creep instanceof Creep) {
-		delete creep.memory.source;
 		creep.say('no source');
+		delete creep.memory.source;
 	}
 	return undefined;
 };
@@ -127,14 +127,14 @@ module.exports.findTarget = function(creep)
 	var targets = this.targets(creep);
 	if (targets.length) {
 		if (creep instanceof Creep) {
-			creep.memory.target = targets[0].id;
 			creep.say('target');
+			creep.memory.target = targets[0].id;
 		}
 		return targets[0];
 	}
 	if (creep instanceof Creep) {
-		delete creep.memory.target;
 		creep.say('no target');
+		delete creep.memory.target;
 	}
 	return undefined;
 };
