@@ -1,6 +1,8 @@
 
 module.exports.__proto__ = require('./creep');
 
+module.exports.body_parts = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, WORK, WORK];
+
 /**
  * @type string
  */
