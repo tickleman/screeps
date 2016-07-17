@@ -8,11 +8,6 @@
 module.exports.__proto__ = require('./creep.harvester');
 
 /**
- * @type boolean
- */
-var DEBUG = true;
-
-/**
  * Body parts for a fast carrier
  * CARRY x 5, MOVE x5, consumes 500 energy units, moves 250 energy / tick
  */
@@ -63,38 +58,31 @@ module.exports.sources = function(creep)
  */
 module.exports.targets = function(creep)
 {
-	if (DEBUG) console.log('creep.carrier.fast.targets :');
 	// priority to harvester's target : extensions, then spawn, that need energy
 	targets = this.__proto__.targets(creep);
 	if (targets.length) {
-		if (DEBUG) console.log('creep.carrier.fast.parent FOUND');
 		return targets;
 	}
 	var room = creep ? creep.room : Game.spawns.Spawn.room;
 	// next target : towers with less than 90% energy
-	if (DEBUG) console.log('creep.carrier.fast.tower');
 	var targets = _.filter(room.find(FIND_MY_STRUCTURES), structure =>
 		(structure.structureType == STRUCTURE_TOWER)
 		&& ((structure.hits / structure.hitsMax) < .9)
 	);
 	if (targets.length) {
-		if (DEBUG) console.log('creep.carrier.fast.tower FOUND');
 		return targets;
 	}
 	// next target : builder creeps
-	if (DEBUG) console.log('creep.carrier.fast.builder');
 	targets = _.filter(room.find(FIND_MY_CREEPS), creep =>
 		(creep.memory.role == 'builder') && (creep.carry.energy < creep.carryCapacity)
 	);
 	// next target : upgrader creeps
 	if (!targets.length) {
-		if (DEBUG) console.log('creep.carrier.fast.uprader');
 		targets = _.filter(room.find(FIND_MY_CREEPS), creep =>
 			(creep.memory.role == 'upgrader') && (creep.carry.energy < creep.carryCapacity)
 		);
 	}
 	// the creep that have the less energy first
-	if (DEBUG) console.log('creep.carrier.fast.sort');
 	targets.sort(function(creep1, creep2) {
 		var fill1 = creep1.carry.energy / creep1.carryCapacity;
 		var fill2 = creep2.carry.energy / creep2.carryCapacity;
@@ -102,7 +90,5 @@ module.exports.targets = function(creep)
 		if (fill1 > fill2) return 1;
 		return 0;
 	});
-	if (DEBUG) console.log('creep.carrier.fast.creep found ?');
-	if (DEBUG) console.log(targets.length);
 	return targets;
 };
