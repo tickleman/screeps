@@ -1,4 +1,6 @@
 
+var creeps = require('./creeps');
+
 /**
  * Adds a task
  *
@@ -41,12 +43,11 @@ module.exports.forEachUnaffected = function(callback, thisArg)
 module.exports.unaffected = function()
 {
 	var affected = {};
-	for (let creep in Memory.creeps) if (Memory.creeps.hasOwnProperty(creep)) {
-		creep = Memory.creeps[creep];
-		if (creep.task) {
-			affected[creep.task] = true;
+	creeps.forEach(function(creep) {
+		if (creep.memory.task !== undefined) {
+			affected[creep.memory.task] = true;
 		}
-	}
+	});
 
 	var unaffected = {};
 	for (let task in Memory.tasks) if (Memory.tasks.hasOwnProperty(task)) {
