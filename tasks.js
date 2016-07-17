@@ -11,6 +11,31 @@ module.exports.add = function(task)
 };
 
 /**
+ * @param callback
+ * @param [thisArg] object
+ */
+module.exports.forEach = function(callback, thisArg)
+{
+	if (thisArg == undefined) thisArg = 0;
+	for (let key in Memory.tasks) if (Memory.tasks.hasOwnProperty(key)) {
+		callback.call(thisArg, Memory.tasks[key], key, Memory.tasks);
+	}
+};
+
+/**
+ * @param callback
+ * @param [thisArg] object
+ */
+module.exports.forEachUnaffected = function(callback, thisArg)
+{
+	if (thisArg == undefined) thisArg = 0;
+	var unaffected = this.unaffected();
+	for (let key in unaffected) if (unaffected.hasOwnProperty(key)) {
+		callback.call(thisArg, unaffected[key], key, unaffected);
+	}
+};
+
+/**
  * Returns unaffected tasks
  */
 module.exports.unaffected = function()

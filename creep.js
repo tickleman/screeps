@@ -2,6 +2,7 @@
  * The creep library : how to manage creeps with basic features that you can override
  */
 
+var body    = require('./body');
 var names   = require('./names');
 var path    = require('./path');
 var sources = require('./sources');
@@ -230,27 +231,31 @@ module.exports.sources = function()
  * @param source string if set : a given source id. If undefined, will automatically found a source using sources()
  * @param role   string @default 'harvester'
  * @param name   string if set : the name of the creep
- * @return Creep
+ * @return Creep|null
  */
 module.exports.spawn = function(target, source, role, name)
 {
-	if (!Game.spawns.Spawn.canCreateCreep(this.body_parts)) {
+	var body_parts = this.body_parts;
+	if (Game.spawns.Spawn.canCreateCreep(body_parts)) {
+		body_parts = body.parts(body_parts, Game.spawns.Spawn.room.energyCapacityAvailable);
+	}
+	if (body_parts && !Game.spawns.Spawn.canCreateCreep(body_parts)) {
 		if (!name) name = names.chooseName();
 		// prepare creep memory
 		var memory = { role: role ? role : this.role };
-		if (source === undefined) source = this.findSourceId();
-		if (target === undefined) target = this.findTargetId();
-		if (source) memory.source = source;
-		if (target) memory.target = target;
+		if (source === undefined) source = this.findSource();
+		if (target === undefined) target = this.findTarget();
+		if (source) memory.source = source.id;
+		if (target) memory.target = target.id;
 		// spawn a new creep
-		var creep_name = Game.spawns.Spawn.createCreep(this.body_parts, name, memory);
+		var creep_name = Game.spawns.Spawn.createCreep(body_parts, name, memory);
 		console.log('spawns ' + role + ' ' + creep_name);
 		// cleanup memory (remove dead creeps, add newly spawned creep)
 		sources.memorize(true);
 		this.freeMemory();
 		return Game.creeps[creep_name];
 	}
-	return undefined;
+	return null;
 };
 
 /**

@@ -51,10 +51,8 @@ module.exports.filter = function(callback)
  */
 module.exports.forEach = function(callback, thisArg)
 {
-	if (thisArg == undefined) {
-		thisArg = this;
-	}
+	if (thisArg == undefined) thisArg = this;
 	for (var key in Game.creeps) if (Game.creeps.hasOwnProperty(key)) {
-		callback.call(thisArg, Game.creeps[key], key, this);
+		callback.call(thisArg, Game.creeps[key], key, Game.creeps);
 	}
 };
