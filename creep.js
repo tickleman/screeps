@@ -323,7 +323,7 @@ module.exports.targets = function(creep)
  **/
 module.exports.work = function(creep)
 {
-	if (creep.memory.task) {
+	if (creep.memory.task == undefined) {
 		var task = Memory.Tasks[creep.memory.Task];
 		// prepare to go to init start point or start init sequence in already in start point
 		if (!creep.memory.step) {
