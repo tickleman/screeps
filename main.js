@@ -54,9 +54,10 @@ module.exports.loop = function ()
 	// spawn creeps for tasks
 	tasks.forEachUnaffected(function(task, task_key) {
 		if (creep_of[task.role]) {
+			console.log('- try to spawn a ' + task.role);
 			let creep = creep_of[task.role].spawn();
 			if (creep) {
-				creep.task = task_key;
+				creep.memory.task = task_key;
 			}
 		}
 	});
