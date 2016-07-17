@@ -28,7 +28,6 @@ module.exports.count = function()
 	var count = {};
 	for (let creep in Game.creeps) if (Game.creeps.hasOwnProperty(creep)) {
 		creep = Game.creeps[creep];
-		console.log(creep.name + ' = ' + creep.memory.role);
 		if (!count[creep.memory.role]) {
 			count[creep.memory.role] = 0;
 		}
