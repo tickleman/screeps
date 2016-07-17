@@ -8,14 +8,10 @@ var Room = require('./room');
 module.exports.build = function()
 {
 	// build roads for all paths having a waypoint (before the waypoint only)
-	for (let source_id in Memory.room.paths) if (Memory.room.paths.hasOwnProperty(source_id)) {
-		let paths = Memory.room.paths[source_id];
-		for (let destination_id in paths) if (paths.hasOwnProperty(destination_id)) {
-			let path = paths[destination_id];
-			let i = path.indexOf(Path.WAYPOINT);
-			if (i > -1) {
-				this.buildRoad(path.unshift(path.substr(0, i)));
-			}
+	for (let task in Memory.tasks) if (Memory.tasks.hasOwnProperty(task)) {
+		task = Memory.tasks[task];
+		if (task.role == 'carrier') {
+			this.buildRoad(task.path.substr(0, task.path.indexOf(Path.WAYPOINT)));
 		}
 	}
 };
