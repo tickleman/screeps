@@ -15,7 +15,7 @@ var upgrader   = require('./creep.upgrader');
  */
 var creep_of = {
 	//builder:   builder,
-	//carrier:   carrier,
+	carrier:   carrier,
 	creep:     base_creep,
 	harvester: harvester
 	//repairer:  repairer,

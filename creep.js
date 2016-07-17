@@ -334,7 +334,7 @@ module.exports.work = function(creep)
 		// prepare to go to init start point or start init sequence in already in start point
 		if (!creep.memory.step) {
 			creep.memory.step = 'go';
-			creep.memory.path = path.calculate(creep, path.startRoomPosition(task.init));
+			creep.memory.path = path.shift(path.calculate(creep, path.startRoomPosition(task.init)), creep.pos);
 			if (this.DEBUG) console.log('- go ' + creep.memory.path);
 			creep.memory.step_pos = 4;
 			if (creep.memory.step_pos >= creep.memory.path) {
@@ -344,7 +344,7 @@ module.exports.work = function(creep)
 			}
 		}
 		// go to init start point
-		if (creep.step == 'go') {
+		if (creep.memory.step == 'go') {
 			if (this.DEBUG) console.log('- go ' + creep.memory.path + ' step ' + creep.memory.step_pos);
 			if (!creep.move(creep.memory.path[creep.memory.step_pos])) {
 				if (this.DEBUG) console.log('- next step');
@@ -361,14 +361,15 @@ module.exports.work = function(creep)
 			}
 		}
 		// initialization path
-		else if (creep.step == 'init') {
+		else if (creep.memory.step == 'init') {
 			if (this.DEBUG) console.log('- init ' + task.init + ' step ' + creep.memory.step_pos);
 			if (!creep.move(task.init[creep.memory.step_pos])) {
 				if (this.DEBUG) console.log('- next step');
 				creep.memory.step_pos ++;
 				if (creep.memory.step_pos >= task.init.length) {
 					creep.memory.step = 'work';
-					creep.memory.step_pos = task.path.length;
+					if (task.path) creep.memory.step_pos = task.path.length;
+					else delete creep.memory.step_pos;
 					if (this.DEBUG) console.log('- work ' + task.path);
 				}
 			}
@@ -377,7 +378,7 @@ module.exports.work = function(creep)
 			}
 		}
 		// work path
-		else if (creep.step == 'work') {
+		else if (creep.memory.step == 'work') {
 			if (task.path) {
 				if (this.DEBUG) console.log('- work ' + task.path + ' step ' + creep.memory.step_pos);
 				// - start point : source job (fill)
