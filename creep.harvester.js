@@ -9,6 +9,10 @@
  */
 
 module.exports.__proto__ = require('./creep');
+/**
+ * @type boolean
+ */
+var DEBUG = true;
 
 /**
  * @type string
@@ -23,15 +27,18 @@ module.exports.role = 'harvester';
  **/
 module.exports.targets = function(creep)
 {
+	if (DEBUG) console.log('creep.harvester.targets :');
 	// priority to the nearest extension
 	var targets;
 	if (creep) {
+		if (DEBUG) console.log('creep.harvester.targets.extension(' + creep.name + ')');
 		targets = [creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: structure =>
 			(structure.energy < structure.energyCapacity)
 			&& (structure.structureType == STRUCTURE_EXTENSION)
 		})];
 	}
 	else {
+		if (DEBUG) console.log('creep.harvester.targets.extension(Spawn)');
 		targets = _.filter(Game.spawns.Spawn.room.find(FIND_STRUCTURES), structure =>
 			(structure.energy < structure.energyCapacity)
 			&& (structure.structureType == STRUCTURE_EXTENSION)
@@ -41,5 +48,7 @@ module.exports.targets = function(creep)
 	if (!targets.length) {
 		targets = this.__proto__.targets(creep);
 	}
+	if (DEBUG) console.log('creep.harvester.targets.find ?');
+	if (DEBUG) console.log(targets.length);
 	return targets;
 };

@@ -6,6 +6,11 @@ var names   = require('./names');
 var sources = require('./sources');
 
 /**
+ * @type boolean
+ */
+var DEBUG = true;
+
+/**
  * Use sources() / targets() to find its initial source / target
  *
  * @type string
@@ -285,12 +290,14 @@ module.exports.targetJobDone = function(creep, target)
  **/
 module.exports.targets = function(creep)
 {
+	if (DEBUG) console.log('creep.targets :');
 	var room = creep ? creep.room : Game.spawns.Spawn.room;
 	// the default target is the first spawn without energy into the current room
-	return room.find(FIND_STRUCTURES, { filter: structure =>
+	if (DEBUG) console.log('creep.targets.spawn ?');
+	return _.filter(room.find(FIND_STRUCTURES), structure =>
 		(structure.energy < structure.energyCapacity)
 		&& (structure.structureType == STRUCTURE_SPAWN)
-	});
+	);
 };
 
 /**
