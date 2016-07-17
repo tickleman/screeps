@@ -14,12 +14,12 @@ var upgrader   = require('./creep.upgrader');
  * @type object|base_creep[]
  */
 var creep_of = {
-	//builder:   builder,
+	builder:   builder,
 	carrier:   carrier,
 	creep:     base_creep,
-	harvester: harvester
-	//repairer:  repairer,
-	//upgrader:  upgrader
+	harvester: harvester,
+	repairer:  repairer,
+	upgrader:  upgrader
 };
 
 /**
