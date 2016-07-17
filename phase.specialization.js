@@ -17,7 +17,7 @@ module.exports.run = function()
 	var count = creeps.count();
 
 	// make creeps work, and count them
-	for (let creep of creeps) {
+	creeps.forEach(function(creep) {
 		if      (creep.memory.role == 'builder')   builder.work(creep);
 		else if (creep.memory.role == 'carrier')   carrier.work(creep);
 		else if (creep.memory.role == 'harvester') harvester.work(creep);
@@ -25,7 +25,7 @@ module.exports.run = function()
 		else if (creep.memory.role == 'upgrader')  upgrader.work(creep);
 		// don't count initial builders / harvesters
 		count[creep.memory.role]++;
-	}
+	});
 
 	// priority : 1 heavy harvester
 	if (!count['harvester']) {

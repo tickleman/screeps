@@ -24,7 +24,8 @@ module.exports.affect = function(creep)
  */
 module.exports.availableSourceId = function(return_last_source)
 {
-	for (let source_id in Memory.sources) if (Memory.sources.hasOwnProperty(source_id)) {
+	var source_id;
+	for (source_id in Memory.sources) if (Memory.sources.hasOwnProperty(source_id)) {
 		let source = Memory.sources[source_id];
 		for (let terrain of source.terrains) {
 			if (!terrain.creeps) {

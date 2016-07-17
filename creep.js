@@ -3,6 +3,7 @@
  */
 
 var names   = require('./names');
+var path    = require('./path');
 var sources = require('./sources');
 
 /**
@@ -300,13 +301,95 @@ module.exports.targets = function(creep)
  **/
 module.exports.work = function(creep)
 {
-	if (!this.fill(creep, this.find_next_target)) {
-		var target = Game.getObjectById(creep.memory.target);
-		if (!target || this.targetJobDone(creep, target)) {
-			this.findTarget(creep);
+	if (creep.memory.task) {
+		var task = Memory.Tasks[creep.memory.Task];
+		// prepare to go to init start point or start init sequence in already in start point
+		if (!creep.memory.step) {
+			creep.memory.step = 'go';
+			creep.memory.path = path.calculate(creep, path.startRoomPosition(task.init));
+			creep.memory.step_pos = 4;
+			if (creep.memory.step_pos >= creep.memory.path) {
+				delete creep.memory.path;
+				creep.memory.step = 'init';
+			}
 		}
-		else if (this.targetJob(creep, target) == ERR_NOT_IN_RANGE) {
-			creep.moveTo(target);
+		// go to init start point
+		if (creep.step == 'go') {
+			if (!creep.move(creep.memory.path[creep.memory.step_pos])) {
+				creep.memory.step_pos ++;
+				if (creep.memory.step_pos >= creep.memory.path.length) {
+					delete creep.memory.path;
+					creep.memory.step = 'init';
+					creep.memory.step_pos = 4;
+				}
+			}
+			else {
+				creep.say('wait');
+			}
+		}
+		// initialization path
+		else if (creep.step == 'init') {
+			if (!creep.move(task.init[creep.memory.step_pos])) {
+				creep.memory.step_pos ++;
+				if (creep.memory.step_pos >= task.init.length) {
+					creep.memory.step = 'work';
+					creep.memory.step_pos = task.path.length;
+				}
+			}
+			else {
+				creep.say('wait');
+			}
+		}
+		// work path
+		else if (creep.step == 'work') {
+			if (task.path) {
+				// - start point : source job (fill)
+				if (creep.memory.step_pos >= task.path.length) {
+					if (!this.fill(creep)) {
+						creep.memory.step_pos = 4;
+					}
+				}
+				// - arrival point : target job
+				if (task.path[creep.memory.step_pos] == path.WAYPOINT) {
+					let target = Game.getObjectById(creep.memory.target);
+					if (this.targetJobDone(creep, target)) {
+						creep.memory.step_pos ++;
+					}
+					else {
+						let error = this.targetJob(creep, target);
+						if (error) {
+							creep.say(error.toString());
+						}
+					}
+				}
+				// - move
+				else if (!creep.move(task.path[creep.memory.step_pos])) {
+					creep.memory.step_pos ++;
+					if (creep.memory.step_pos >= task.path.length) {
+						creep.memory.step_pos = 4;
+					}
+				}
+				else {
+					creep.say('wait');
+				}
+			}
+			else {
+				if (!this.fill(creep)) {
+					creep.say('no-fill');
+				}
+			}
+		}
+	}
+
+	else {
+		if (!this.fill(creep, this.find_next_target)) {
+			let target = Game.getObjectById(creep.memory.target);
+			if (!target || this.targetJobDone(creep, target)) {
+				this.findTarget(creep);
+			}
+			else if (this.targetJob(creep, target) == ERR_NOT_IN_RANGE) {
+				creep.moveTo(target);
+			}
 		}
 	}
 };
