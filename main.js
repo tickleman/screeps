@@ -54,13 +54,23 @@ module.exports.loop = function ()
 	// spawn creeps for tasks
 	tasks.forEachUnaffected(function(task, task_key) {
 		if (creep_of[task.role]) {
-			console.log('- try to spawn a ' + task.role);
+			console.log('- try to spawn a ' + task.role + ' task');
 			let creep = creep_of[task.role].spawn();
 			if (creep) {
 				creep.memory.task = task_key;
+				if (task.source) creep.memory.source = task.source;
+				if (task.target) creep.memory.target = task.target;
 			}
 		}
 	});
+
+	// spawn creeps outside of tasks
+	for (let role in creep_of) if (creep_of.hasOwnProperty(role)) {
+		if (!count[role]) {
+			console.log('- try to spawn a free ' + role);
+			creep_of[role].spawn();
+		}
+	}
 
 	// structures work
 	for (let structure in Game.structures) if (Game.structures.hasOwnProperty(structure)) {
