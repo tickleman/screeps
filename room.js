@@ -63,38 +63,43 @@ module.exports.prepare = function()
 module.exports.prepareCreeps = function()
 {
 	this.init();
+	tasks.reset();
 
 	// harvester : source-to-spawn
 	tasks.add({
 		role: 'harvester',
-		init: Memory.room.paths[this.spawn.id][this.nearest_to_spawn.id]
+		init: Memory.room.paths[this.spawn.id][this.nearest_to_spawn.id],
+		source: this.nearest_to_spawn.id
 	});
 	// harvester : source-to-controller (if not the same)
 	if (this.nearest_to_spawn.id != this.nearest_to_controller.id) {
 		tasks.add({
-			role: 'harvester',
-			init: Memory.room.paths[this.spawn.id][this.nearest_to_controller.id]
+			init:   Memory.room.paths[this.spawn.id][this.nearest_to_controller.id],
+			role:   'harvester',
+			source: this.nearest_to_controller.id
 		});
 	}
 	// upgrader
 	var arrival = Path.lastRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id]);
 	tasks.add({
-		role: 'upgrader',
-		init: Path.calculate(this.spawn, arrival)
+		init:   Path.calculate(this.spawn, arrival),
+		role:   'upgrader',
+		target: this.controller.id
 	});
 	// carrier 1 : source-to-spawn
 	tasks.add({
-		role: 'carrier',
 		init: Path.calculate(
 			this.spawn, Path.stepRoomPosition(Memory.room.paths[this.nearest_to_spawn.id][this.spawn.id], 1)
 		),
 		path: Path.calculateTwoWay(
 			Path.startRoomPosition(Memory.room.paths[this.nearest_to_spawn.id][this.spawn.id]), this.spawn, 1
-		)
+		),
+		role:   'carrier',
+		source: this.nearest_to_spawn.id,
+		target: this.spawn.id
 	});
 	// carrier 2 : source-to-upgrader
 	tasks.add({
-		role: 'carrier',
 		init: Path.calculate(
 			this.spawn, Path.stepRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id], 1)
 		),
@@ -102,7 +107,10 @@ module.exports.prepareCreeps = function()
 			Path.startRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id]),
 			Path.lastRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id]),
 			1
-		)
+		),
+		role:   'carrier',
+		source: this.nearest_to_controller.id,
+		target: this.controller.id
 	});
 };
 

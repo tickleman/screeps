@@ -38,6 +38,14 @@ module.exports.forEachUnaffected = function(callback, thisArg)
 };
 
 /**
+ * Remove all tasks
+ */
+module.exports.reset = function()
+{
+	Memory.tasks = {};
+};
+
+/**
  * Returns unaffected tasks
  */
 module.exports.unaffected = function()
