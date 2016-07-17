@@ -15,6 +15,11 @@ var sources = require('./sources');
 module.exports.AUTO = 'AUTO';
 
 /**
+ * @type boolean
+ */
+module.exports.DEBUG = true;
+
+/**
  * This value for spawn() enables the automatic available source terrain finder
  *
  * @type string
@@ -323,7 +328,7 @@ module.exports.targets = function(creep)
  **/
 module.exports.work = function(creep)
 {
-	if (creep.memory.task == undefined) {
+	if (creep.memory.task != undefined) {
 		var task = Memory.tasks[creep.memory.task];
 		// prepare to go to init start point or start init sequence in already in start point
 		if (!creep.memory.step) {
