@@ -6,7 +6,8 @@
  * - prepareCreeps
  */
 
-var Path = require('./path');
+var Path  = require('./path');
+var tasks = require('./tasks');
 
 /**
  * @type boolean
@@ -62,28 +63,27 @@ module.exports.prepare = function()
 module.exports.prepareCreeps = function()
 {
 	this.init();
-	var creeps = [];
 
 	// harvester : source-to-spawn
-	creeps.push({
+	tasks.add({
 		role: 'harvester',
 		init: Memory.room.paths[this.spawn.id][this.nearest_to_spawn.id]
 	});
 	// harvester : source-to-controller (if not the same)
 	if (this.nearest_to_spawn.id != this.nearest_to_controller.id) {
-		creeps.push({
+		tasks.add({
 			role: 'harvester',
 			init: Memory.room.paths[this.spawn.id][this.nearest_to_controller.id]
 		});
 	}
 	// upgrader
 	var arrival = Path.lastRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id]);
-	creeps.push({
+	tasks.add({
 		role: 'upgrader',
 		init: Path.calculate(this.spawn, arrival)
 	});
 	// carrier 1 : source-to-spawn
-	creeps.push({
+	tasks.add({
 		role: 'carrier',
 		init: Path.calculate(
 			this.spawn, Path.stepRoomPosition(Memory.room.paths[this.nearest_to_spawn.id][this.spawn.id], 1)
@@ -93,7 +93,7 @@ module.exports.prepareCreeps = function()
 		)
 	});
 	// carrier 2 : source-to-upgrader
-	creeps.push({
+	tasks.add({
 		role: 'carrier',
 		init: Path.calculate(
 			this.spawn, Path.stepRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id], 1)
@@ -104,9 +104,6 @@ module.exports.prepareCreeps = function()
 			1
 		)
 	});
-
-	// memorize creeps as tasks
-	Memory.tasks = creeps;
 };
 
 /**
