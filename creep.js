@@ -287,12 +287,28 @@ module.exports.targetJobDone = function(creep, target)
  **/
 module.exports.targets = function(creep)
 {
-	var room = creep ? creep.room : Game.spawns.Spawn.room;
+	var targets;
+	if (creep) {
+		targets = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: structure =>
+			(structure.energy < structure.energyCapacity)
+			&& (structure.structureType == STRUCTURE_EXTENSION)
+		});
+		targets = targets ? [targets] : [];
+	}
+	else {
+		targets = _.filter(Game.spawns.Spawn.room.find(FIND_STRUCTURES), structure =>
+			(structure.energy < structure.energyCapacity)
+			&& (structure.structureType == STRUCTURE_EXTENSION)
+		);
+	}
+	if (targets.length) return targets;
 	// the default target is the first spawn without energy into the current room
-	return _.filter(room.find(FIND_STRUCTURES), structure =>
+	var room = creep ? creep.room : Game.spawns.Spawn.room;
+	targets = _.filter(room.find(FIND_STRUCTURES), structure =>
 		(structure.energy < structure.energyCapacity)
 		&& (structure.structureType == STRUCTURE_SPAWN)
 	);
+	return targets;
 };
 
 /**

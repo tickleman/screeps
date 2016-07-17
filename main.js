@@ -27,13 +27,15 @@ module.exports.loop = function ()
 
 	// creeps work
 	creeps.forEach(function(creep) {
-		switch (creep.memory.role) {
-			case 'builder':   builder.work(creep);    break;
-			case 'carrier':   carrier.work(creep);    break;
-			case 'creep':     base_creep.work(creep); break;
-			case 'harvester': harvester.work(creep);  break;
-			case 'repairer':  repairer.work(creep);   break;
-			case 'upgrader':  upgrader.work(creep);   break;
+		if (!creep.spawning) {
+			switch (creep.memory.role) {
+				case 'builder':   builder.work(creep);    break;
+				case 'carrier':   carrier.work(creep);    break;
+				case 'creep':     base_creep.work(creep); break;
+				case 'harvester': harvester.work(creep);  break;
+				case 'repairer':  repairer.work(creep);   break;
+				case 'upgrader':  upgrader.work(creep);   break;
+			}
 		}
 	});
 
