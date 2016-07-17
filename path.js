@@ -10,14 +10,14 @@
  *
  * Want to test ? This draw flags :
  * - a creep goes from the spawn to the source, in order to stay here
- * require('path').flag().calculate(Game.spawns.Spawn, Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), 1)
+ * require('path').flags(require('path').calculate(Game.spawns.Spawn, Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), 1))
  * - a creep goes from a source to the spawn, then back
- * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn, 1)
+ * require('path').flags(require('path').calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn, 1))
  * - a creep goes from a source to the upgrader, then back
- * require('path').flag().calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 3)
+ * require('path').flags(require('path').calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 3))
  *
  * Cleanup test flags :
- * for (let flag of Game.spawns.Spawn.room.find(FIND_FLAGS)) if (!isNaN(flag.name)) flag.remove()
+ * require('path').clearFlags()
  */
 
 var room = Game.spawns.Spawn.room;
@@ -43,11 +43,6 @@ module.exports.exclude = [];
  * @type object [cost: [{x, y}]]
  */
 module.exports.valorize = [];
-
-/**
- * @type boolean|string
- */
-module.exports.flags = false;
 
 /**
  * @type boolean
@@ -149,14 +144,6 @@ module.exports.calculateTwoWay = function(source, destination, range)
 	if (this.DEBUG) console.log('source = ' + source.x + ', ' + source.y);
 	if (this.DEBUG) console.log('destination = ' + destination.x + ', ' + destination.y);
 	if (this.DEBUG) console.log('range = ' + range);
-	// remove flags
-	if (this.flags) {
-		for (let flag of Game.rooms[source.roomName].find(FIND_FLAGS)) {
-			if (!isNaN(flag.name)) {
-				flag.remove();
-			}
-		}
-	}
 	// calculate path
 	var path             = this.calculate(source, destination, range, true);
 	var back_source      = this.last(path);
@@ -168,21 +155,25 @@ module.exports.calculateTwoWay = function(source, destination, range)
 	if (this.DEBUG) console.log('back_destination = ' + back_destination.x + ', ' + back_destination.y);
 	var back_path = this.calculate(back_source, back_destination);
 	path = path.concat(this.WAYPOINT, this.shift(back_path, back_source).substr(4));
-	// show flags
+	this.exclude = exclude;
+	return path;
+};
+
+/**
+ * Clear flags
+ *
+ * @param [after] number
+ */
+module.exports.clearFlags = function(after)
+{
+	if (!after) after = -1;
 	if (this.flags) {
-		var counter = 0;
-		for (let pos of this.unserialize(path)) {
-			if (pos == this.WAYPOINT) {
-				if (this.DEBUG) console.log('flag ' + counter + ' : WAYPOINT');
-			}
-			else {
-				Game.rooms[source.roomName].createFlag(pos.x, pos.y, (++counter).toString());
-				if (this.DEBUG) console.log('flag ' + counter + ' : ' + pos.x + ', ' + pos.y);
+		for (let flag of room.find(FIND_FLAGS)) {
+			if (!isNaN(flag.name) && (Number(flag.name) > after)) {
+				flag.remove();
 			}
 		}
 	}
-	this.exclude = exclude;
-	return path;
 };
 
 /**
@@ -213,12 +204,29 @@ module.exports.direction = function(from, to)
 /**
  * Will draw flags (for debugging purpose)
  *
- * @param name string
+ * @param path string 'xxyy123w456'
  * @return object self
  */
-module.exports.flag = function(name)
+module.exports.flags = function(path)
 {
-	this.flags = name ? name : true;
+	var room = Game.spawns.Spawn.room;
+	var counter = 0;
+	for (let pos of this.unserialize(path)) {
+		if (pos == this.WAYPOINT) {
+			console.log('waypoint');
+		}
+		else {
+			counter ++;
+			if (Game.flags[counter.toString()]) {
+				Game.flags[counter.toString()].setPosition(pos.x, pos.y);
+			}
+			else {
+				room.createFlag(pos.x, pos.y, counter.toString());
+			}
+			console.log('flag ' + counter + ' : ' + pos.x + ', ' + pos.y);
+		}
+	}
+	this.clearFlags(counter);
 	return this;
 };
 
@@ -410,6 +418,18 @@ module.exports.step = function(path, step, position)
 		step --;
 	}
 	return pos;
+};
+
+/**
+ * Extracts the position at the given step, or WAYPOINT if the step is a waypoint, as a RoomPosition
+ *
+ * @param path string @example 'xxyy123w456'
+ * @param step number
+ * @return RoomPosition
+ */
+module.exports.stepRoomPosition = function(path, step)
+{
+	return this.toRoomPosition(this.step(path, step, true));
 };
 
 /**
