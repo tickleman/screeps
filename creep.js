@@ -166,7 +166,7 @@ module.exports.findTargetId = function(creep)
 module.exports.freeMemory = function()
 {
 	for (let creep_name in Memory.creeps) if (Memory.creeps.hasOwnProperty(creep_name)) {
-		if (Memory.creeps[creep_name].hasOwnProperty('_move') && !Game.creeps[creep_name]) {
+		if (!Game.creeps[creep_name]) {
 			delete Memory.creeps[creep_name];
 			console.log('prune creep ' + creep_name);
 		}
@@ -252,12 +252,11 @@ module.exports.spawn = function(target, source, role, name)
 		if (target === undefined) target = this.findTarget();
 		if (source) memory.source = source.id;
 		if (target) memory.target = target.id;
+		this.freeMemory();
 		// spawn a new creep
 		var creep_name = Game.spawns.Spawn.createCreep(body_parts, name, memory);
 		console.log('spawns ' + role + ' ' + creep_name);
-		// cleanup memory (remove dead creeps, add newly spawned creep)
 		sources.memorize(true);
-		this.freeMemory();
 		return Game.creeps[creep_name];
 	}
 	return null;
