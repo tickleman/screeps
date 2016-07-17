@@ -1,11 +1,8 @@
 /**
- * The base harvester creep :
- * - CARRY, MOVE, WORK body parts
- * - associated to an energy source access terrain
- * - targets extensions then spawn that need energy
- *
- * It will go to the source, get energy, go to the target and transfer the energy, until it dies.
- * This is the first creep that starts the colony.
+ * The heavy harvester :
+ * - goes (slowly) to a free source
+ * - stays near it for its all its life
+ * - it harvests the energy (10 / tick) and throw it on the ground
  */
 
 module.exports.__proto__ = require('./creep');
@@ -16,31 +13,28 @@ module.exports.__proto__ = require('./creep');
 module.exports.role = 'harvester';
 
 /**
- * Targets are the not filled-in extensions, or the spawn if there are none of them
+ * Body parts for a heavy harvester
+ * MOVE, WORK x 5
+ * - consume 550 energy units
+ */
+module.exports.body_parts = [MOVE, WORK, WORK, WORK, WORK, WORK];
+
+/**
+ * Never full : we never fill the heavy harvester : energy is thrown on the ground
  *
- * @param [creep] Creep
- * @return StructureExtension[]|StructureSpawn[]
+ * @return boolean false
  **/
-module.exports.targets = function(creep)
+module.exports.isFull = function()
 {
-	// priority to the nearest extension
-	var targets;
-	if (creep) {
-		targets = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: structure =>
-			(structure.energy < structure.energyCapacity)
-			&& (structure.structureType == STRUCTURE_EXTENSION)
-		});
-		targets = targets ? [targets] : [];
-	}
-	else {
-		targets = _.filter(Game.spawns.Spawn.room.find(FIND_STRUCTURES), structure =>
-			(structure.energy < structure.energyCapacity)
-			&& (structure.structureType == STRUCTURE_EXTENSION)
-		);
-	}
-	// if no extensions or all extensions are already filled in : go to spawn
-	if (!targets.length) {
-		targets = this.__proto__.targets(creep);
-	}
-	return targets;
+	return false;
+};
+
+/**
+ * This creep has no target
+ *
+ * @returns array []
+ */
+module.exports.targets = function()
+{
+	return [];
 };

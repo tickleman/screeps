@@ -5,7 +5,7 @@
  * - bring this energy to extensions and spawn
  */
 
-module.exports.__proto__ = require('./creep.harvester');
+module.exports.__proto__ = require('./creep');
 
 /**
  * Body parts for a fast carrier
@@ -58,14 +58,32 @@ module.exports.sources = function(creep)
  */
 module.exports.targets = function(creep)
 {
-	// priority to harvester's target : extensions, then spawn, that need energy
-	targets = this.__proto__.targets(creep);
+	// priority to extensions, then spawn, that need energy
+	// - priority to the nearest extension
+	var targets;
+	if (creep) {
+		targets = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: structure =>
+		(structure.energy < structure.energyCapacity)
+		&& (structure.structureType == STRUCTURE_EXTENSION)
+		});
+		targets = targets ? [targets] : [];
+	}
+	else {
+		targets = _.filter(Game.spawns.Spawn.room.find(FIND_STRUCTURES), structure =>
+			(structure.energy < structure.energyCapacity)
+			&& (structure.structureType == STRUCTURE_EXTENSION)
+		);
+	}
+	// - if no extensions or all extensions are already filled in : go to spawn
+	if (!targets.length) {
+		targets = this.__proto__.targets(creep);
+	}
 	if (targets.length) {
 		return targets;
 	}
 	var room = creep ? creep.room : Game.spawns.Spawn.room;
 	// next target : towers with less than 90% energy
-	var targets = _.filter(room.find(FIND_MY_STRUCTURES), structure =>
+	targets = _.filter(room.find(FIND_MY_STRUCTURES), structure =>
 		(structure.structureType == STRUCTURE_TOWER)
 		&& ((structure.hits / structure.hitsMax) < .9)
 	);

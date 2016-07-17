@@ -2,9 +2,36 @@
 module.exports.__proto__ = require('./creep');
 
 /**
+ * Body parts for a heavy builder
+ * CARRY x 2, MOVE, WORK x 4
+ * - consume 550 energy units
+ */
+module.exports.body_parts = [CARRY, CARRY, MOVE, WORK, WORK, WORK, WORK];
+
+/**
  * @type string
  */
 module.exports.role = 'builder';
+
+/**
+ * Always full : we never fill the heavy builder : a carrier will bring him energy
+ *
+ * @return boolean true
+ **/
+module.exports.isFull = function()
+{
+	return true;
+};
+
+/**
+ * This creep has no source
+ *
+ * @returns array []
+ */
+module.exports.sources = function()
+{
+	return [];
+};
 
 /**
  * The target job is to build the target

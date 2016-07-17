@@ -28,9 +28,10 @@ module.exports.ENERGY = 'ENERGY';
 module.exports.JOB_DONE = 'JOB_DONE';
 
 /**
- * Body parts for a simple creep
+ * Body parts for a starter creep
  * CARRY, MOVE, WORK
  * - consume 200 energy units
+ * - harvests 2 energy units per tick
  * - carrie 25 energy units per tick
  *
  * @type string[]
