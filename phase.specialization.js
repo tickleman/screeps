@@ -1,6 +1,7 @@
 
 var builder   = require('./creep.builder.heavy');
 var carrier   = require('./creep.carrier.fast');
+var creeps    = require('./creeps');
 var harvester = require('./creep.harvester.heavy');
 var repairer  = require('./creep.repairer');
 var upgrader  = require('./creep.upgrader.heavy');
@@ -13,14 +14,7 @@ var upgrader  = require('./creep.upgrader.heavy');
  */
 module.exports.run = function()
 {
-	var creeps = _.filter(Game.creeps, creep => (
-		(creep.memory.role == 'builder')
-		|| (creep.memory.role == 'carrier')
-		|| (creep.memory.role == 'harvester')
-		|| (creep.memory.role == 'repairer')
-		|| (creep.memory.role == 'upgrader')
-	));
-	var count = { builder: 0, carrier: 0, harvester: 0, repairer: 0, upgrader: 0 };
+	var count = creeps.count();
 
 	// make creeps work, and count them
 	for (let creep of creeps) {

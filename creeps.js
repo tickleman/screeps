@@ -6,6 +6,23 @@ module.exports =
 {
 
 	/**
+	 * Count creeps per role
+	 *
+	 * @returns object { role: count }
+	 */
+	count: function()
+	{
+		var count = {};
+		for (let creep of this) {
+			if (!count[creep.role]) {
+				count[creep.role] = 0;
+			}
+			count[creep.role] ++;
+		}
+		return count;
+	},
+
+	/**
 	 * @param callback callable
 	 * @returns Creep[]
 	 */
