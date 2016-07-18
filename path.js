@@ -182,6 +182,31 @@ module.exports.clearFlags = function(after)
 };
 
 /**
+ * Set new costs (default if no value).
+ * Returns the old costs.
+ *
+ * @param road  number|{{road: number, plain: number, swamp: number}}
+ * @param plain number
+ * @param swamp number
+ * @returns {{road: number, plain: number, swamp: number}} old cost
+ */
+module.exports.cost = function(road, plain, swamp)
+{
+	var old_cost = { road: this.road, plain: this.plain, swamp: this.swamp };
+	if (typeof road === 'object') {
+		this.road  = (road.road  === undefined) ?  1 : road.road;
+		this.plain = (road.plain === undefined) ?  2 : road.plain;
+		this.swamp = (road.swamp === undefined) ? 10 : road.swamp;
+	}
+	else {
+		this.road  = (road  === undefined) ?  1 : road;
+		this.plain = (plain === undefined) ?  2 : plain;
+		this.swamp = (swamp === undefined) ? 10 : swamp;
+	}
+	return old_cost;
+};
+
+/**
  * Calculates the direction from the position from to the position to
  *
  * @param from object {x, y}

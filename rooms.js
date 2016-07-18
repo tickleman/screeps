@@ -139,6 +139,7 @@ module.exports.forEach = function(callback, thisArg)
  */
 module.exports.memorize = function(reset)
 {
+	var save_cost = Path.cost(1, 1, 1);
 	if (reset ||!Memory.rooms) {
 		Memory.rooms = {};
 	}
@@ -158,7 +159,7 @@ module.exports.memorize = function(reset)
 			if (cache.spawn) {
 				cache.spawn_source     = cache.spawn.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
 				memory.spawn_source    = toMemoryObject(cache.spawn_source);
-				memory.spawn_path      = Path.calculate(cache.spawn_source, cache.spawn, 1);
+				memory.spawn_path      = Path.calculateTwoWay(cache.spawn_source, cache.spawn, 1);
 				memory.spawn_harvester = Path.start(memory.spawn_path);
 				cache.spawn_harvester  = Path.toRoomPosition(memory.spawn_harvester);
 			}
@@ -185,7 +186,7 @@ module.exports.memorize = function(reset)
 			}
 			// remove creeps position from paths (paths are here for carriers needs
 			memory.spawn_path      = Path.unshift(memory.spawn_path);
-			memory.controller_path = Path.unshift(Path.pop(memory.controller_path));
+			memory.controller_path = Path.calculateTwoWay(cache.controller_harvester, cache.controller_upgrader, 1);
 			rooms[room.name]        = cache;
 			Memory.rooms[room.name] = memory;
 		}
@@ -196,6 +197,7 @@ module.exports.memorize = function(reset)
 			delete Memory.rooms[room_name];
 		}
 	}
+	Path.cost(save_cost);
 };
 
 /**
