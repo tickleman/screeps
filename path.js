@@ -20,8 +20,6 @@
  * require('path').clearFlags()
  */
 
-var room = Game.spawns.Spawn.room;
-
 /**
  * @type boolean
  */
@@ -58,6 +56,11 @@ module.exports.plain_cost = 2;
  * @type number
  */
 module.exports.road_cost = 1;
+
+/**
+ * @type Room
+ */
+module.exports.room = Game.spawn.Spawn.room;
 
 /**
  * @type number
@@ -168,9 +171,11 @@ module.exports.clearFlags = function(after)
 {
 	if (!after) after = -1;
 	if (this.flags) {
-		for (let flag of room.find(FIND_FLAGS)) {
-			if (!isNaN(flag.name) && (Number(flag.name) > after)) {
-				flag.remove();
+		for (let room of Game.rooms) {
+			for (let flag of room.find(FIND_FLAGS)) {
+				if (!isNaN(flag.name) && (Number(flag.name) > after)) {
+					flag.remove();
+				}
 			}
 		}
 	}
@@ -209,7 +214,6 @@ module.exports.direction = function(from, to)
  */
 module.exports.flags = function(path)
 {
-	var room = Game.spawns.Spawn.room;
 	var counter = 0;
 	for (let pos of this.unserialize(path)) {
 		if (pos == this.WAYPOINT) {
@@ -221,7 +225,7 @@ module.exports.flags = function(path)
 				Game.flags[counter.toString()].setPosition(pos.x, pos.y);
 			}
 			else {
-				room.createFlag(pos.x, pos.y, counter.toString());
+				this.room.createFlag(pos.x, pos.y, counter.toString());
 			}
 			console.log('flag ' + counter + ' : ' + pos.x + ', ' + pos.y);
 		}
@@ -438,7 +442,7 @@ module.exports.stepRoomPosition = function(path, step)
  */
 module.exports.toRoomPosition = function(pos)
 {
-	return Game.rooms[room.name].getPositionAt(pos.x, pos.y);
+	return this.room.getPositionAt(pos.x, pos.y);
 };
 
 /**
