@@ -60,7 +60,7 @@ module.exports.road_cost = 1;
 /**
  * @type Room
  */
-module.exports.room = Game.spawn.Spawn.room;
+module.exports.room = Game.spawns.Spawn.room;
 
 /**
  * @type number
