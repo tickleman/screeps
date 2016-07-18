@@ -13,6 +13,18 @@ My screeps code
     * carriers : one for the upgrader, one for the extensions and spawn (upgrader when has nothing else to do)
     * others creeps do not move
 
+## Memory structure
+
+* rooms : room_name -> room : A room for each Game.room
+    * spawn : the id and position of the spawn
+    * spawn_harvester : the position of the nearest to the spawn harvester (and id when alive)
+    * spawn_source : the id and position of the nearest to the spawn source
+    * spawn_path : the path from the harvester position to the spawn and resources, then back to the harvester position
+    * controller : the id and position of the controller
+    * controller_harvester : the position of the nearest to the spawn harvester (and id when alive)
+    * controller_source : the id and position of the nearest to the controller source
+    * controller_path : the path from the harvester position to the upgrader, then back to the harvester position
+
 ## Development environment
 
 I am using PhpStorm under Linux Mint (/Ubuntu/Debian).
