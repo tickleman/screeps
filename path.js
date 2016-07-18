@@ -192,16 +192,16 @@ module.exports.clearFlags = function(after)
  */
 module.exports.cost = function(road, plain, swamp)
 {
-	var old_cost = { road: this.road, plain: this.plain, swamp: this.swamp };
+	var old_cost = { road: this.road_cost, plain: this.plain_cost, swamp: this.swamp_cost };
 	if (typeof road === 'object') {
-		this.road  = (road.road  === undefined) ?  1 : road.road;
-		this.plain = (road.plain === undefined) ?  2 : road.plain;
-		this.swamp = (road.swamp === undefined) ? 10 : road.swamp;
+		this.road_cost  = (road.road  === undefined) ?  1 : road.road;
+		this.plain_cost = (road.plain === undefined) ?  2 : road.plain;
+		this.swamp_cost = (road.swamp === undefined) ? 10 : road.swamp;
 	}
 	else {
-		this.road  = (road  === undefined) ?  1 : road;
-		this.plain = (plain === undefined) ?  2 : plain;
-		this.swamp = (swamp === undefined) ? 10 : swamp;
+		this.road_cost  = (road  === undefined) ?  1 : road;
+		this.plain_cost = (plain === undefined) ?  2 : plain;
+		this.swamp_cost = (swamp === undefined) ? 10 : swamp;
 	}
 	return old_cost;
 };
