@@ -17,13 +17,20 @@ My screeps code
 
 * rooms : room_name -> room : A room for each Game.room
     * spawn : the id and position of the spawn
-    * spawn_harvester : the position of the nearest to the spawn harvester (and id when alive)
+    * spawn_harvester : the position of the nearest to the spawn harvester (with creep name when alive) + role
     * spawn_source : the id and position of the nearest to the spawn source
     * spawn_path : the path from the harvester position to the spawn and resources, then back to the harvester position
     * controller : the id and position of the controller
-    * controller_harvester : the position of the nearest to the spawn harvester (and id when alive)
+    * controller_harvester : the position of the nearest to the spawn harvester (with creep name when alive) + role
     * controller_source : the id and position of the nearest to the controller source
     * controller_path : the path from the harvester position to the upgrader, then back to the harvester position
+    * controller_upgrader : the position where the harvester creep should be (with creep name when alive) + role
+
+* creeps : creep_name -> creem : A creep for each Game.creeps
+    * role : the role of the creep
+    * room : if set, the name of the room the creep is affected to
+    * room_role : if set, the role the creep is affected to in the room :
+                  spawn_harvester, controller_harvester, controller_upgrader
 
 ## Development environment
 

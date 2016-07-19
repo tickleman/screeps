@@ -53,6 +53,40 @@ module.exports.forEach = function(callback, thisArg)
 {
 	if (thisArg == undefined) thisArg = this;
 	for (var key in Game.creeps) if (Game.creeps.hasOwnProperty(key)) {
-		callback.call(thisArg, Game.creeps[key], key, Game.creeps);
+		if (callback.call(thisArg, Game.creeps[key], key, Game.creeps)) break;
 	}
+};
+
+/**
+ * Remove dead creeps from memory
+ * Callback accepts one argument : the name of the dead creep
+ *
+ * @param callback
+ * @param [dead_creep_free_memory] boolean if true, free memory from the dead creep
+ */
+module.exports.forEachDeadCreep = function(callback, dead_creep_free_memory)
+{
+	for (let creep_name in Memory.creeps) if (Memory.creeps.hasOwnProperty(creep_name)) {
+		if (!Game.creeps[creep_name]) {
+			if (callback.call(Memory.creeps[creep_name], creep_name)) break;
+			if (dead_creep_free_memory) {
+				delete Memory.creeps[creep_name];
+			}
+		}
+	}
+};
+
+/**
+ * Free memory for dead creeps :
+ * - list dead creeps
+ * - empty memory about this creep from Memory.rooms
+ * - empty memory about this creep from from Memory.creeps
+ */
+module.exports.freeDeadCreeps = function()
+{
+	this.forEachDeadCreep(function() {
+		if (this.room && this.room_role) {
+			delete Memory.rooms[this.room][this.room_role].creep;
+		}
+	}, true);
 };

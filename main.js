@@ -25,6 +25,28 @@ var creep_of = {
 };
 
 /**
+ * @param room  Room
+ * @returns boolean
+ */
+var spawnSpawnHarvester = function(room)
+{
+	if (!rooms.has(room, 'spawn_harvester')) {
+		let source = rooms.spawnSource(room);
+		let role   = rooms.getRole(room, 'spawn_harvester');
+		if (role && source && spawn) {
+			let creep = creep_of[role].spawn(spawn.id, source.id, role);
+			if (creep) {
+				creep.memory.room      = room.name;
+				creep.memory.room_role = 'spawn_harvester';
+				rooms.setCreep(room, 'spawn_harvester', creep);
+				console.log('new creep position = ' + creep.pos.x + ', ' + creep.pos.y);
+			}
+			return true;
+		}
+	}
+};
+
+/**
  * @type object|tower[]
  */
 var structure_of = {
@@ -37,6 +59,25 @@ module.exports.loop = function ()
 
 	// count existing creeps
 	var count = creeps.count();
+
+	// free dead creeps
+	creeps.freeDeadCreeps();
+
+	// spawn the first needed creep
+	rooms.forEach(function(room) {
+		let spawn = rooms.spawn(room);
+		if (spawn && !spawn.spawning) {
+			if (
+				//spawnSpawnHarvester(room)
+				//|| spawnCarrier(room)
+				//|| controllerHarvester(room)
+				//|| controllerCarrier(room)
+				//|| controllerUpgrader(room)
+			) {
+				return true;
+			}
+		}
+	});
 
 	// creeps work
 	creeps.forEach(function(creep) {
