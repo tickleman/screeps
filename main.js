@@ -4,6 +4,7 @@ var builder    = require('./creep.builder');
 var carrier    = require('./creep.carrier');
 var harvester  = require('./creep.harvester');
 var creeps     = require('./creeps');
+var path       = require('./path');
 var repairer   = require('./creep.repairer');
 var rooms      = require('./rooms');
 var start      = require('./phase.start');
@@ -31,8 +32,9 @@ var creep_of = {
 var spawnSpawnHarvester = function(room)
 {
 	if (!rooms.has(room, 'spawn_harvester')) {
-		let source = rooms.spawnSource(room);
 		let role   = rooms.getRole(room, 'spawn_harvester');
+		let source = rooms.spawnSource(room);
+		let spawn  = rooms.spawn(room);
 		if (role && source && spawn) {
 			let creep = creep_of[role].spawn(spawn.id, source.id, role);
 			if (creep) {
@@ -68,7 +70,8 @@ module.exports.loop = function ()
 		let spawn = rooms.spawn(room);
 		if (spawn && !spawn.spawning) {
 			if (
-				//spawnSpawnHarvester(room)
+				false
+				//|| spawnSpawnHarvester(room)
 				//|| spawnCarrier(room)
 				//|| controllerHarvester(room)
 				//|| controllerCarrier(room)
