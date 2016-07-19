@@ -5,6 +5,7 @@ var carrier    = require('./creep.carrier');
 var harvester  = require('./creep.harvester');
 var creeps     = require('./creeps');
 var repairer   = require('./creep.repairer');
+var rooms      = require('./rooms');
 var start      = require('./phase.start');
 var tasks      = require('./tasks');
 var tower      = require('./structure.tower');
@@ -32,6 +33,28 @@ var structure_of = {
 
 module.exports.loop = function ()
 {
+	if (!rooms.memorized()) rooms.memorize();
+
+	// count existing creeps
+	var count = creeps.count();
+
+	// creeps work
+	creeps.forEach(function(creep) {
+		if (!creep.spawning && creep_of[creep.memory.role]) {
+			creep_of[creep.memory.role].work(creep);
+		}
+	});
+
+	// spawn creeps outside of tasks
+	for (let role in creep_of) if (creep_of.hasOwnProperty(role)) {
+		if (!count[role]) {
+			console.log('- try to spawn a free ' + role);
+			creep_of[role].spawn();
+		}
+	}
+
+	return;
+
 	// start phase
 	if (!Memory.phase) {
 		start.run();
@@ -43,9 +66,6 @@ module.exports.loop = function ()
 			creep_of[creep.memory.role].work(creep);
 		}
 	});
-
-	// count existing creeps
-	var count = creeps.count();
 
 	// spawn a base creep to start the map
 	if (!count.creep && (!count.carrier || !count.harvester)) {
