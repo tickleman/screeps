@@ -40,8 +40,8 @@ var spawnSpawnHarvester = function(room)
 			if (creep) {
 				creep.memory.room      = room.name;
 				creep.memory.room_role = 'spawn_harvester';
+				creep.memory.step      = 'spawning';
 				rooms.setCreep(room, 'spawn_harvester', creep);
-				console.log('new creep position = ' + creep.pos.x + ', ' + creep.pos.y);
 			}
 			return true;
 		}
@@ -70,8 +70,7 @@ module.exports.loop = function ()
 		let spawn = rooms.spawn(room);
 		if (spawn && !spawn.spawning) {
 			if (
-				false
-				//|| spawnSpawnHarvester(room)
+				spawnSpawnHarvester(room)
 				//|| spawnCarrier(room)
 				//|| controllerHarvester(room)
 				//|| controllerCarrier(room)
@@ -89,6 +88,8 @@ module.exports.loop = function ()
 		}
 	});
 
+	return;
+
 	// spawn creeps outside of tasks
 	for (let role in creep_of) if (creep_of.hasOwnProperty(role)) {
 		if (!count[role]) {
@@ -99,8 +100,6 @@ module.exports.loop = function ()
 			}
 		}
 	}
-
-	return;
 
 	// start phase
 	if (!Memory.phase) {
