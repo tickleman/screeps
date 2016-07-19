@@ -38,7 +38,6 @@ var spawnSpawnHarvester = function(room)
 		if (role && source && spawn) {
 			let creep = creep_of[role].spawn(spawn.id, source.id, role);
 			if (creep) {
-				creep.memory.room      = room.name;
 				creep.memory.room_role = 'spawn_harvester';
 				creep.memory.step      = 'spawning';
 				rooms.setCreep(room, 'spawn_harvester', creep);

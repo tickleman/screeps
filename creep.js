@@ -5,6 +5,7 @@
 var body    = require('./body');
 var names   = require('./names');
 var path    = require('./path');
+var rooms   = require('./rooms');
 var sources = require('./sources');
 
 /**
@@ -358,6 +359,28 @@ module.exports.workBasic = function(creep)
 module.exports.workRoomRole = function(creep)
 {
 	console.log(creep.name + ' works depending on its room role');
+	switch (creep.memory.step) {
+		case 'spawning': if (!creep.spawning) this.workRoomRoleSpawn(creep); break;
+	}
+};
+
+/**
+ * @param creep Creep
+ */
+module.exports.workRoomRoleSpawn = function(creep)
+{
+	var target = rooms.get(creep.room, creep.memory.room_role);
+	if (target) {
+		let ignore_creeps = path.ignore_creeps;
+		path.ignore_creeps = false;
+		path.calculate(creep, target);
+		path.ignore_creeps = ignore_creeps;
+		path.move(creep);
+		creep.memory.step = 'goToSource';
+	}
+	else {
+		creep.say('! no target');
+	}
 };
 
 /**

@@ -26,36 +26,6 @@ module.exports =
 var rooms = {};
 
 /**
- * Gets an object from memory (use cache)
- *
- * @param room        Room|string
- * @param object_name string eg controller, controller_source, spawn, spawn_source
- * @return RoomObject|RoomPosition
- */
-var fromMemory = function(room, object_name)
-{
-	var room_name = (typeof room === 'object') ? room.name : room;
-	if (!rooms[room_name]) {
-		rooms[room_name] = {};
-	}
-	if (!rooms[room_name][object_name]) {
-		if (Memory.rooms[room_name][object_name].creep) {
-			rooms[room_name][object_name] = Game.creeps[Memory.rooms[room_name][object_name].creep];
-		}
-		else if (Memory.rooms[room_name][object_name].id) {
-			rooms[room_name][object_name] = Game.getObjectById(Memory.rooms[room_name][object_name].id);
-		}
-		else {
-			rooms[room_name][object_name] = Game.rooms[room_name].getPositionAt(
-				Memory.rooms[room_name][object_name].x,
-				Memory.rooms[room_name][object_name].y
-			);
-		}
-	}
-	return rooms[room_name][object_name];
-};
-
-/**
  * Changes an object to something we can store in memory : only its id and position
  *
  * @var object RoomObject
@@ -80,7 +50,7 @@ var toMemoryObject = function(object)
 module.exports.controller = function(room)
 {
 	//noinspection JSValidateTypes
-	return fromMemory(room, 'controller');
+	return this.get(room, 'controller');
 };
 
 /**
@@ -89,7 +59,7 @@ module.exports.controller = function(room)
  */
 module.exports.controllerHarvester = function(room)
 {
-	return fromMemory(room, 'controller_harvester');
+	return this.get(room, 'controller_harvester');
 };
 
 /**
@@ -108,7 +78,7 @@ module.exports.controllerPath = function(room)
 module.exports.controllerSource = function(room)
 {
 	//noinspection JSValidateTypes
-	return fromMemory(room, 'spawn_source');
+	return this.get(room, 'spawn_source');
 };
 
 /**
@@ -117,7 +87,7 @@ module.exports.controllerSource = function(room)
  */
 module.exports.controllerUpgrader = function(room)
 {
-	return fromMemory(room, 'controller_upgrader');
+	return this.get(room, 'controller_upgrader');
 };
 
 /**
@@ -139,6 +109,36 @@ module.exports.forEach = function(callback, thisArg)
 	for (var key in Game.rooms) if (Game.rooms.hasOwnProperty(key)) {
 		if (callback.call(thisArg, Game.rooms[key], key, Game.rooms)) break;
 	}
+};
+
+/**
+ * Gets an object from memory (use cache)
+ *
+ * @param room        Room|string
+ * @param object_name string eg controller, controller_source, spawn, spawn_source
+ * @return RoomObject|RoomPosition
+ */
+module.exports.get = function(room, object_name)
+{
+	var room_name = (typeof room === 'object') ? room.name : room;
+	if (!rooms[room_name]) {
+		rooms[room_name] = {};
+	}
+	if (!rooms[room_name][object_name]) {
+		if (Memory.rooms[room_name][object_name].creep) {
+			rooms[room_name][object_name] = Game.creeps[Memory.rooms[room_name][object_name].creep];
+		}
+		else if (Memory.rooms[room_name][object_name].id) {
+			rooms[room_name][object_name] = Game.getObjectById(Memory.rooms[room_name][object_name].id);
+		}
+		else {
+			rooms[room_name][object_name] = Game.rooms[room_name].getPositionAt(
+				Memory.rooms[room_name][object_name].x,
+				Memory.rooms[room_name][object_name].y
+			);
+		}
+	}
+	return rooms[room_name][object_name];
 };
 
 /**
@@ -281,7 +281,7 @@ module.exports.setCreep = function(room, object_name, creep)
 module.exports.spawn = function(room)
 {
 	//noinspection JSValidateTypes
-	return fromMemory(room, 'spawn');
+	return this.get(room, 'spawn');
 };
 
 /**
@@ -290,7 +290,7 @@ module.exports.spawn = function(room)
  */
 module.exports.spawnHarvester = function(room)
 {
-	return fromMemory(room, 'spawn_harvester');
+	return this.get(room, 'spawn_harvester');
 };
 
 /**
@@ -309,5 +309,5 @@ module.exports.spawnPath = function(room)
 module.exports.spawnSource = function(room)
 {
 	//noinspection JSValidateTypes
-	return fromMemory(room, 'spawn_source');
+	return this.get(room, 'spawn_source');
 };

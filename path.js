@@ -21,6 +21,11 @@
  */
 
 /**
+ * @type number
+ */
+module.exports.ARRIVED = 1;
+
+/**
  * @type boolean
  */
 module.exports.DEBUG = false;
@@ -68,6 +73,10 @@ module.exports.room = Game.spawns.Spawn.room;
 module.exports.swamp_cost = 10;
 
 /**
+ * If source is a Creep, will memorize the path for the creep to allow .move calls :
+ * - creep.memory.path
+ * - creep.memory.path_step
+ *
  * @param source             object the source point
  * @param destination        object the destination point
  * @param [range]            number range from the destination @default 0
@@ -76,9 +85,11 @@ module.exports.swamp_cost = 10;
  **/
 module.exports.calculate = function(source, destination, range, cumulate_exclude)
 {
-	if (source.pos)      source      = source.pos;
-	if (destination.pos) destination = destination.pos;
-	if (!range)          range       = 0;
+	var source_creep;
+	if (source instanceof Creep) source_creep = source;
+	if (source.pos)              source       = source.pos;
+	if (destination.pos)         destination  = destination.pos;
+	if (!range)                  range        = 0;
 	var calculator = this;
 	if (this.DEBUG) console.log('calculate.source = ' + source.x + ', ' + source.y);
 	if (this.DEBUG) console.log('calculate.destination = ' + destination.x + ', ' + destination.y);
@@ -129,7 +140,12 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 		}
 	);
 
-	return this.serialize(path.path, cumulate_exclude);
+	path = this.serialize(path.path, cumulate_exclude);
+	if (source_creep) {
+		source_creep.memory.path      = path;
+		source_creep.memory.path_step = 4;
+	}
+	return path;
 };
 
 /**
@@ -296,13 +312,36 @@ module.exports.length = function(path)
 };
 
 /**
+ * Move creep following the path
+ *
+ * @example : require('path').moveCreep(creep, )
+ * @param creep  Creep
+ * @param [path] string if not set, will use creep.memory.path
+ * @param [step] number if not set, will use and increment creep.memory.path_step
+ * @returns number 0 if moved, ARRIVED if arrived (before or after moving), error code if not moved
+ */
+module.exports.move = function(creep, path, step)
+{
+	var increment_step;
+	if (!path) path = creep.memory.path;
+	if (step) increment_step = false;
+	else { step = creep.memory.path_step; increment_step = true; }
+	if (step >= path.length) return this.ARRIVED;
+	var result = creep.move(path[step]);
+	if (increment_step) creep.memory.path_step ++;
+	return (!result && (step >= path.length - 1))
+		? this.ARRIVED
+		: result;
+};
+
+/**
  * Returns the destination after move from source to direction
  *
  * @param source    object {x, y}
  * @param direction number a direction constant value
  * @return object {x, y}
  */
-module.exports.move = function(source, direction)
+module.exports.movePos = function(source, direction)
 {
 	switch (direction) {
 		case TOP_LEFT:     return {x: source.x - 1, y: source.y - 1};
@@ -442,7 +481,7 @@ module.exports.step = function(path, step, position)
 	var pos = this.start(path);
 	var i = 4;
 	while (step) {
-		pos = this.move(pos, Number(path.substr(i, 1)));
+		pos = this.movePos(pos, Number(path.substr(i, 1)));
 		i ++;
 		step --;
 	}
@@ -484,7 +523,7 @@ module.exports.unserialize = function(path)
 		result.push(
 			(path[i] == this.WAYPOINT)
 				? this.WAYPOINT
-				: (pos = this.move(pos, Number(path[i])))
+				: (pos = this.movePos(pos, Number(path[i])))
 		);
 		i ++;
 	}
@@ -502,7 +541,7 @@ module.exports.unshift = function(path)
 	var pos       = this.start(path);
 	var direction = path.substr(4, 1);
 	if (direction != this.WAYPOINT) {
-		pos = this.move(pos, Number(direction));
+		pos = this.movePos(pos, Number(direction));
 	}
 	return this.serialize([pos]).concat(path.substr(5));
 };
@@ -527,7 +566,7 @@ module.exports.waypoint = function(path, count = 1)
 			}
 		}
 		else {
-			pos = this.move(pos, Number(path[i]));
+			pos = this.movePos(pos, Number(path[i]));
 		}
 		i ++;
 	}
