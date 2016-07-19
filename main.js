@@ -49,7 +49,10 @@ module.exports.loop = function ()
 	for (let role in creep_of) if (creep_of.hasOwnProperty(role)) {
 		if (!count[role]) {
 			console.log('- try to spawn a free ' + role);
-			creep_of[role].spawn();
+			var creep = creep_of[role].spawn();
+			if (creep) {
+				creep.memory.role = role;
+			}
 		}
 	}
 
@@ -59,13 +62,6 @@ module.exports.loop = function ()
 	if (!Memory.phase) {
 		start.run();
 	}
-
-	// creeps work
-	creeps.forEach(function(creep) {
-		if (!creep.spawning && creep_of[creep.memory.role]) {
-			creep_of[creep.memory.role].work(creep);
-		}
-	});
 
 	// spawn a base creep to start the map
 	if (!count.creep && (!count.carrier || !count.harvester)) {
@@ -84,14 +80,6 @@ module.exports.loop = function ()
 			}
 		}
 	});
-
-	// spawn creeps outside of tasks
-	for (let role in creep_of) if (creep_of.hasOwnProperty(role)) {
-		if (!count[role]) {
-			console.log('- try to spawn a free ' + role);
-			creep_of[role].spawn();
-		}
-	}
 
 	// structures work
 	for (let structure in Game.structures) if (Game.structures.hasOwnProperty(structure)) {
