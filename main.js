@@ -13,6 +13,13 @@ var tower      = require('./structure.tower');
 var upgrader   = require('./creep.upgrader');
 
 /**
+ * count existing creeps
+ *
+ * @var object number[] key is the creep role
+ */
+var count = creeps.count();
+
+/**
  * @type object|base_creep[]
  */
 var creep_of = {
@@ -26,28 +33,6 @@ var creep_of = {
 };
 
 /**
- * @param room  Room
- * @returns boolean
- */
-var spawnSpawnHarvester = function(room)
-{
-	if (!rooms.has(room, 'spawn_harvester')) {
-		let role   = rooms.getRole(room, 'spawn_harvester');
-		let source = rooms.spawnSource(room);
-		let spawn  = rooms.spawn(room);
-		if (role && source && spawn) {
-			let creep = creep_of[role].spawn(spawn.id, source.id, role);
-			if (creep) {
-				creep.memory.room_role = 'spawn_harvester';
-				creep.memory.step      = 'spawning';
-				rooms.setCreep(room, 'spawn_harvester', creep);
-			}
-			return true;
-		}
-	}
-};
-
-/**
  * @type object|tower[]
  */
 var structure_of = {
@@ -58,9 +43,6 @@ module.exports.loop = function ()
 {
 	if (!rooms.memorized()) rooms.memorize();
 
-	// count existing creeps
-	var count = creeps.count();
-
 	// free dead creeps
 	creeps.freeDeadCreeps();
 
@@ -69,7 +51,7 @@ module.exports.loop = function ()
 		let spawn = rooms.spawn(room);
 		if (spawn && !spawn.spawning) {
 			if (
-				spawnSpawnHarvester(room)
+				this.spawnSpawnHarvester(room)
 				//|| spawnCarrier(room)
 				//|| controllerHarvester(room)
 				//|| controllerCarrier(room)
@@ -131,4 +113,28 @@ module.exports.loop = function ()
 		}
 	}
 
+};
+
+/**
+ * @param room  Room
+ * @returns boolean
+ */
+module.exports.spawnSpawnHarvester = function(room)
+{
+	if (!rooms.has(room, 'spawn_harvester')) {
+		let role   = rooms.getRole(room, 'spawn_harvester');
+		let source = rooms.spawnSource(room);
+		let spawn  = rooms.spawn(room);
+		if (role && source && spawn) {
+			let creep = creep_of[role].spawn({
+				accept_little: !count['harvester'], role: role, source: spawn, target: source
+			});
+			if (creep) {
+				creep.memory.room_role = 'spawn_harvester';
+				creep.memory.step      = 'spawning';
+				rooms.setCreep(room, 'spawn_harvester', creep);
+			}
+			return true;
+		}
+	}
 };

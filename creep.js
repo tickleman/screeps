@@ -162,19 +162,6 @@ module.exports.findTargetId = function(creep)
 };
 
 /**
- * Remove dead creeps from memory
- */
-module.exports.freeMemory = function()
-{
-	for (let creep_name in Memory.creeps) if (Memory.creeps.hasOwnProperty(creep_name)) {
-		if (!Game.creeps[creep_name]) {
-			delete Memory.creeps[creep_name];
-			console.log('prune creep ' + creep_name);
-		}
-	}
-};
-
-/**
  * Return true if the creep is full of energy
  * Store the full information into its memory
  *
@@ -233,31 +220,37 @@ module.exports.sources = function()
 /**
  * Spawn a creep, giving it a role, source and target (optionals)
  *
- * @param target string if set : a given target id. If undefined, will automatically found a target using targets()
- * @param source string if set : a given source id. If undefined, will automatically found a source using sources()
- * @param role   string @default 'harvester'
- * @param name   string if set : the name of the creep
+ * @param [options] {{ target: RoomObject|RoomPosition|string, source: RoomObject|RoomPosition|string, role: string,
+ *                     name: string }}
  * @return Creep|null
  */
-module.exports.spawn = function(target, source, role, name)
+module.exports.spawn = function(options)
 {
+	if (!options) options = {};
+	// spawn
+	if (!options.spawn && options.source) options.spawn = rooms.spawn(rooms.nameOf(options.source));
+	if (!options.spawn && options.target) options.spawn = rooms.spawn(rooms.nameOf(options.target));
+	// source / target id
+	if (options.source && (typeof options.source == 'object')) options.source = options.source.id;
+	if (options.target && (typeof options.target == 'object')) options.target = options.target.id;
+	// body parts
 	var body_parts = this.body_parts;
-	if (Game.spawns.Spawn.canCreateCreep(body_parts)) {
-		body_parts = body.parts(body_parts, Game.spawns.Spawn.room.energyCapacityAvailable);
+	if (options.accept_little && options.spawn.canCreateCreep(body_parts)) {
+		body_parts = body.parts(body_parts, options.spawn.room.energyAvailable);
 	}
-	if (body_parts && !Game.spawns.Spawn.canCreateCreep(body_parts)) {
-		if (!name) name = names.chooseName();
+	// create creep
+	if (body_parts && !options.spawn.canCreateCreep(body_parts)) {
+		if (!options.name)   options.name   = names.chooseName();
+		if (!options.role)   options.role   = this.role;
+		if (!options.source) options.source = this.findSource().id;
+		if (!options.target) options.target = this.findTarget().id;
 		// prepare creep memory
-		var memory = { role: role ? role : this.role };
-		if (source === undefined) source = this.findSource();
-		if (target === undefined) target = this.findTarget();
-		if (source) memory.source = source.id;
-		if (target) memory.target = target.id;
-		this.freeMemory();
+		var memory = { role: options.role };
+		if (options.source) memory.source = options.source;
+		if (options.target) memory.target = options.target;
 		// spawn a new creep
-		var creep_name = Game.spawns.Spawn.createCreep(body_parts, name, memory);
-		console.log('spawns ' + role + ' ' + creep_name);
-		sources.memorize(true);
+		var creep_name = options.spawn.createCreep(body_parts, options.name, memory);
+		console.log('spawns ' + options.role + ' ' + creep_name);
 		return Game.creeps[creep_name];
 	}
 	return null;

@@ -261,6 +261,30 @@ module.exports.memorize = function(reset)
 };
 
 /**
+ * @param object RoomObject|RoomPosition|string an object or object id
+ * @return string|null
+ */
+module.exports.nameOf = function(object)
+{
+	if (typeof object == 'string')      object = Game.getObjectById(object);
+	if (object instanceof RoomObject)   return object.room.name;
+	if (object instanceof RoomPosition) return object.roomName;
+	return null;
+};
+
+/**
+ * @param object RoomObject|RoomPosition|string an object or object id
+ * @return Room
+ */
+module.exports.of = function(object)
+{
+	if (typeof object == 'string')      object = Game.getObjectById(object);
+	if (object instanceof RoomObject)   return object.room;
+	if (object instanceof RoomPosition) return Game.rooms[object.roomName];
+	return null;
+};
+
+/**
  * Sets a creep object
  *
  * @param room        Room|string
