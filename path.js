@@ -84,8 +84,8 @@ module.exports.valorize = [];
  * - creep.memory.path
  * - creep.memory.path_step
  *
- * @param source             object the source point
- * @param destination        object the destination point
+ * @param source             RoomObject|RoomPosition the source point
+ * @param destination        RoomObject|RoomPosition the destination point
  * @param [opts]             {{ [accumulate_exclude]: boolean, [exclude]: Array, [plain_cost]: number, [range]: number }}
  *        range : number range from the destination @default 0
  *        accumulate_exclude :  boolean if true, the new path will append to this.exclude
@@ -98,15 +98,15 @@ module.exports.calculate = function(source, destination, opts)
 	if (source instanceof RoomObject)      source             = source.pos;
 	if (destination instanceof RoomObject) destination        = destination.pos;
 	if (!opts)                             opts               = {};
-	if (!opts.exclude)                     opts.exclude       = this.exclude;
-	if (!opts.plain_cost)                  opts.plain_cost    = this.plain_cost;
-	if (!opts.range)                       opts.range         = 0;
-	if (!opts.road_cost)                   opts.road_cost     = this.road_cost;
-	if (!opts.source_range)                opts.source_range  = this.source_range;
-	if (!opts.swamp_cost)                  opts.swamp_cost    = this.swamp_cost;
-	if (!opts.valorize)                    opts.valorize      = this.valorize;
+	if (opts.exclude       === undefined)  opts.exclude       = this.exclude;
+	if (opts.plain_cost    === undefined)  opts.plain_cost    = this.plain_cost;
+	if (opts.range         === undefined)  opts.range         = 0;
+	if (opts.road_cost     === undefined)  opts.road_cost     = this.road_cost;
+	if (opts.source_range  === undefined)  opts.source_range  = this.source_range;
+	if (opts.swamp_cost    === undefined)  opts.swamp_cost    = this.swamp_cost;
+	if (opts.valorize      === undefined)  opts.valorize      = this.valorize;
 	if (opts.ignore_creeps === undefined)  opts.ignore_creeps = this.ignore_creeps;
-	if (opts.DEBUG === undefined)          opts.DEBUG         = this.DEBUG;
+	if (opts.DEBUG         === undefined)  opts.DEBUG         = this.DEBUG;
 	if (this.DEBUG) console.log('calculate.source = ' + source.x + ', ' + source.y);
 	if (this.DEBUG) console.log('calculate.destination = ' + destination.x + ', ' + destination.y);
 	if (this.DEBUG) console.log('calculate.range = ' + opts.range);

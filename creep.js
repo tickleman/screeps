@@ -230,9 +230,6 @@ module.exports.spawn = function(options)
 	// spawn
 	if (!options.spawn && options.source) options.spawn = rooms.spawn(rooms.nameOf(options.source));
 	if (!options.spawn && options.target) options.spawn = rooms.spawn(rooms.nameOf(options.target));
-	// source / target id
-	if (options.source && (typeof options.source == 'object')) options.source = options.source.id;
-	if (options.target && (typeof options.target == 'object')) options.target = options.target.id;
 	// body parts
 	var body_parts = this.body_parts;
 	if (options.accept_little && options.spawn.canCreateCreep(body_parts)) {
@@ -242,8 +239,11 @@ module.exports.spawn = function(options)
 	if (body_parts && !options.spawn.canCreateCreep(body_parts)) {
 		if (!options.name)   options.name   = names.chooseName();
 		if (!options.role)   options.role   = this.role;
-		if (!options.source) options.source = this.findSource().id;
-		if (!options.target) options.target = this.findTarget().id;
+		if (!options.source) options.source = this.findSource();
+		if (!options.target) options.target = this.findTarget();
+		// source / target id
+		if (options.source && (options.source instanceof RoomObject)) options.source = options.source.id;
+		if (options.target && (options.target instanceof RoomObject)) options.target = options.target.id;
 		// prepare creep memory
 		var memory = { role: options.role };
 		if (options.source) memory.source = options.source;
