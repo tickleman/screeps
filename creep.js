@@ -354,7 +354,7 @@ module.exports.workRoomRole = function(creep)
 	console.log(creep.name + ' works depending on its room role');
 	switch (creep.memory.step) {
 		case 'spawning':   if (!creep.spawning) this.workRoomRoleSpawn(creep); break;
-		//case 'goToSource': this.workRoomRoleGoToSource(creep); break;
+		case 'goToSource': this.workRoomRoleGoToSource(creep); break;
 	}
 };
 
@@ -373,7 +373,21 @@ module.exports.workRoomRoleSpawn = function(creep)
 		creep.memory.step = 'goToSource';
 	}
 	else {
-		creep.say('! no target');
+		creep.say('no pos');
+	}
+};
+
+/**
+ * @param creep Creep
+ */
+module.exports.workRoomRoleGoToSource = function(creep)
+{
+	let moved = path.move(creep);
+	if (moved == path.ARRIVED) {
+		creep.memory.step = 'working';
+	}
+	else if (moved) {
+		creep.say('move:' + moved);
 	}
 };
 

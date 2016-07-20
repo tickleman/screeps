@@ -328,7 +328,7 @@ module.exports.move = function(creep, path, step)
 	else { step = creep.memory.path_step; increment_step = true; }
 	if (step >= path.length) return this.ARRIVED;
 	var result = creep.move(path[step]);
-	if (increment_step) creep.memory.path_step ++;
+	if (!result && increment_step) creep.memory.path_step ++;
 	return (!result && (step >= path.length - 1))
 		? this.ARRIVED
 		: result;
