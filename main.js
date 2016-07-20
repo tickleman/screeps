@@ -132,6 +132,7 @@ module.exports.spawnSpawnHarvester = function(room)
 				accept_little: !count['harvester'], role: role, source: spawn, target: source
 			});
 			if (creep) {
+				creep.memory.room      = room.name;
 				creep.memory.room_role = 'spawn_harvester';
 				creep.memory.step      = 'spawning';
 				rooms.setCreep(room, 'spawn_harvester', creep);

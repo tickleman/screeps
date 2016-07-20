@@ -28,7 +28,7 @@ My screeps code
 
 * creeps : creep_name -> creem : A creep for each Game.creeps
     * role : the role of the creep
-    * room : if set, the name of the room the creep is affected to
+    * room : if set, the name of the room the creep is affected to (needed to free memory when die)
     * room_role : if set, the role the creep is affected to in the room :
                   spawn_harvester, controller_harvester, controller_upgrader
 
