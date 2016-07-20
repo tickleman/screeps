@@ -188,8 +188,9 @@ module.exports.getRole = function(room, object_name)
  */
 module.exports.getRoomPosition = function(room, object_name)
 {
-	var object = this.get(room, object_name);
-	return (object instanceof RoomPosition) ? object : object.pos;
+	if (!(room instanceof Room)) room = Game.rooms[room];
+	var pos = this.getPos(room, object_name);
+	return room.getPositionAt(pos.x, pos.y);
 };
 
 /**
