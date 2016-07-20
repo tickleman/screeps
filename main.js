@@ -41,6 +41,8 @@ var structure_of = {
 
 module.exports.loop = function ()
 {
+	var main = this;
+
 	if (!rooms.memorized()) rooms.memorize();
 
 	// free dead creeps
@@ -51,7 +53,7 @@ module.exports.loop = function ()
 		let spawn = rooms.spawn(room);
 		if (spawn && !spawn.spawning) {
 			if (
-				this.spawnSpawnHarvester(room)
+				main.spawnSpawnHarvester(room)
 				//|| spawnCarrier(room)
 				//|| controllerHarvester(room)
 				//|| controllerCarrier(room)
