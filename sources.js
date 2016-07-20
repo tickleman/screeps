@@ -19,7 +19,7 @@ module.exports.affect = function(creep)
 };
 
 /**
- * @param return_last_source boolean
+ * @param [return_last_source] boolean
  * @return string|null the id of the first source with at least one available access terrain
  */
 module.exports.availableSourceId = function(return_last_source)
