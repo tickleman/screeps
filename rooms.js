@@ -68,7 +68,7 @@ module.exports.controllerHarvester = function(room)
  */
 module.exports.controllerPath = function(room)
 {
-	return Memory.rooms[(typeof room == 'object') ? room.name : room].controller_path;
+	return Memory.rooms[(room instanceof Room) ? room.name : room].controller_path;
 };
 
 /**
@@ -120,7 +120,7 @@ module.exports.forEach = function(callback, thisArg)
  */
 module.exports.get = function(room, object_name)
 {
-	var room_name = (typeof room === 'object') ? room.name : room;
+	var room_name = (room instanceof Room) ? room.name : room;
 	if (!rooms[room_name]) {
 		rooms[room_name] = {};
 	}
@@ -150,8 +150,21 @@ module.exports.get = function(room, object_name)
  */
 module.exports.getId = function(room, object_name)
 {
-	var room_name = (typeof room === 'object') ? room.name : room;
+	var room_name = (room instanceof Room) ? room.name : room;
 	return Memory.rooms[room_name][object_name].id;
+};
+
+/**
+ * Gets the position (x, y only) where the object is assigned to
+ *
+ * @param room        Room|string
+ * @param object_name string
+ * @return {{ x: number, y: number }}
+ */
+module.exports.getPos = function(room, object_name)
+{
+	var room_name = (room instanceof Room) ? room.name : room;
+	return Memory.rooms[room_name][object_name];
 };
 
 /**
@@ -162,8 +175,21 @@ module.exports.getId = function(room, object_name)
  */
 module.exports.getRole = function(room, object_name)
 {
-	var room_name = (typeof room === 'object') ? room.name : room;
+	var room_name = (room instanceof Room) ? room.name : room;
 	return Memory.rooms[room_name][object_name].role;
+};
+
+/**
+ * Gets the room position where the object is assigned to
+ *
+ * @param room        Room|string
+ * @param object_name string
+ * @return RoomPosition
+ */
+module.exports.getRoomPosition = function(room, object_name)
+{
+	var object = this.get(room, object_name);
+	return (object instanceof RoomPosition) ? object : object.pos;
 };
 
 /**
@@ -173,7 +199,7 @@ module.exports.getRole = function(room, object_name)
  */
 module.exports.has = function(room, object_name)
 {
-	var room_name = (typeof room === 'object') ? room.name : room;
+	var room_name = (room instanceof Room) ? room.name : room;
 	return (Memory.rooms[room_name][object_name] && Memory.rooms[room_name][object_name].creep) ? true : false;
 };
 
@@ -293,7 +319,7 @@ module.exports.of = function(object)
  */
 module.exports.setCreep = function(room, object_name, creep)
 {
-	var room_name = (typeof room === 'object') ? room.name : room;
+	var room_name = (room instanceof Room) ? room.name : room;
 	Memory.rooms[room_name][object_name].creep = creep.name;
 	rooms[room_name][object_name] = creep;
 };
@@ -323,7 +349,7 @@ module.exports.spawnHarvester = function(room)
  */
 module.exports.spawnPath = function(room)
 {
-	return Memory.rooms[(typeof room == 'object' ? room.name : room)].spawn_path;
+	return Memory.rooms[(room instanceof Room) ? room.name : room].spawn_path;
 };
 
 /**

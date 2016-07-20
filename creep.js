@@ -363,7 +363,7 @@ module.exports.workRoomRole = function(creep)
  */
 module.exports.workRoomRoleSpawn = function(creep)
 {
-	var target = rooms.get(creep.room, creep.memory.room_role);
+	var target = rooms.getRoomPosition(creep.room, creep.memory.room_role);
 	if (target) {
 		let ignore_creeps = path.ignore_creeps;
 		path.ignore_creeps = false;

@@ -128,9 +128,7 @@ module.exports.spawnSpawnHarvester = function(room)
 		let source = rooms.spawnSource(room);
 		let spawn  = rooms.spawn(room);
 		if (role && source && spawn) {
-			let creep = creep_of[role].spawn({
-				accept_little: !count['harvester'], role: role, source: spawn, target: source
-			});
+			let creep = creep_of[role].spawn({ accept_little: !count['harvester'], role: role, source: source });
 			if (creep) {
 				creep.memory.room      = room.name;
 				creep.memory.room_role = 'spawn_harvester';
