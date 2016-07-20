@@ -92,7 +92,7 @@ module.exports.prepareCreeps = function()
 			this.spawn, Path.stepRoomPosition(Memory.room.paths[this.nearest_to_spawn.id][this.spawn.id], 1)
 		),
 		path: Path.calculateTwoWay(
-			Path.startRoomPosition(Memory.room.paths[this.nearest_to_spawn.id][this.spawn.id]), this.spawn, 1
+			Path.startRoomPosition(Memory.room.paths[this.nearest_to_spawn.id][this.spawn.id]), this.spawn, { range: 1 }
 		),
 		role:   'carrier',
 		source: this.nearest_to_spawn.id,
@@ -106,7 +106,7 @@ module.exports.prepareCreeps = function()
 		path: Path.calculateTwoWay(
 			Path.startRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id]),
 			Path.lastRoomPosition(Memory.room.paths[this.nearest_to_controller.id][this.controller.id]),
-			1
+			{ range: 1 }
 		),
 		role:   'carrier',
 		source: this.nearest_to_controller.id,
@@ -129,10 +129,10 @@ module.exports.prepareSourcesToController = function()
 	for (let source of this.sources) {
 		if (source.id == this.nearest_to_spawn.id) {
 			var start = Path.startRoomPosition(Memory.room.paths[source.id][this.spawn.id]);
-			path = Path.shift(Path.calculate(start, this.controller, 2), start);
+			path = Path.shift(Path.calculate(start, this.controller, { range: 2 }), start);
 		}
 		else {
-			path = Path.calculate(source, this.controller, 2);
+			path = Path.calculate(source, this.controller, { range: 2 });
 		}
 		if (!Memory.room.paths[source.id]) Memory.room.paths[source.id] = {};
 		Memory.room.paths[source.id][this.controller.id] = path;
@@ -157,7 +157,7 @@ module.exports.prepareSourcesToSpawn = function()
 	var nearest_distance = 999999;
 	var path;
 	for (let source of this.sources) {
-		path = Path.calculate(source, this.spawn, 1);
+		path = Path.calculate(source, this.spawn, { range: 1 });
 		if (!Memory.room.paths[source.id]) Memory.room.paths[source.id] = {};
 		Memory.room.paths[source.id][this.spawn.id] = path;
 		if (this.DEBUG) console.log('source ' + source.id + ' to spawn ' + this.spawn.id + ' = ' + path);

@@ -186,6 +186,8 @@ module.exports.path = function()
 	this.assert('length',    path.length(test),            4);
 	this.assert('move',      path.move(source, TOP_RIGHT), {x: 2, y: 0});
 	this.assert('pop',       path.pop(test),               '101033w');
+	this.assert('pop2',      path.pop(test, 2),            '101033');
+	this.assert('pop3',      path.pop(test, 3),            '10103');
 	this.assert('push',      path.push(test,               {x: 11, y: 10}), test + '5');
 	this.assert('serialize',
 		path.serialize([{x: 10, y: 10}, {x: 11, y: 10}, {x: 12, y: 10}, path.WAYPOINT, {x: 11, y: 9}]), test
@@ -195,6 +197,8 @@ module.exports.path = function()
 	this.assert('unserialize',
 		path.unserialize(test), [{x: 10, y: 10}, {x: 11, y: 10}, {x: 12, y: 10}, path.WAYPOINT, {x: 11, y: 9}]
 	);
-	this.assert('unshift', path.unshift(test), '11103w8');
+	this.assert('unshift',  path.unshift(test), '11103w8');
+	this.assert('unshift2', path.unshift(test), '1210w8');
+	this.assert('unshift3', path.unshift(test), '12108');
 	this.assert('waypoint', path.waypoint(test), {x: 12, y: 10});
 };

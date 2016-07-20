@@ -41,13 +41,6 @@ module.exports.WAYPOINT = 'w';
 module.exports.exclude = [];
 
 /**
- * Valorized ways (eg future roads, etc.)
- *
- * @type object [cost: [{x, y}]]
- */
-module.exports.valorize = [];
-
-/**
  * @type boolean
  */
 module.exports.ignore_creeps = true;
@@ -68,9 +61,23 @@ module.exports.road_cost = 1;
 module.exports.room = Game.spawns.Spawn.room;
 
 /**
+ * Source range default is 1. May be 0 (others won't work)
+ *
+ * @type number
+ */
+module.exports.source_range = 1;
+
+/**
  * @type number
  */
 module.exports.swamp_cost = 10;
+
+/**
+ * Valorized ways (eg future roads, etc.)
+ *
+ * @type object [cost: [{x, y}]]
+ */
+module.exports.valorize = [];
 
 /**
  * If source is a Creep, will memorize the path for the creep to allow .move calls :
@@ -79,28 +86,37 @@ module.exports.swamp_cost = 10;
  *
  * @param source             object the source point
  * @param destination        object the destination point
- * @param [range]            number range from the destination @default 0
- * @param [cumulate_exclude] boolean if true, the new path will append to this.exclude
+ * @param [opts]             {{ [accumulate_exclude]: boolean, [exclude]: Array, [plain_cost]: number, [range]: number }}
+ *        range : number range from the destination @default 0
+ *        accumulate_exclude :  boolean if true, the new path will append to this.exclude
  * @return string 'xxyy123' where xx and yy are the start coordinates and 123 are the moves
  **/
-module.exports.calculate = function(source, destination, range, cumulate_exclude)
+module.exports.calculate = function(source, destination, opts)
 {
 	var source_creep;
-	if (source instanceof Creep) source_creep = source;
-	if (source.pos)              source       = source.pos;
-	if (destination.pos)         destination  = destination.pos;
-	if (!range)                  range        = 0;
-	var calculator = this;
+	if (source instanceof Creep)           source_creep       = source;
+	if (source instanceof RoomObject)      source             = source.pos;
+	if (destination instanceof RoomObject) destination        = destination.pos;
+	if (!opts)                             opts               = {};
+	if (!opts.exclude)                     opts.exclude       = this.exclude;
+	if (!opts.plain_cost)                  opts.plain_cost    = this.plain_cost;
+	if (!opts.range)                       opts.range         = 0;
+	if (!opts.road_cost)                   opts.road_cost     = this.road_cost;
+	if (!opts.source_range)                opts.source_range  = this.source_range;
+	if (!opts.swamp_cost)                  opts.swamp_cost    = this.swamp_cost;
+	if (!opts.valorize)                    opts.valorize      = this.valorize;
+	if (opts.ignore_creeps === undefined)  opts.ignore_creeps = this.ignore_creeps;
+	if (opts.DEBUG === undefined)          opts.DEBUG         = this.DEBUG;
 	if (this.DEBUG) console.log('calculate.source = ' + source.x + ', ' + source.y);
 	if (this.DEBUG) console.log('calculate.destination = ' + destination.x + ', ' + destination.y);
-	if (this.DEBUG) console.log('calculate.range = ' + range);
+	if (this.DEBUG) console.log('calculate.range = ' + opts.range);
 	//noinspection JSUnusedGlobalSymbols Used by search()
 	var path = PathFinder.search(
 		source,
-		{ pos: destination, range: range },
+		{ pos: destination, range: opts.range },
 		{
-			plainCost: calculator.plain_cost,
-			swampCost: calculator.swamp_cost,
+			plainCost: opts.plain_cost,
+			swampCost: opts.swamp_cost,
 			roomCallback: function(room_name) {
 				var room = Game.rooms[room_name];
 				if (!room) return;
@@ -108,7 +124,7 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 
 				for (let structure of room.find(FIND_STRUCTURES)) {
 					if (structure.structureType === STRUCTURE_ROAD) {
-						costs.set(structure.pos.x, structure.pos.y, calculator.road_cost);
+						costs.set(structure.pos.x, structure.pos.y, opts.road_cost);
 					}
 					else if (
 						(structure.structureType !== STRUCTURE_CONTAINER)
@@ -118,20 +134,20 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 					}
 				}
 
-				if (!calculator.ignore_creeps) {
+				if (!opts.ignore_creeps) {
 					for (let creep of room.find(FIND_CREEPS)) {
 						costs.set(creep.pos.x, creep.pos.y, 0xff);
 					}
 				}
 
-				calculator.valorize.forEach(function(valorize, cost) {
+				opts.valorize.forEach(function(valorize, cost) {
 					for (let pos of valorize) {
 						costs.set(pos.x, pos.y, cost);
 					}
 				});
 
-				for (let pos of calculator.exclude) {
-					if (calculator.DEBUG) console.log('~ ' + pos.x + ', ' + pos.y);
+				for (let pos of opts.exclude) {
+					if (opts.DEBUG) console.log('~ ' + pos.x + ', ' + pos.y);
 					costs.set(pos.x, pos.y, 0xff);
 				}
 
@@ -140,7 +156,13 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 		}
 	);
 
-	path = this.serialize(path.path, cumulate_exclude);
+	path = this.serialize(path.path, opts);
+	if (!opts.source_range) {
+		path = this.shift(path, source);
+	}
+	else if (opts.source_range > 1) {
+		path = this.unshift(path, source_range - 1);
+	}
 	if (source_creep) {
 		source_creep.memory.path      = path;
 		source_creep.memory.path_step = 4;
@@ -151,30 +173,43 @@ module.exports.calculate = function(source, destination, range, cumulate_exclude
 /**
  * @param source      object
  * @param destination object
- * @param [range]     number
+ * @param opts        {{ [accumulate_exclude]: boolean, [exclude]: Array, [range]: number }}
  * @returns string @example 'xx123w456'
  */
-module.exports.calculateTwoWay = function(source, destination, range)
+module.exports.calculateTwoWay = function(source, destination, opts)
 {
 	if (source.pos)      source      = source.pos;
 	if (destination.pos) destination = destination.pos;
-	if (!range)          range       = 0;
-	var exclude = this.exclude.slice(0);
 	if (this.DEBUG) console.log('source = ' + source.x + ', ' + source.y);
 	if (this.DEBUG) console.log('destination = ' + destination.x + ', ' + destination.y);
-	if (this.DEBUG) console.log('range = ' + range);
+	if (this.DEBUG) console.log('range = ' + opts.range);
+
 	// calculate path
-	var path             = this.calculate(source, destination, range, true);
+	var accumulate_exclude = opts.accumulate_exclude;
+	opts.accumulate_exclude = true;
+	var path = this.calculate(source, destination, opts);
+	opts.accumulate_exclude = accumulate_exclude;
+
+	// prepare back path limits
 	var back_source      = this.last(path);
 	var back_destination = this.start(path);
 	back_source      = this.toRoomPosition(back_source);
 	back_destination = this.toRoomPosition(back_destination);
-	this.exclude.pop();
+	opts.exclude.pop();
 	if (this.DEBUG) console.log('back_source = '      + back_source.x      + ', ' + back_source.y);
 	if (this.DEBUG) console.log('back_destination = ' + back_destination.x + ', ' + back_destination.y);
-	var back_path = this.calculate(back_source, back_destination);
+
+	// calculate return
+	var range        = opts.range;
+	var source_range = opts.source_range;
+	opts.range        = 0;
+	opts.source_range = 1;
+	var back_path = this.calculate(back_source, back_destination, opts);
+	opts.range        = range;
+	opts.source_range = source_range;
+
+	// concat paths
 	path = path.concat(this.WAYPOINT, this.shift(back_path, back_source).substr(4));
-	this.exclude = exclude;
 	return path;
 };
 
@@ -359,12 +394,14 @@ module.exports.movePos = function(source, direction)
 /**
  * Removes the last step from the path
  *
- * @param path string
+ * @param path    string
+ * @param [count] number @default 1
  * @return string
  */
-module.exports.pop = function(path)
+module.exports.pop = function(path, count)
 {
-	return path.substr(0, Math.max(4, path.length - 1));
+	if (!count) count = 1;
+	return path.substr(0, Math.max(4, path.length - count));
 };
 
 /**
@@ -389,11 +426,11 @@ module.exports.push = function(path, pos)
 
 /**
  *
- * @param path         object[] [{x, y}]
- * @param [to_exclude] boolean
+ * @param path   object[] [{x, y}]
+ * @param [opts] {{ accumulate_exclude: boolean, exclude: Array }}
  * @return string 'xxyy123'
  */
-module.exports.serialize = function(path, to_exclude)
+module.exports.serialize = function(path, opts)
 {
 	var pos = path[Object.keys(path)[0]];
 	if (this.DEBUG) console.log('SERIALIZE');
@@ -406,14 +443,15 @@ module.exports.serialize = function(path, to_exclude)
 
 	var last_pos = pos;
 	if (this.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + result);
+	if (opts.accumulate_exclude && !opts.exclude) opts.exclude = [];
 	for (pos of path.slice(1)) {
 		if (pos == this.WAYPOINT) {
 			result = result.concat(pos);
 			if (this.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + this.WAYPOINT);
 		}
 		else {
-			if (to_exclude) {
-				this.exclude.push(pos);
+			if (opts.accumulate_exclude) {
+				opts.exclude.push(pos);
 			}
 			result = result.concat(this.direction(last_pos, pos));
 			if (this.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + this.direction(last_pos, pos));
@@ -533,17 +571,21 @@ module.exports.unserialize = function(path)
 /**
  * Removes the first step from the path
  *
- * @param path string
+ * @param path    string
+ * @param [count] number @default 1
  * @returns string
  */
-module.exports.unshift = function(path)
+module.exports.unshift = function(path, count)
 {
+	if (!count) count = 1;
 	var pos       = this.start(path);
 	var direction = path.substr(4, 1);
-	if (direction != this.WAYPOINT) {
-		pos = this.movePos(pos, Number(direction));
+	for (let i = 0; i < count; i ++) {
+		if (direction != this.WAYPOINT) {
+			pos = this.movePos(pos, Number(direction));
+		}
 	}
-	return this.serialize([pos]).concat(path.substr(5));
+	return this.serialize([pos]).concat(path.substr(4 + count));
 };
 
 /**

@@ -243,7 +243,7 @@ module.exports.memorize = function(reset)
 			if (cache.spawn) {
 				cache.spawn_source     = cache.spawn.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
 				memory.spawn_source    = toMemoryObject(cache.spawn_source);
-				memory.spawn_path      = Path.calculateTwoWay(cache.spawn_source, cache.spawn, 1);
+				memory.spawn_path      = Path.calculateTwoWay(cache.spawn_source, cache.spawn, { range: 1 });
 				memory.spawn_harvester = Path.start(memory.spawn_path);
 				cache.spawn_harvester  = Path.toRoomPosition(memory.spawn_harvester);
 				memory.spawn_harvester.role = 'harvester';
@@ -257,12 +257,12 @@ module.exports.memorize = function(reset)
 					cache.controller_harvester  = cache.spawn_harvester;
 					memory.controller_harvester = memory.spawn_harvester;
 					memory.controller_path = Path.shift(
-						Path.calculate(cache.spawn_harvester, cache.controller, 2), memory.controller_harvester
+						Path.calculate(cache.spawn_harvester, cache.controller, { range: 2 }), memory.controller_harvester
 					);
 				}
 				// controller source is another one than the spawn source
 				else {
-					memory.controller_path      = Path.calculate(cache.controller_source, cache.controller, 2);
+					memory.controller_path      = Path.calculate(cache.controller_source, cache.controller, { range: 2 });
 					memory.controller_harvester = Path.start(memory.controller_path);
 					cache.controller_harvester  = Path.toRoomPosition(memory.controller_harvester);
 					memory.controller_harvester.role = 'harvester';
@@ -273,7 +273,7 @@ module.exports.memorize = function(reset)
 			}
 			// remove creeps position from paths (paths are here for carriers needs
 			memory.spawn_path      = Path.unshift(memory.spawn_path);
-			memory.controller_path = Path.calculateTwoWay(cache.controller_harvester, cache.controller_upgrader, 1);
+			memory.controller_path = Path.calculateTwoWay(cache.controller_harvester, cache.controller_upgrader, { range: 1 });
 			rooms[room.name]        = cache;
 			Memory.rooms[room.name] = memory;
 		}

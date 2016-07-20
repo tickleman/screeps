@@ -367,7 +367,7 @@ module.exports.workRoomRoleSpawn = function(creep)
 	if (target) {
 		let ignore_creeps = path.ignore_creeps;
 		path.ignore_creeps = false;
-		path.shift(path.calculate(creep, target), creep.pos);
+		path.calculate(creep, target, { source_range: 0 });
 		path.ignore_creeps = ignore_creeps;
 		path.move(creep);
 		creep.memory.step = 'goToSource';
