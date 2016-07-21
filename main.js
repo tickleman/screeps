@@ -4,11 +4,8 @@ var builder    = require('./creep.builder');
 var carrier    = require('./creep.carrier');
 var harvester  = require('./creep.harvester');
 var creeps     = require('./creeps');
-var path       = require('./path');
 var repairer   = require('./creep.repairer');
 var rooms      = require('./rooms');
-var start      = require('./phase.start');
-var tasks      = require('./tasks');
 var tower      = require('./structure.tower');
 var upgrader   = require('./creep.upgrader');
 
@@ -50,14 +47,14 @@ module.exports.loop = function ()
 
 	// spawn the first needed creep
 	rooms.forEach(function(room) {
-		let spawn = rooms.spawn(room);
+		let spawn = rooms.get(room, 'spawn');
 		if (spawn && !spawn.spawning) {
 			if (
-				main.spawnSpawnHarvester(room)
-				//|| spawnCarrier(room)
-				//|| controllerHarvester(room)
-				//|| controllerCarrier(room)
-				//|| controllerUpgrader(room)
+				   main.spawnCreep(room, 'spawn_harvester', true)
+				|| main.spawnCreep(room, 'spawn_carrier', true)
+				|| main.spawnCreep(room, 'controller_harvester')
+				|| main.spawnCreep(room, 'controller_carrier')
+				|| main.spawnCreep(room, 'controller_upgrader')
 			) {
 				return true;
 			}
@@ -68,42 +65,6 @@ module.exports.loop = function ()
 	creeps.forEach(function(creep) {
 		if (!creep.spawning && creep_of[creep.memory.role]) {
 			creep_of[creep.memory.role].work(creep);
-		}
-	});
-
-	return;
-
-	// spawn creeps outside of tasks
-	for (let role in creep_of) if (creep_of.hasOwnProperty(role)) {
-		if (!count[role]) {
-			console.log('- try to spawn a free ' + role);
-			var creep = creep_of[role].spawn();
-			if (creep) {
-				creep.memory.role = role;
-			}
-		}
-	}
-
-	// start phase
-	if (!Memory.phase) {
-		start.run();
-	}
-
-	// spawn a base creep to start the map
-	if (!count.creep && (!count.carrier || !count.harvester)) {
-		base_creep.spawn(Game.spawns.Spawn.id);
-	}
-
-	// spawn creeps for tasks
-	tasks.forEachUnaffected(function(task, task_key) {
-		if (creep_of[task.role]) {
-			console.log('- try to spawn a task ' + task.role);
-			let creep = creep_of[task.role].spawn();
-			if (creep) {
-				creep.memory.task = task_key;
-				if (task.source) creep.memory.source = task.source;
-				if (task.target) creep.memory.target = task.target;
-			}
 		}
 	});
 
@@ -118,22 +79,28 @@ module.exports.loop = function ()
 };
 
 /**
- * @param room  Room
+ * @param room            Room
+ * @param room_role       string @example 'spawn_harvester'
+ * @param [accept_little] boolean @default false
  * @returns boolean
  */
-module.exports.spawnSpawnHarvester = function(room)
+module.exports.spawnCreep = function(room, room_role, accept_little)
 {
-	if (!rooms.has(room, 'spawn_harvester')) {
-		let role   = rooms.getRole(room, 'spawn_harvester');
-		let source = rooms.spawnSource(room);
-		let spawn  = rooms.spawn(room);
+	if (!rooms.has(room, room_role)) {
+		let role   = rooms.get(room, room_role, 'role');
+		let spawn  = rooms.get(room, 'spawn');
+		let source = rooms.get(room, 'spawn_source');
 		if (role && source && spawn) {
-			let creep = creep_of[role].spawn({ accept_little: !count['harvester'], role: role, source: source });
+			let creep = creep_of[role].spawn({
+				accept_little: accept_little && !count[role],
+				role:          role,
+				source:        source
+			});
 			if (creep) {
 				creep.memory.room      = room.name;
-				creep.memory.room_role = 'spawn_harvester';
+				creep.memory.room_role = room_role;
 				creep.memory.step      = 'spawning';
-				rooms.setCreep(room, 'spawn_harvester', creep);
+				rooms.setCreep(room, room_role, creep);
 			}
 			return true;
 		}

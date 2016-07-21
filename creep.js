@@ -228,8 +228,8 @@ module.exports.spawn = function(options)
 {
 	if (!options) options = {};
 	// spawn
-	if (!options.spawn && options.source) options.spawn = rooms.spawn(rooms.nameOf(options.source));
-	if (!options.spawn && options.target) options.spawn = rooms.spawn(rooms.nameOf(options.target));
+	if (!options.spawn && options.source) options.spawn = rooms.get(rooms.nameOf(options.source), 'spawn');
+	if (!options.spawn && options.target) options.spawn = rooms.get(rooms.nameOf(options.target), 'spawn');
 	// body parts
 	var body_parts = this.body_parts;
 	if (options.accept_little && options.spawn.canCreateCreep(body_parts)) {
@@ -351,11 +351,11 @@ module.exports.workBasic = function(creep)
  */
 module.exports.workRoomRole = function(creep)
 {
-	console.log(creep.name + ' works depending on its room role');
 	switch (creep.memory.step) {
 		case 'spawning':   if (!creep.spawning) this.workRoomRoleSpawn(creep); break;
 		case 'goToSource': this.workRoomRoleGoToSource(creep); break;
-		case 'sourcing':   this.workRoomRoleSource(creep); break;
+		case 'sourcing':   this.workRoomRoleSource(creep);     break;
+		//case 'goToTarget': this.workRoomRoleGoToTarget(creep); break;
 	}
 };
 
@@ -364,11 +364,11 @@ module.exports.workRoomRole = function(creep)
  */
 module.exports.workRoomRoleSpawn = function(creep)
 {
-	var target = rooms.getRoomPosition(creep.room, creep.memory.room_role);
-	if (target) {
+	var source = rooms.getRoomPosition(creep.room, creep.memory.room_role);
+	if (source) {
 		let ignore_creeps = path.ignore_creeps;
 		path.ignore_creeps = false;
-		path.calculate(creep, target, { source_range: 0 });
+		path.calculate(creep, source, { source_range: 0 });
 		path.ignore_creeps = ignore_creeps;
 		path.move(creep);
 		creep.memory.step = 'goToSource';
@@ -386,6 +386,20 @@ module.exports.workRoomRoleGoToSource = function(creep)
 	let moved = path.move(creep);
 	if (moved == path.ARRIVED) {
 		creep.memory.step = 'sourcing';
+	}
+	else if (moved) {
+		creep.say('move:' + moved);
+	}
+};
+
+/**
+ * @param creep Creep
+ */
+module.exports.workRoomRoleGoToSource = function(creep)
+{
+	let moved = path.move(creep);
+	if ((moved == path.ARRIVED) || (moved == path.WAYPOINT)) {
+		creep.memory.step = 'working';
 	}
 	else if (moved) {
 		creep.say('move:' + moved);

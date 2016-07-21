@@ -44,53 +44,6 @@ var toMemoryObject = function(object)
 };
 
 /**
- * @param room Room|string
- * @returns StructureController
- */
-module.exports.controller = function(room)
-{
-	//noinspection JSValidateTypes
-	return this.get(room, 'controller');
-};
-
-/**
- * @param room Room|string
- * @returns Creep|RoomPosition
- */
-module.exports.controllerHarvester = function(room)
-{
-	return this.get(room, 'controller_harvester');
-};
-
-/**
- * @param room Room|string
- * @returns string
- */
-module.exports.controllerPath = function(room)
-{
-	return Memory.rooms[(room instanceof Room) ? room.name : room].controller_path;
-};
-
-/**
- * @param room Room|string
- * @returns Source
- */
-module.exports.controllerSource = function(room)
-{
-	//noinspection JSValidateTypes
-	return this.get(room, 'spawn_source');
-};
-
-/**
- * @param room Room|string
- * @returns Creep|RoomPosition
- */
-module.exports.controllerUpgrader = function(room)
-{
-	return this.get(room, 'controller_upgrader');
-};
-
-/**
  * @param callback callable
  * @returns Creep[]
  */
@@ -116,11 +69,16 @@ module.exports.forEach = function(callback, thisArg)
  *
  * @param room        Room|string
  * @param object_name string eg controller, controller_source, spawn, spawn_source
+ * @param [property]  string if set, the property to read from memory
  * @return RoomObject|RoomPosition
  */
-module.exports.get = function(room, object_name)
+module.exports.get = function(room, object_name, property)
 {
 	var room_name = (room instanceof Room) ? room.name : room;
+	if (property) {
+		return Memory.rooms[room_name][object_name][property];
+	}
+
 	if (!rooms[room_name]) {
 		rooms[room_name] = {};
 	}
@@ -142,41 +100,18 @@ module.exports.get = function(room, object_name)
 };
 
 /**
- * Gets the id of an object
- *
- * @param room        Room|string
- * @param object_name string
- * @returns string
- */
-module.exports.getId = function(room, object_name)
-{
-	var room_name = (room instanceof Room) ? room.name : room;
-	return Memory.rooms[room_name][object_name].id;
-};
-
-/**
  * Gets the position (x, y only) where the object is assigned to
  *
  * @param room        Room|string
  * @param object_name string
- * @return {{ x: number, y: number }}
+ * @returns {{ x: number, y: number }}
  */
 module.exports.getPos = function(room, object_name)
 {
 	var room_name = (room instanceof Room) ? room.name : room;
-	return Memory.rooms[room_name][object_name];
-};
-
-/**
- * Gets the planned role of a creep
- *
- * @param room
- * @param object_name
- */
-module.exports.getRole = function(room, object_name)
-{
-	var room_name = (room instanceof Room) ? room.name : room;
-	return Memory.rooms[room_name][object_name].role;
+	var pos = Memory.rooms[room_name][object_name];
+	if (pos.path && ((pos.x === undefined) || (pos.y === undefined))) pos = Path.start(pos.path);
+	return pos;
 };
 
 /**
@@ -194,8 +129,10 @@ module.exports.getRoomPosition = function(room, object_name)
 };
 
 /**
+ * Returns true if the room has an existing creep affected to the object name
+ *
  * @param room        Room|string
- * @param object_name string
+ * @param object_name string @example spawn_harvester
  * @returns boolean
  */
 module.exports.has = function(room, object_name)
@@ -243,8 +180,8 @@ module.exports.memorize = function(reset)
 			if (cache.spawn) {
 				cache.spawn_source     = cache.spawn.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
 				memory.spawn_source    = toMemoryObject(cache.spawn_source);
-				memory.spawn_path      = Path.calculateTwoWay(cache.spawn_source, cache.spawn, { range: 1 });
-				memory.spawn_harvester = Path.start(memory.spawn_path);
+				memory.spawn_carrier   = { path: Path.calculateTwoWay(cache.spawn_source, cache.spawn, { range: 1 }) };
+				memory.spawn_harvester = Path.start(memory.spawn_carrier.path);
 				cache.spawn_harvester  = Path.toRoomPosition(memory.spawn_harvester);
 				memory.spawn_harvester.role = 'harvester';
 			}
@@ -256,28 +193,47 @@ module.exports.memorize = function(reset)
 				if (cache.controller_source.id == cache.spawn_source.id) {
 					cache.controller_harvester  = cache.spawn_harvester;
 					memory.controller_harvester = memory.spawn_harvester;
-					memory.controller_path = Path.shift(
-						Path.calculate(cache.spawn_harvester, cache.controller, { range: 2 }), memory.controller_harvester
-					);
+					memory.controller_carrier = {
+						path: Path.shift(
+							Path.calculate(cache.spawn_harvester, cache.controller, { range: 2 }), memory.controller_harvester
+						)
+					};
 				}
 				// controller source is another one than the spawn source
 				else {
-					memory.controller_path      = Path.calculate(cache.controller_source, cache.controller, { range: 2 });
-					memory.controller_harvester = Path.start(memory.controller_path);
+					memory.controller_carrier =  {
+						path: Path.calculate(cache.controller_source, cache.controller, { range: 2 })
+					};
+					memory.controller_harvester = Path.start(memory.controller_carrier.path);
 					cache.controller_harvester  = Path.toRoomPosition(memory.controller_harvester);
 					memory.controller_harvester.role = 'harvester';
 				}
-				memory.controller_upgrader = Path.last(memory.controller_path);
+				memory.controller_upgrader = Path.last(memory.controller_carrier.path);
 				cache.controller_upgrader  = Path.toRoomPosition(memory.controller_upgrader);
 				memory.controller_upgrader.role = 'upgrader';
 			}
-			// remove creeps position from paths (paths are here for carriers needs
-			memory.spawn_path      = Path.unshift(memory.spawn_path);
-			memory.controller_path = Path.calculateTwoWay(cache.controller_harvester, cache.controller_upgrader, { range: 1 });
+
+			// finalise carriers : remove creeps position from carriers paths
+			memory.spawn_carrier = {
+				path: Path.unshift(memory.spawn_carrier.path), role: 'carrier'
+			};
+			memory.controller_carrier = {
+				path: Path.calculateTwoWay(cache.controller_harvester, cache.controller_upgrader, {range: 1}), role: 'carrier'
+			};
+
 			rooms[room.name]        = cache;
 			Memory.rooms[room.name] = memory;
 		}
 	});
+	// re-affect existing creeps
+	if (reset) {
+		for (let creep in Game.creeps) if (Game.creeps.hasOwnProperty(creep)) {
+			creep = Memory.creeps[creep];
+			if (creep.room && creep.room_role) {
+				Memory.rooms[creep.room][creep.room_role].creep = creep;
+			}
+		}
+	}
 	// remove lost rooms
 	for (let room_name in Memory.rooms) if (Memory.rooms.hasOwnProperty(room_name)) {
 		if (!Game.rooms[room_name]) {
@@ -288,6 +244,8 @@ module.exports.memorize = function(reset)
 };
 
 /**
+ * Returns the name of the room where the RoomObject / RoomPosition / object id is
+ *
  * @param object RoomObject|RoomPosition|string an object or object id
  * @return string|null
  */
@@ -300,6 +258,8 @@ module.exports.nameOf = function(object)
 };
 
 /**
+ * Returns the room where the RoomObject / RoomPosition / object id is
+ *
  * @param object RoomObject|RoomPosition|string an object or object id
  * @return Room
  */
@@ -323,42 +283,4 @@ module.exports.setCreep = function(room, object_name, creep)
 	var room_name = (room instanceof Room) ? room.name : room;
 	Memory.rooms[room_name][object_name].creep = creep.name;
 	rooms[room_name][object_name] = creep;
-};
-
-/**
- * @param room Room|string
- * @returns StructureSpawn
- */
-module.exports.spawn = function(room)
-{
-	//noinspection JSValidateTypes
-	return this.get(room, 'spawn');
-};
-
-/**
- * @param room Room|string
- * @returns Creep|RoomPosition
- */
-module.exports.spawnHarvester = function(room)
-{
-	return this.get(room, 'spawn_harvester');
-};
-
-/**
- * @param room Room|string
- * @returns string
- */
-module.exports.spawnPath = function(room)
-{
-	return Memory.rooms[(room instanceof Room) ? room.name : room].spawn_path;
-};
-
-/**
- * @param room Room|string
- * @returns Source
- */
-module.exports.spawnSource = function(room)
-{
-	//noinspection JSValidateTypes
-	return this.get(room, 'spawn_source');
 };
