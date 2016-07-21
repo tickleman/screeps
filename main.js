@@ -54,8 +54,8 @@ module.exports.loop = function ()
 		    || main.spawnRoleCreep(room, 'controller_upgrader')
 				|| main.spawnRoleCreep(room, 'controller_harvester')
 				|| main.spawnRoleCreep(room, 'controller_carrier')
-				|| main.spawnSimpleCreep(room, 'builder')
-				|| main.spawnSimpleCreep(room, 'repairer')
+				|| main.needBuilder(room)
+				|| main.needRepairer(room)
 			) {
 				return true;
 			}
@@ -77,6 +77,37 @@ module.exports.loop = function ()
 		}
 	}
 
+};
+
+/**
+ * Returns true if needs and spawns a builder
+ *
+ * @param room Room
+ * @returns {boolean}
+ */
+module.exports.needBuilder = function(room)
+{
+	if (!count['builder'] && _.filter(room.find(FIND_CONSTRUCTION_SITES)).length) {
+		return this.spawnSimpleCreep(room, 'builder')
+	}
+	return false;
+};
+
+/**
+ * Returns true if needs and spawns a builder
+ *
+ * @param room Room
+ * @returns {boolean}
+ */
+module.exports.needRepairer = function(room)
+{
+	if (
+		!count['repairer']
+		&& _.filter(room.find(FIND_MY_STRUCTURES), structure => structure.hits < structure.hitsMax).length
+	) {
+		return this.spawnSimpleCreep(room, 'repairer')
+	}
+	return false;
 };
 
 /**
