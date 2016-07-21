@@ -124,16 +124,14 @@ module.exports.targetWork = function(creepjs, creep)
 	if (target.id != creep.memory.target) {
 		creep.memory.target = target.id;
 	}
+	let error = creepjs.targetJob(creep, target);
+	if (error) {
+		creep.say(error.toString());
+	}
 	if (creepjs.targetJobDone(creep, target)) {
 		creep.memory.step = 'goToSource';
 		creep.memory.path_step ++;
 		path.move(creep);
-	}
-	else {
-		let error = creepjs.targetJob(creep, target);
-		if (error) {
-			creep.say(error.toString());
-		}
 	}
 };
 
