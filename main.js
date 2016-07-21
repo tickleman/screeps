@@ -51,11 +51,12 @@ module.exports.loop = function ()
 			if (
 				   main.spawnRoleCreep(room, 'spawn_harvester', true)
 				|| main.spawnRoleCreep(room, 'spawn_carrier', true)
-		    || main.spawnRoleCreep(room, 'controller_upgrader')
-				|| main.spawnRoleCreep(room, 'controller_harvester')
-				|| main.spawnRoleCreep(room, 'controller_carrier')
+		    || main.spawnRoleCreep(room, 'controller_upgrader', true)
+				|| main.spawnRoleCreep(room, 'controller_harvester', true)
+				|| main.spawnRoleCreep(room, 'controller_carrier', true)
 				|| main.needBuilder(room)
 				|| main.needRepairer(room)
+				|| main.needCarrier(room)
 			) {
 				return true;
 			}
@@ -89,6 +90,26 @@ module.exports.needBuilder = function(room)
 {
 	if (!count['builder'] && _.filter(room.find(FIND_CONSTRUCTION_SITES)).length) {
 		return this.spawnSimpleCreep(room, 'builder', true)
+	}
+	return false;
+};
+
+/**
+ * Returns true if needs and spawns a builder
+ *
+ * @param room Room
+ * @returns {boolean}
+ */
+module.exports.needCarrier = function(room)
+{
+	if (
+		(count['carrier'] < 4)
+		&& _.filter(
+			room.find(FIND_MY_CREEPS),
+			creep => (creep.memory.role == 'builder') || (creep.memory.role == 'repairer')
+		).length
+	) {
+		return this.spawnSimpleCreep(room, 'carrier', true)
 	}
 	return false;
 };
@@ -146,11 +167,9 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
  */
 module.exports.spawnSimpleCreep = function(room, role, accept_little)
 {
-	if (!count[role]) {
-		let creep = creep_of[role].spawn({ accept_little: accept_little, role: role, spawn: rooms.get(room, 'spawn') });
-		if (creep) {
-			return true;
-		}
+	let creep = creep_of[role].spawn({ accept_little: accept_little, role: role, spawn: rooms.get(room, 'spawn') });
+	if (creep) {
+		return true;
 	}
 	return false;
 };
