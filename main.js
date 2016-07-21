@@ -54,9 +54,11 @@ module.exports.loop = function ()
 		    || main.spawnRoleCreep(room, 'controller_upgrader', true)
 				|| main.spawnRoleCreep(room, 'controller_harvester', true)
 				|| main.spawnRoleCreep(room, 'controller_carrier', true)
-				|| main.needBuilder(room)
-				|| main.needRepairer(room)
-				|| main.needCarrier(room)
+				|| main.needBuilder(room, 1)
+				|| main.needRepairer(room, 1)
+				|| main.needCarrier(room, 4)
+				|| main.needBuilder(room, 2)
+				|| main.needRepairer(room, 2)
 			) {
 				return true;
 			}
@@ -84,11 +86,12 @@ module.exports.loop = function ()
  * Returns true if needs and spawns a builder
  *
  * @param room Room
+ * @param cnt  number
  * @returns {boolean}
  */
-module.exports.needBuilder = function(room)
+module.exports.needBuilder = function(room, cnt)
 {
-	if (!count['builder'] && _.filter(room.find(FIND_CONSTRUCTION_SITES)).length) {
+	if ((count['builder'] < cnt) && _.filter(room.find(FIND_CONSTRUCTION_SITES)).length) {
 		return this.spawnSimpleCreep(room, 'builder', true)
 	}
 	return false;
@@ -98,12 +101,13 @@ module.exports.needBuilder = function(room)
  * Returns true if needs and spawns a builder
  *
  * @param room Room
+ * @param cnt  number
  * @returns {boolean}
  */
-module.exports.needCarrier = function(room)
+module.exports.needCarrier = function(room, cnt)
 {
 	if (
-		(count['carrier'] < 4)
+		(count['carrier'] < cnt)
 		&& _.filter(
 			room.find(FIND_MY_CREEPS),
 			creep => (creep.memory.role == 'builder') || (creep.memory.role == 'repairer')
@@ -118,12 +122,13 @@ module.exports.needCarrier = function(room)
  * Returns true if needs and spawns a builder
  *
  * @param room Room
+ * @param cnt  number
  * @returns {boolean}
  */
-module.exports.needRepairer = function(room)
+module.exports.needRepairer = function(room, cnt)
 {
 	if (
-		!count['repairer']
+		(count['repairer'] < cnt)
 		&& _.filter(room.find(FIND_MY_STRUCTURES), structure => structure.hits < structure.hitsMax).length
 	) {
 		return this.spawnSimpleCreep(room, 'repairer', true)
