@@ -56,9 +56,7 @@ module.exports.loop = function ()
 				|| main.spawnRoleCreep(room, 'controller_carrier', true)
 				|| main.needBuilder(room, 1)
 				|| main.needRepairer(room, 1)
-				|| main.needCarrier(room, 4)
-				|| main.needBuilder(room, 2)
-				|| main.needRepairer(room, 2)
+				|| main.needCarrier(room, 3)
 			) {
 				return true;
 			}
@@ -129,7 +127,7 @@ module.exports.needRepairer = function(room, cnt)
 {
 	if (
 		(count['repairer'] < cnt)
-		&& _.filter(room.find(FIND_MY_STRUCTURES), structure => structure.hits < structure.hitsMax).length
+		&& _.filter(room.find(FIND_STRUCTURES), structure => structure.hits < structure.hitsMax).length
 	) {
 		return this.spawnSimpleCreep(room, 'repairer', true)
 	}
