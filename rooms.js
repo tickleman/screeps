@@ -142,16 +142,6 @@ module.exports.has = function(room, object_name)
 };
 
 /**
- * Returns true if rooms is memorized
- *
- * @returns boolean
- */
-module.exports.memorized = function()
-{
-	return Memory.rooms !== undefined;
-};
-
-/**
  * Refresh rooms memory :
  * - get new rooms main information
  * - remove lost rooms
@@ -227,10 +217,10 @@ module.exports.memorize = function(reset)
 	});
 	// re-affect existing creeps
 	if (reset) {
-		for (let creep in Game.creeps) if (Game.creeps.hasOwnProperty(creep)) {
-			creep = Memory.creeps[creep];
+		for (let creep_name in Game.creeps) if (Game.creeps.hasOwnProperty(creep_name)) {
+			let creep = Memory.creeps[creep_name];
 			if (creep.room && creep.room_role) {
-				Memory.rooms[creep.room][creep.room_role].creep = creep;
+				Memory.rooms[creep.room][creep.room_role].creep = creep_name;
 			}
 		}
 	}
@@ -241,6 +231,16 @@ module.exports.memorize = function(reset)
 		}
 	}
 	Path.cost(save_cost);
+};
+
+/**
+ * Returns true if rooms is memorized
+ *
+ * @returns boolean
+ */
+module.exports.memorized = function()
+{
+	return Memory.rooms !== undefined;
 };
 
 /**
