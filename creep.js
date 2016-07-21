@@ -279,6 +279,7 @@ module.exports.targetJob = function(creep, target)
  */
 module.exports.targetJobDone = function(creep, target)
 {
+	if (!creep.carry.energy) return true;
 	var energy = (target instanceof Creep) ? target.carry.energy : target.energy;
 	return energy == target.energyCapacity;
 };
