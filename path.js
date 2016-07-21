@@ -353,17 +353,22 @@ module.exports.length = function(path)
  * @param creep  Creep
  * @param [path] string if not set, will use creep.memory.path
  * @param [step] number if not set, will use and increment creep.memory.path_step
- * @returns number 0 if moved, ARRIVED if arrived (before or after moving), error code if not moved
+ * @returns number|string 0 if moved, ARRIVED or WAYPOINT if arrived (before or after moving), error code if not moved
  */
 module.exports.move = function(creep, path, step)
 {
 	var increment_step;
 	if (!path) path = creep.memory.path;
-	if (step) increment_step = false;
+	if (step)  increment_step = false;
 	else { step = creep.memory.path_step; increment_step = true; }
 	if (step >= path.length) return this.ARRIVED;
+	else if (path[step] == this.WAYPOINT) {
+		if (increment_step) creep.memory.path_step ++;
+		return this.WAYPOINT;
+	}
 	var result = creep.move(path[step]);
-	if (!result && increment_step) creep.memory.path_step ++;
+	if (!result && increment_step) creep.memory.path_step = ++step;
+	if (path.substr(step, 1) == this.WAYPOINT) return this.WAYPOINT;
 	return (!result && (step >= path.length - 1))
 		? this.ARRIVED
 		: result;
