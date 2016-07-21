@@ -221,7 +221,7 @@ module.exports.memorize = function(reset)
 				path:   Path.calculateTwoWay(cache.controller_harvester, cache.controller_upgrader, {range: 1}),
 				role:   'carrier',
 				source: FIND_DROPPED_ENERGY,
-				target: STRUCTURE_CONTROLLER
+				target: 'controller_upgrader'
 			};
 
 			rooms[room.name]        = cache;
