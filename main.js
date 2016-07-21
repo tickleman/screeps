@@ -51,7 +51,7 @@ module.exports.loop = function ()
 			if (
 				   main.spawnRoleCreep(room, 'spawn_harvester', true)
 				|| main.spawnRoleCreep(room, 'spawn_carrier', true)
-		    || main.spawnRoleCreep(room, 'controller_upgrader', true)
+				|| main.spawnRoleCreep(room, 'controller_upgrader', true)
 				|| main.spawnRoleCreep(room, 'controller_harvester', true)
 				|| main.spawnRoleCreep(room, 'controller_carrier', true)
 				|| main.needBuilder(room, 1)
