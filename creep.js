@@ -280,8 +280,9 @@ module.exports.targetJob = function(creep, target)
 module.exports.targetJobDone = function(creep, target)
 {
 	if (!creep.carry.energy) return true;
-	var energy = (target instanceof Creep) ? target.carry.energy : target.energy;
-	return energy == target.energyCapacity;
+	return (target instanceof Creep)
+		? (target.carry.energy / target.carryCapacity > .8)
+		: (target.energy / target.energyCapacity > .8);
 };
 
 /**
