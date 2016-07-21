@@ -147,6 +147,9 @@ module.exports.goToSource = function(creeps, creep)
 {
 	let moved = path.move(creep);
 	if (moved == path.ARRIVED) {
+		if (creep.memory.path_step) {
+			creep.memory.path_step = 4;
+		}
 		creep.memory.step = 'sourceWork';
 	}
 	else if (moved) {
