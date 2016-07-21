@@ -88,7 +88,7 @@ module.exports.loop = function ()
 module.exports.needBuilder = function(room)
 {
 	if (!count['builder'] && _.filter(room.find(FIND_CONSTRUCTION_SITES)).length) {
-		return this.spawnSimpleCreep(room, 'builder')
+		return this.spawnSimpleCreep(room, 'builder', true)
 	}
 	return false;
 };
@@ -105,7 +105,7 @@ module.exports.needRepairer = function(room)
 		!count['repairer']
 		&& _.filter(room.find(FIND_MY_STRUCTURES), structure => structure.hits < structure.hitsMax).length
 	) {
-		return this.spawnSimpleCreep(room, 'repairer')
+		return this.spawnSimpleCreep(room, 'repairer', true)
 	}
 	return false;
 };
@@ -138,10 +138,16 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
 	return false;
 };
 
-module.exports.spawnSimpleCreep = function(room, role)
+/**
+ * @param room            Room
+ * @param role            string @example 'builder'
+ * @param [accept_little] boolean @default false
+ * @returns boolean
+ */
+module.exports.spawnSimpleCreep = function(room, role, accept_little)
 {
 	if (!count[role]) {
-		let creep = creep_of[role].spawn({ role: role, spawn: rooms.get(room, 'spawn') });
+		let creep = creep_of[role].spawn({ accept_little: accept_little, role: role, spawn: rooms.get(room, 'spawn') });
 		if (creep) {
 			return true;
 		}
