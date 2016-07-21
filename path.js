@@ -432,8 +432,11 @@ module.exports.push = function(path, pos)
  */
 module.exports.serialize = function(path, opts)
 {
+	if (!opts) opts = {};
+	if (opts.DEBUG === undefined) opts.DEBUG = this.DEBUG;
+	if (opts.accumulate_exclude && !opts.exclude) opts.exclude = [];
 	var pos = path[Object.keys(path)[0]];
-	if (this.DEBUG) console.log('SERIALIZE');
+	if (opts.DEBUG) console.log('SERIALIZE');
 
 	var xx = pos.x.toString();
 	if (xx.length < 2) xx = '0' + xx;
@@ -442,24 +445,23 @@ module.exports.serialize = function(path, opts)
 	var result = xx.concat(yy);
 
 	var last_pos = pos;
-	if (this.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + result);
-	if (opts.accumulate_exclude && !opts.exclude) opts.exclude = [];
+	if (opts.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + result);
 	for (pos of path.slice(1)) {
 		if (pos == this.WAYPOINT) {
 			result = result.concat(pos);
-			if (this.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + this.WAYPOINT);
+			if (opts.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + this.WAYPOINT);
 		}
 		else {
 			if (opts.accumulate_exclude) {
 				opts.exclude.push(pos);
 			}
 			result = result.concat(this.direction(last_pos, pos));
-			if (this.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + this.direction(last_pos, pos));
+			if (opts.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + this.direction(last_pos, pos));
 			last_pos = pos;
 		}
 	}
 
-	if (this.DEBUG) console.log('SERIALIZE = ' + result);
+	if (opts.DEBUG) console.log('SERIALIZE = ' + result);
 	return result;
 };
 
