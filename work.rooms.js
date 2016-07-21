@@ -42,7 +42,7 @@ module.exports.spawning = function(creepjs, creep)
 		creep.memory.step = 'goToStart';
 		creep.memory.source = rooms.get(creep.memory.room, creep.memory.room_role, 'source');
 		creep.memory.target = rooms.get(creep.memory.room, creep.memory.room_role, 'target');
-		path.move(creep);
+		this.goToStart(creepjs, creep);
 	}
 	else {
 		creep.say('no pos');
@@ -88,9 +88,11 @@ module.exports.sourceWork = function(creepjs, creep)
 		if (creep.memory.path) {
 			creep.memory.step_pos = 4;
 			creep.memory.step = 'goToTarget';
+			this.goToTarget(creepjs, creep);
 		}
 		else {
-			creep.say('path missing');
+			creep.memory.step = 'targetWork';
+			this.targetWork(creepjs, creep);
 		}
 	}
 };
@@ -131,7 +133,7 @@ module.exports.targetWork = function(creepjs, creep)
 	if (creepjs.targetJobDone(creep, target)) {
 		creep.memory.step = 'goToSource';
 		creep.memory.path_step ++;
-		path.move(creep);
+		this.goToSource(creepjs, creep);
 	}
 };
 
