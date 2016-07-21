@@ -361,17 +361,25 @@ module.exports.move = function(creep, path, step)
 	if (!path) path = creep.memory.path;
 	if (step)  increment_step = false;
 	else { step = creep.memory.path_step; increment_step = true; }
+console.log(creep.name + ' ' + creep.memory.path + ' step ' + step);
 	if (step >= path.length) return this.ARRIVED;
-	else if (path[step] == this.WAYPOINT) {
-		if (increment_step) creep.memory.path_step ++;
+	if (path[step] == this.WAYPOINT) {
+console.log('- waypoint (inc)');
+		if (increment_step) ++ creep.memory.path_step;
 		return this.WAYPOINT;
 	}
+console.log('- move ' + path[step]);
 	var result = creep.move(path[step]);
-	if (!result && increment_step) creep.memory.path_step = ++step;
-	if (path.substr(step, 1) == this.WAYPOINT) return this.WAYPOINT;
-	return (!result && (step >= path.length - 1))
-		? this.ARRIVED
-		: result;
+console.log('- result = ' + result);
+	if (!result && increment_step) creep.memory.path_step = ++ step;
+	if (path.substr(step, 1) == this.WAYPOINT) {
+		result = this.WAYPOINT;
+	}
+	if (!result && (step >= path.length)) {
+		result = this.ARRIVED;
+	}
+console.log('- return ' + result);
+	return result;
 };
 
 /**

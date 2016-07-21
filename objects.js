@@ -1,4 +1,6 @@
 
+var rooms = require('./rooms');
+
 /**
  * @param context RoomObject|RoomPosition
  * @param target RoomObject|RoomPosition|string|number
@@ -10,9 +12,9 @@ module.exports.get = function(context, target)
 	if ((target instanceof RoomObject) || (target instanceof RoomPosition)) {
 		return target;
 	}
+	if (context instanceof RoomObject) context = context.pos;
 	// a number : may be some kind of FIND_RESOURCE, FIND_STRUCTURE, or what
 	if (!isNaN(target)) {
-		if (context instanceof RoomObject) context = context.pos;
 		let object = context.findClosestByRange(target);
 		if (object instanceof RoomObject) {
 			return object;
@@ -24,6 +26,10 @@ module.exports.get = function(context, target)
 		if (object instanceof RoomObject) {
 			return object;
 		}
+	}
+	// a room role ?
+	if (Memory.rooms[context.roomName][target]) {
+		return rooms.get(context.roomName, target);
 	}
 	// the name of a creep ?
 	if (Game.creeps[target]) {
