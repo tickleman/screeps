@@ -43,6 +43,8 @@ var toMemoryObject = function(object)
 	return result;
 };
 
+module.exports.MEMORY = 'MEMORY';
+
 /**
  * @param callback callable
  * @returns Creep[]
@@ -77,6 +79,9 @@ module.exports.get = function(room, object_name, property)
 	var room_name = (room instanceof Room) ? room.name : room;
 	if (property) {
 		return Memory.rooms[room_name][object_name][property];
+	}
+	if (property == this.MEMORY) {
+		return Memory.rooms[room_name][object_name];
 	}
 
 	if (!rooms[room_name]) {
@@ -150,7 +155,6 @@ module.exports.has = function(room, object_name)
  */
 module.exports.memorize = function(reset)
 {
-	var save_cost = Path.cost(1, 1, 1);
 	if (reset ||!Memory.rooms) {
 		Memory.rooms = {};
 	}
@@ -158,6 +162,7 @@ module.exports.memorize = function(reset)
 	this.forEach(function(room) {
 		Path.room = room;
 		if (!Memory.rooms[room.name]) {
+			let save_cost = Path.cost(1, 1, 1);
 			let cache  = {};
 			let memory = {};
 			room.find(FIND_MY_STRUCTURES).forEach(function(structure) {
@@ -221,6 +226,7 @@ module.exports.memorize = function(reset)
 
 			rooms[room.name]        = cache;
 			Memory.rooms[room.name] = memory;
+			Path.cost(save_cost);
 		}
 	});
 	// re-affect existing creeps
@@ -238,7 +244,6 @@ module.exports.memorize = function(reset)
 			delete Memory.rooms[room_name];
 		}
 	}
-	Path.cost(save_cost);
 };
 
 /**

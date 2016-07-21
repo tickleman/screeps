@@ -7,6 +7,7 @@ var names   = require('./names');
 var path    = require('./path');
 var rooms   = require('./rooms');
 var sources = require('./sources');
+var work    = require('./work.rooms');
 
 /**
  * Use sources() / targets() to find its initial source / target
@@ -352,73 +353,12 @@ module.exports.workBasic = function(creep)
 module.exports.workRoomRole = function(creep)
 {
 	switch (creep.memory.step) {
-		case 'spawning':   if (!creep.spawning) this.workRoomRoleSpawn(creep); break;
-		case 'goToSource': this.workRoomRoleGoToSource(creep); break;
-		case 'sourcing':   this.workRoomRoleSource(creep);     break;
-		//case 'goToTarget': this.workRoomRoleGoToTarget(creep); break;
-	}
-};
-
-/**
- * @param creep Creep
- */
-module.exports.workRoomRoleSpawn = function(creep)
-{
-	var source = rooms.getRoomPosition(creep.room, creep.memory.room_role);
-	if (source) {
-		let ignore_creeps = path.ignore_creeps;
-		path.ignore_creeps = false;
-		path.calculate(creep, source, { source_range: 0 });
-		path.ignore_creeps = ignore_creeps;
-		path.move(creep);
-		creep.memory.step = 'goToSource';
-	}
-	else {
-		creep.say('no pos');
-	}
-};
-
-/**
- * @param creep Creep
- */
-module.exports.workRoomRoleGoToSource = function(creep)
-{
-	let moved = path.move(creep);
-	if (moved == path.ARRIVED) {
-		creep.memory.step = 'sourcing';
-	}
-	else if (moved) {
-		creep.say('move:' + moved);
-	}
-};
-
-/**
- * @param creep Creep
- */
-module.exports.workRoomRoleGoToSource = function(creep)
-{
-	let moved = path.move(creep);
-	if ((moved == path.ARRIVED) || (moved == path.WAYPOINT)) {
-		creep.memory.step = 'working';
-	}
-	else if (moved) {
-		creep.say('move:' + moved);
-	}
-};
-
-/**
- * @param creep Creep
- */
-module.exports.workRoomRoleSource = function(creep)
-{
-	if (!this.fill(creep)) {
-		if (creep.memory.path) {
-			creep.memory.step_pos = 4;
-			creep.memory.step = 'goToTarget';
-		}
-		else {
-			creep.say('path missing');
-		}
+		case 'spawning':   if (!creep.spawning) work.spawning(this, creep); break;
+		case 'goToStart':  work.goToStart (this, creep); break;
+		case 'goToSource': work.goToSource(this, creep); break;
+		case 'sourceWork': work.sourceWork(this, creep); break;
+		case 'goToTarget': work.goToTarget(this, creep); break;
+		case 'targetWork': work.targetWork(this, creep); break;
 	}
 };
 

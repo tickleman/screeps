@@ -86,15 +86,10 @@ module.exports.loop = function ()
 module.exports.spawnCreep = function(room, room_role, accept_little)
 {
 	if (!rooms.has(room, room_role)) {
-		let role   = rooms.get(room, room_role, 'role');
-		let spawn  = rooms.get(room, 'spawn');
-		let source = rooms.get(room, 'spawn_source');
+		let role  = rooms.get(room, room_role, 'role');
+		let spawn = rooms.get(room, 'spawn');
 		if (role && source && spawn) {
-			let creep = creep_of[role].spawn({
-				accept_little: accept_little && !count[role],
-				role:          role,
-				source:        source
-			});
+			let creep = creep_of[role].spawn({ accept_little: accept_little && !count[role], role: role });
 			if (creep) {
 				creep.memory.room      = room.name;
 				creep.memory.room_role = room_role;
