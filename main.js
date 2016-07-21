@@ -85,6 +85,9 @@ module.exports.loop = function ()
  */
 module.exports.spawnCreep = function(room, room_role, accept_little)
 {
+	if (room.controller.level == 1) {
+		accept_little = true;
+	}
 	if (!rooms.has(room, room_role)) {
 		let role  = rooms.get(room, room_role, 'role');
 		let spawn = rooms.get(room, 'spawn');

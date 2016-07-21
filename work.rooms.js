@@ -40,8 +40,8 @@ module.exports.spawning = function(creepjs, creep)
 		path.calculate(creep, position, { source_range: 0 });
 		path.ignore_creeps = ignore_creeps;
 		creep.memory.step = 'goToStart';
-		creep.memory.source = objects.get(creep, rooms.get(creep.memory.room, creep.memory.room_role, 'source'));
-		creep.memory.target = objects.get(creep, rooms.get(creep.memory.room, creep.memory.room_role, 'target'));
+		creep.memory.source = rooms.get(creep.memory.room, creep.memory.room_role, 'source');
+		creep.memory.target = rooms.get(creep.memory.room, creep.memory.room_role, 'target');
 		path.move(creep);
 	}
 	else {
