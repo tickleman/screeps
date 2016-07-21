@@ -323,7 +323,7 @@ module.exports.targets = function(creep)
 module.exports.work = function(creep)
 {
 	if (creep.memory.task !== undefined) this.workTask(creep);
-	else if (creep.memory.room_role)     this.workRoomRole(creep);
+	else if (creep.memory.room_role)     work.work(this, creep);
 	else                                 this.workBasic(creep);
 };
 
@@ -342,23 +342,6 @@ module.exports.workBasic = function(creep)
 		if (this.targetJob(creep, target) == ERR_NOT_IN_RANGE) {
 			creep.moveTo(target);
 		}
-	}
-};
-
-/**
- * Room-role-planned work : depends on tasks steps
- *
- * @param creep Creep
- */
-module.exports.workRoomRole = function(creep)
-{
-	switch (creep.memory.step) {
-		case 'spawning':   if (!creep.spawning) work.spawning(this, creep); break;
-		case 'goToStart':  work.goToStart (this, creep); break;
-		case 'goToSource': work.goToSource(this, creep); break;
-		case 'sourceWork': work.sourceWork(this, creep); break;
-		case 'goToTarget': work.goToTarget(this, creep); break;
-		case 'targetWork': work.targetWork(this, creep); break;
 	}
 };
 

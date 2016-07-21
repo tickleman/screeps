@@ -7,6 +7,24 @@ var path    = require('./path');
 var rooms   = require('./rooms');
 
 /**
+ * Room-role-planned work : depends on work step
+ *
+ * @param creepjs object
+ * @param creep   Creep
+ */
+module.exports.work = function(creepjs, creep)
+{
+	switch (creep.memory.step) {
+		case 'spawning':   if (!creep.spawning) this.spawning(creepjs, creep); break;
+		case 'goToStart':  this.goToStart (creepjs, creep); break;
+		case 'goToSource': this.goToSource(creepjs, creep); break;
+		case 'sourceWork': this.sourceWork(creepjs, creep); break;
+		case 'goToTarget': this.goToTarget(creepjs, creep); break;
+		case 'targetWork': this.targetWork(creepjs, creep); break;
+	}
+};
+
+/**
  * #1 : SPAWN
  * Called when creep has just spawned
  *
@@ -24,6 +42,7 @@ module.exports.spawning = function(creepjs, creep)
 		creep.memory.step = 'goToStart';
 		creep.memory.source = objects.get(creep, rooms.get(creep.memory.room, creep.memory.room_role, 'source'));
 		creep.memory.target = objects.get(creep, rooms.get(creep.memory.room, creep.memory.room_role, 'target'));
+		path.move(creep);
 	}
 	else {
 		creep.say('no pos');
@@ -39,6 +58,7 @@ module.exports.spawning = function(creepjs, creep)
  */
 module.exports.goToStart = function(creepjs, creep)
 {
+	return;
 	let moved = path.move(creep);
 	if (moved == path.ARRIVED) {
 		let room_memory = rooms.get(creep.memory.room, creep.memory.room_role, rooms.MEMORY);
