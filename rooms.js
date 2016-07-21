@@ -205,9 +205,10 @@ module.exports.memorize = function(reset)
 				}
 				memory.controller_harvester.role   = 'harvester';
 				memory.controller_harvester.source = memory.controller_source.id;
-				memory.controller_upgrader = Path.last(memory.controller_carrier.path);
-				cache.controller_upgrader  = Path.toRoomPosition(memory.controller_upgrader);
-				memory.controller_upgrader.role = 'upgrader';
+				memory.controller_upgrader         = Path.last(memory.controller_carrier.path);
+				cache.controller_upgrader          = Path.toRoomPosition(memory.controller_upgrader);
+				memory.controller_upgrader.role    = 'upgrader';
+				memory.controller_upgrader.target  = 'controller';
 			}
 
 			// finalise carriers : remove creeps position from carriers paths
