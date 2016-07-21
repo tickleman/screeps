@@ -175,7 +175,7 @@ module.exports.memorize = function(reset)
 			if (cache.spawn) {
 				cache.spawn_source            = cache.spawn.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
 				memory.spawn_source           = toMemoryObject(cache.spawn_source);
-				memory.spawn_carrier          = { path: Path.calculateTwoWay(cache.spawn_source, cache.spawn, { range: 1 }) };
+				memory.spawn_carrier          = { path: Path.calculate(cache.spawn_source, cache.spawn, { range: 1 }) };
 				memory.spawn_harvester        = Path.start(memory.spawn_carrier.path);
 				memory.spawn_harvester.role   = 'harvester';
 				memory.spawn_harvester.source = memory.spawn_source.id;
@@ -197,11 +197,11 @@ module.exports.memorize = function(reset)
 				}
 				// controller source is another one than the spawn source
 				else {
-					memory.controller_harvester = Path.start(memory.controller_carrier.path);
-					cache.controller_harvester  = Path.toRoomPosition(memory.controller_harvester);
 					memory.controller_carrier =  {
 						path: Path.calculate(cache.controller_source, cache.controller, { range: 2 })
 					};
+					memory.controller_harvester = Path.start(memory.controller_carrier.path);
+					cache.controller_harvester  = Path.toRoomPosition(memory.controller_harvester);
 				}
 				memory.controller_harvester.role   = 'harvester';
 				memory.controller_harvester.source = memory.controller_source.id;
@@ -212,7 +212,7 @@ module.exports.memorize = function(reset)
 
 			// finalise carriers : remove creeps position from carriers paths
 			memory.spawn_carrier = {
-				path:   Path.unshift(memory.spawn_carrier.path),
+				path:   Path.calculateTwoWay(cache.spawn_harvester, cache.spawn, { range : 1 }),
 				role:   'carrier',
 				source: FIND_DROPPED_ENERGY,
 				target: STRUCTURE_SPAWN
