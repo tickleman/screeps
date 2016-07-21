@@ -324,9 +324,8 @@ module.exports.targets = function(creep)
  **/
 module.exports.work = function(creep)
 {
-	if (creep.memory.task !== undefined) this.workTask(creep);
-	else if (creep.memory.room_role)     work.work(this, creep);
-	else                                 this.workBasic(creep);
+	if (creep.memory.room_role) work.work(this, creep);
+	else                        this.workBasic(creep);
 };
 
 /**

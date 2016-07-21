@@ -49,11 +49,13 @@ module.exports.loop = function ()
 		let spawn = rooms.get(room, 'spawn');
 		if (spawn && !spawn.spawning) {
 			if (
-				   main.spawnCreep(room, 'spawn_harvester', true)
-				|| main.spawnCreep(room, 'spawn_carrier', true)
-		    || main.spawnCreep(room, 'controller_upgrader')
-				|| main.spawnCreep(room, 'controller_harvester')
-				|| main.spawnCreep(room, 'controller_carrier')
+				   main.spawnRoleCreep(room, 'spawn_harvester', true)
+				|| main.spawnRoleCreep(room, 'spawn_carrier', true)
+		    || main.spawnRoleCreep(room, 'controller_upgrader')
+				|| main.spawnRoleCreep(room, 'controller_harvester')
+				|| main.spawnRoleCreep(room, 'controller_carrier')
+				|| main.spawnSimpleCreep(room, 'builder')
+				|| main.spawnSimpleCreep(room, 'repairer')
 			) {
 				return true;
 			}
@@ -83,7 +85,7 @@ module.exports.loop = function ()
  * @param [accept_little] boolean @default false
  * @returns boolean
  */
-module.exports.spawnCreep = function(room, room_role, accept_little)
+module.exports.spawnRoleCreep = function(room, room_role, accept_little)
 {
 	if (room.controller.level == 1) {
 		accept_little = true;
@@ -98,8 +100,20 @@ module.exports.spawnCreep = function(room, room_role, accept_little)
 				creep.memory.room_role = room_role;
 				creep.memory.step      = 'spawning';
 				rooms.setCreep(room, room_role, creep);
+				return true;
 			}
+		}
+	}
+	return false;
+};
+
+module.exports.spawnSimpleCreep = function(room, role)
+{
+	if (!count[role]) {
+		let creep = creep_of[role].spawn({ role: role, spawn: rooms.get(room, 'spawn') });
+		if (creep) {
 			return true;
 		}
 	}
+	return false;
 };
