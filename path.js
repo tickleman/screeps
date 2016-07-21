@@ -370,7 +370,7 @@ console.log('- waypoint (inc)');
 	}
 console.log('- move ' + path[step]);
 	var result = creep.move(path[step]);
-console.log('- result = ' + result);
+console.log('- result = ' + result + ((!result && increment_step) ? ' (inc)' : ''));
 	if (!result && increment_step) creep.memory.path_step = ++ step;
 	if (path.substr(step, 1) == this.WAYPOINT) {
 		result = this.WAYPOINT;

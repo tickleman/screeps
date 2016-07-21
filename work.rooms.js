@@ -124,7 +124,7 @@ module.exports.targetWork = function(creepjs, creep)
 	if (target.id != creep.memory.target) {
 		creep.memory.target = target.id;
 	}
-	if (this.targetJobDone(creep, target)) {
+	if (creepjs.targetJobDone(creep, target)) {
 		creep.memory.step = 'goToSource';
 		creep.memory.path_step ++;
 	}
