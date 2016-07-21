@@ -51,9 +51,9 @@ module.exports.loop = function ()
 			if (
 				   main.spawnCreep(room, 'spawn_harvester', true)
 				|| main.spawnCreep(room, 'spawn_carrier', true)
+		    || main.spawnCreep(room, 'controller_upgrader')
 				|| main.spawnCreep(room, 'controller_harvester')
 				|| main.spawnCreep(room, 'controller_carrier')
-				|| main.spawnCreep(room, 'controller_upgrader')
 			) {
 				return true;
 			}
