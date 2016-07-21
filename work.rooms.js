@@ -58,7 +58,6 @@ module.exports.spawning = function(creepjs, creep)
  */
 module.exports.goToStart = function(creepjs, creep)
 {
-	return;
 	let moved = path.move(creep);
 	if (moved == path.ARRIVED) {
 		let room_memory = rooms.get(creep.memory.room, creep.memory.room_role, rooms.MEMORY);

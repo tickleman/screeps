@@ -77,11 +77,11 @@ module.exports.forEach = function(callback, thisArg)
 module.exports.get = function(room, object_name, property)
 {
 	var room_name = (room instanceof Room) ? room.name : room;
-	if (property) {
-		return Memory.rooms[room_name][object_name][property];
-	}
 	if (property == this.MEMORY) {
 		return Memory.rooms[room_name][object_name];
+	}
+	if (property) {
+		return Memory.rooms[room_name][object_name][property];
 	}
 
 	if (!rooms[room_name]) {
