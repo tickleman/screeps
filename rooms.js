@@ -205,10 +205,12 @@ module.exports.memorize = function(reset)
 
 			// finalise carriers : remove creeps position from carriers paths
 			memory.spawn_carrier = {
-				path: Path.unshift(memory.spawn_carrier.path), role: 'carrier'
+				path: Path.unshift(memory.spawn_carrier.path),
+				role: 'carrier'
 			};
 			memory.controller_carrier = {
-				path: Path.calculateTwoWay(cache.controller_harvester, cache.controller_upgrader, {range: 1}), role: 'carrier'
+				path: Path.calculateTwoWay(cache.controller_harvester, cache.controller_upgrader, {range: 1}),
+				role: 'carrier'
 			};
 
 			rooms[room.name]        = cache;

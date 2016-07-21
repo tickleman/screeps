@@ -20,13 +20,12 @@ var count = creeps.count();
  * @type object|base_creep[]
  */
 var creep_of = {
-	base_creep:      base_creep,
-	harvester:       harvester,
-	source_carrier:  carrier,
-	upgrade_carrier: carrier,
-	repairer:        repairer,
-	builder:         builder,
-	upgrader:        upgrader
+	base_creep: base_creep,
+	builder:    builder,
+	carrier:    carrier,
+	harvester:  harvester,
+	repairer:   repairer,
+	upgrader:   upgrader
 };
 
 /**
