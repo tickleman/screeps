@@ -9,7 +9,7 @@ module.exports.fight_club = [
 ];
 
 // source : https://fr.wikipedia.org/wiki/Personnages_de_Game_of_Thrones
-module.exports.game_of_thrones = {
+module.exports.game_of_thrones = [
 	'Robin', 'Lysa', 'Anya', 'Yohn', 'Donnel', 'Mord', 'Shagga', 'Timett', 'Hugh', 'Vardis', 'Tommen', 'Robert',
 	'Joffrey', 'Myrcella', 'Stannis', 'Selyse', 'Shirren', 'Davos', 'Melisandre', 'Matthos', 'Cressen', 'Renly', 'Ramsay',
 	'Roose', 'Walda', 'Myranda', 'Locke', 'Walder', 'Lothar', 'Theon', 'Balon', 'Yara', 'Euron', 'Dagmer', 'Tyrion',
@@ -25,7 +25,7 @@ module.exports.game_of_thrones = {
 	'Jeor', 'Aemon', 'Janos', 'Yoren', 'Qhorin', 'Green', 'Rast', 'Pypar', 'Karl', 'Will', 'Waymar', 'Tormund', 'Vere',
 	'Leaf', 'Mance', 'Ygrid', 'Cliquefrac', 'Orell', 'Craster', 'Styr', 'Wun', 'Drogon', 'Rhaegal', 'Viserion', 'Summer',
 	'Ghost', 'Shaggydog', 'Greywind', 'Lady'
-};
+];
 
 module.exports.use_names = ['game_of_thrones', 'fight_club', 'bappli'];
 
