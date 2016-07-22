@@ -69,13 +69,13 @@ module.exports.targets = function(context)
 			FIND_MY_CREEPS,
 			{ filter: creep => (creep.memory.role == 'builder') && (objects.energyRatio(creep) < ratio) }
 		);
-		if (target) break;
+		if (target) return [target];
 		// next target : upgrader creeps
 		target = context.pos.findClosestByRange(
 			FIND_MY_CREEPS,
 			{ filter: creep => (creep.memory.role == 'upgrader') && (objects.energyRatio(creep) < ratio) }
 		);
-		if (target) break;
+		if (target) return [target];
 	}
 	target = context.pos.findClosestByRange(
 		FIND_MY_STRUCTURES,
