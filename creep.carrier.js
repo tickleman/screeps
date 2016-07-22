@@ -63,21 +63,23 @@ module.exports.targets = function(creep)
 	if (targets.length) return targets;
 	var room = creep ? creep.room : Game.spawns.Spawn.room;
 	// next target : towers with less than 90% energy
-	targets = _.filter(room.find(FIND_MY_STRUCTURES), structure =>
-		(structure.structureType == STRUCTURE_TOWER)
-		&& ((structure.hits / structure.hitsMax) < .9)
+	targets = _.filter(
+		room.find(FIND_MY_STRUCTURES),
+		structure => (structure.structureType == STRUCTURE_TOWER) && ((structure.hits / structure.hitsMax) < .9)
 	);
 	if (targets.length) {
 		return targets;
 	}
 	// next target : builder creeps
-	targets = _.filter(room.find(FIND_MY_CREEPS), creep =>
-		(creep.memory.role == 'builder') && (creep.carry.energy < creep.carryCapacity)
+	targets = _.filter(
+		room.find(FIND_MY_CREEPS),
+		creep => (creep.memory.role == 'builder') && (creep.carry.energy < creep.carryCapacity)
 	);
 	// next target : upgrader creeps
 	if (!targets.length) {
-		targets = _.filter(room.find(FIND_MY_CREEPS), creep =>
-			(creep.memory.role == 'upgrader') && (creep.carry.energy < creep.carryCapacity)
+		targets = _.filter(
+			room.find(FIND_MY_CREEPS),
+			creep => (creep.memory.role == 'upgrader') && (creep.carry.energy < creep.carryCapacity)
 		);
 	}
 	// the creep that have the less energy first

@@ -65,9 +65,10 @@ module.exports.targetJobDone = function(creep, target)
 module.exports.targets = function(creep)
 {
 	var room = creep ? creep.room : Game.spawns.Spawn.room;
-	var targets = room.find(FIND_STRUCTURES, { filter:
+	var targets = _.filter(
+		room.find(FIND_STRUCTURES),
 		structure => structure.hits < structure.hitsMax
-	});
+	);
 	targets.sort(function(s1, s2) {
 		let r1 = s1.hits / s1.hitsMax;
 		let r2 = s2.hits / s2.hitsMax;

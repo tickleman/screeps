@@ -65,9 +65,5 @@ module.exports.targetJobDone = function()
 module.exports.targets = function(creep)
 {
 	var room = creep ? creep.room : Game.spawns.Spawn.room;
-	var targets = room.find(FIND_CONSTRUCTION_SITES);
-	if (creep && !targets.length) {
-		creep.memory.role = 'upgrader';
-	}
-	return targets;
+	return room.find(FIND_CONSTRUCTION_SITES);
 };

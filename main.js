@@ -54,9 +54,9 @@ module.exports.loop = function ()
 				|| main.spawnRoleCreep(room, 'controller_upgrader', true)
 				|| main.spawnRoleCreep(room, 'controller_harvester', true)
 				|| main.spawnRoleCreep(room, 'controller_carrier', true)
-				|| main.needBuilder(room, 1)
-				|| main.needRepairer(room, 1)
-				|| main.needCarrier(room, 3)
+				|| main.spawnSimpleCreep(room, 'builder', 1)
+				|| main.spawnSimpleCreep(room, 'repairer', 1)
+				|| main.spawnSimpleCreep(room, 'carrier', 3)
 			) {
 				return true;
 			}
@@ -78,60 +78,6 @@ module.exports.loop = function ()
 		}
 	}
 
-};
-
-/**
- * Returns true if needs and spawns a builder
- *
- * @param room Room
- * @param cnt  number
- * @returns {boolean}
- */
-module.exports.needBuilder = function(room, cnt)
-{
-	if ((count['builder'] < cnt) && _.filter(room.find(FIND_CONSTRUCTION_SITES)).length) {
-		return this.spawnSimpleCreep(room, 'builder', true)
-	}
-	return false;
-};
-
-/**
- * Returns true if needs and spawns a builder
- *
- * @param room Room
- * @param cnt  number
- * @returns {boolean}
- */
-module.exports.needCarrier = function(room, cnt)
-{
-	if (
-		(count['carrier'] < cnt)
-		&& _.filter(
-			room.find(FIND_MY_CREEPS),
-			creep => (creep.memory.role == 'builder') || (creep.memory.role == 'repairer')
-		).length
-	) {
-		return this.spawnSimpleCreep(room, 'carrier', true)
-	}
-	return false;
-};
-
-/**
- * Returns true if needs and spawns a builder
- *
- * @param room Room
- * @param cnt  number
- * @returns {boolean}
- */
-module.exports.needRepairer = function(room, cnt)
-{
-	if (
-		(count['repairer'] < cnt)
-		&& _.filter(room.find(FIND_STRUCTURES), structure => structure.hits < structure.hitsMax).length
-	) {
-		return this.spawnSimpleCreep(room, 'repairer', true)
-	}
-	return false;
 };
 
 /**
@@ -163,16 +109,19 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
 };
 
 /**
- * @param room            Room
- * @param role            string @example 'builder'
- * @param [accept_little] boolean @default false
+ * @param room Room
+ * @param role string @example 'builder'
+ * @param cnt  number
  * @returns boolean
  */
-module.exports.spawnSimpleCreep = function(room, role, accept_little)
+module.exports.spawnSimpleCreep = function(room, role, cnt)
 {
-	let creep = creep_of[role].spawn({ accept_little: accept_little, role: role, spawn: rooms.get(room, 'spawn') });
-	if (creep) {
-		return true;
+	if (count[role] && (count[role] > cnt)) return false;
+	if (creep_of[role].targets().length) {
+		let creep = creep_of[role].spawn({ accept_little: true, role: role, spawn: rooms.get(room, 'spawn') });
+		if (creep) {
+			return true;
+		}
 	}
 	return false;
 };
