@@ -52,7 +52,7 @@ module.exports.targetJob = function(creep)
 module.exports.targetJobDone = function(creep)
 {
 	var target = objects.get(creep, creep.memory.target);
-	return !target || (target.hits == target.hitsMax) || !creep.carry.energy;
+	return !creep.carry.energy || !target || (target.hits == target.hitsMax);
 };
 
 /**

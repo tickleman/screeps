@@ -6,7 +6,7 @@ var cache = {};
 /**
  * @param context RoomObject|RoomPosition
  * @param target RoomObject|RoomPosition|string|number
- * @return RoomObject|RoomPosition|null
+ * @returns RoomObject|RoomPosition|null
  */
 module.exports.get = function(context, target)
 {
@@ -49,4 +49,66 @@ module.exports.get = function(context, target)
 		return cache[target] = Game.spawns[target];
 	}
 	return null;
+};
+
+/**
+ * @param object RoomObject
+ * @returns number|null
+ */
+module.exports.energy = function(object)
+{
+	if (object instanceof ConstructionSite)    return object.progress;
+	if (object instanceof Creep)               return object.carry.energy;
+	if (object instanceof Resource)            return object.amount;
+	if (object instanceof Room)                return object.energyAvailable;
+	if (object instanceof Source)              return object.energy;
+	if (object instanceof StructureContainer)  return object.store[RESOURCE_ENERGY];
+	if (object instanceof StructureController) return object.progress;
+	if (object instanceof StructureLink)       return object.energy;
+	if (object instanceof StructureNuker)      return object.energy;
+	if (object instanceof StructureSpawn)      return object.energy;
+	if (object instanceof StructureStorage)    return object.store[RESOURCE_ENERGY];
+	if (object instanceof StructureTerminal)   return object.store[RESOURCE_ENERGY];
+	if (object instanceof StructureTower)      return object.energy;
+	return null;
+};
+
+/**
+ * @param object RoomObject
+ * @returns number|null
+ */
+module.exports.energyCapacity = function(object)
+{
+	if (object instanceof ConstructionSite)    return object.progressTotal;
+	if (object instanceof Creep)               return object.carryCapacity;
+	if (object instanceof Resource)            return object.amount;
+	if (object instanceof Room)                return object.energyCapacityAvailable;
+	if (object instanceof Source)              return object.energyCapacity;
+	if (object instanceof StructureContainer)  return object.storeCapacity;
+	if (object instanceof StructureController) return object.progressTotal;
+	if (object instanceof StructureLink)       return object.energyCapacity;
+	if (object instanceof StructureNuker)      return object.energyCapacity;
+	if (object instanceof StructureSpawn)      return object.energyCapacity;
+	if (object instanceof StructureStorage)    return object.storeCapacity;
+	if (object instanceof StructureTerminal)   return object.storeCapacity;
+	if (object instanceof StructureTower)      return object.energyCapacity;
+	return null;
+};
+
+/**
+ * @param object RoomObject
+ * @returns number
+ */
+module.exports.energyRatio = function(object)
+{
+	return this.energy(object) / this.energyCapacity(object);
+};
+
+/**
+ * @param object RoomObject
+ * @returns boolean
+ */
+module.exports.energyFull = function(object)
+{
+	return this.energy(object) == this.energyCapacity(object);
 };

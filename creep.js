@@ -197,7 +197,9 @@ module.exports.sourceJob = function(creep)
  */
 module.exports.sourceJobDone = function(creep)
 {
-	return (creep.carry.energy / creep.carryCapacity > .8);
+	if (objects.energyFull(creep)) return true;
+	let source = objects.get(creep, creep.memory.source);
+	return !source || ((objects.energy(source) < 10) && (objects.energyRatio(creep) > .5));
 };
 
 /**
@@ -276,10 +278,8 @@ module.exports.targetJob = function(creep)
 module.exports.targetJobDone = function(creep)
 {
 	let target = objects.get(creep, creep.memory.target);
-	if (!target || !creep.carry.energy) return true;
-	return (target instanceof Creep)
-		? (target.carry.energy / target.carryCapacity > .8)
-		: (target.energy / target.energyCapacity > .8);
+	if (!target || !objects.energy(creep)) return true;
+	return objects.energyRatio(target) > .9;
 };
 
 /**
@@ -291,14 +291,13 @@ module.exports.targetJobDone = function(creep)
 module.exports.targets = function(context)
 {
 	// the nearest extension without energy into the current room
-	let target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter:
-		structure => (structure.energy < structure.energyCapacity)
-		&& (structure.structureType == STRUCTURE_EXTENSION)
+	let target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
+		(structure.structureType == STRUCTURE_EXTENSION) && (structure.energy < structure.energyCapacity)
 	});
 	if (target) return [target];
 	// the nearest spawn without energy into the current room
-	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter:
-		structure => (structure.energy < structure.energyCapacity) && (structure.structureType == STRUCTURE_SPAWN)
+	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
+		(structure.structureType == STRUCTURE_SPAWN) && (structure.energy < structure.energyCapacity)
 	});
 	return target ? [target] : [];
 };
