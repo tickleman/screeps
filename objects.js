@@ -64,6 +64,7 @@ module.exports.energy = function(object)
 	if (object instanceof Source)              return object.energy;
 	if (object instanceof StructureContainer)  return object.store[RESOURCE_ENERGY];
 	if (object instanceof StructureController) return object.progress;
+	if (object instanceof StructureExtension)  return object.energy;
 	if (object instanceof StructureLink)       return object.energy;
 	if (object instanceof StructureNuker)      return object.energy;
 	if (object instanceof StructureSpawn)      return object.energy;
@@ -86,6 +87,7 @@ module.exports.energyCapacity = function(object)
 	if (object instanceof Source)              return object.energyCapacity;
 	if (object instanceof StructureContainer)  return object.storeCapacity;
 	if (object instanceof StructureController) return object.progressTotal;
+	if (object instanceof StructureExtension)  return object.energyCapacity;
 	if (object instanceof StructureLink)       return object.energyCapacity;
 	if (object instanceof StructureNuker)      return object.energyCapacity;
 	if (object instanceof StructureSpawn)      return object.energyCapacity;

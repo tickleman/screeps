@@ -292,12 +292,12 @@ module.exports.targets = function(context)
 {
 	// the nearest extension without energy into the current room
 	let target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_EXTENSION) && (structure.energy < structure.energyCapacity)
+		(structure.structureType == STRUCTURE_EXTENSION) && !objects.energyFull(structure)
 	});
 	if (target) return [target];
 	// the nearest spawn without energy into the current room
 	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_SPAWN) && (structure.energy < structure.energyCapacity)
+		(structure.structureType == STRUCTURE_SPAWN) && !objects.energyFull(structure)
 	});
 	return target ? [target] : [];
 };
