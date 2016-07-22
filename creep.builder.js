@@ -61,10 +61,10 @@ module.exports.targetJobDone = function()
  * Targets are construction sites
  * If there are no construction sites : the builder becomes an upgrader
  *
- * @param creep Creep
+ * @param context RoomObject
  * @return ConstructionSite[]
  **/
-module.exports.targets = function(creep)
+module.exports.targets = function(context)
 {
-	return creep.room.find(FIND_CONSTRUCTION_SITES);
+	return context.room.find(FIND_CONSTRUCTION_SITES);
 };

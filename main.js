@@ -117,8 +117,9 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
 module.exports.spawnSimpleCreep = function(room, role, cnt)
 {
 	if (count[role] && (count[role] >= cnt)) return false;
-	if (creep_of[role].targets().length) {
-		let creep = creep_of[role].spawn({ accept_little: true, role: role, spawn: rooms.get(room, 'spawn') });
+	let spawn = rooms.get(room, 'spawn');
+	if (creep_of[role].targets(spawn).length) {
+		let creep = creep_of[role].spawn({ accept_little: true, role: role, spawn: spawn });
 		if (creep) {
 			return true;
 		}

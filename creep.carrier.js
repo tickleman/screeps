@@ -34,11 +34,11 @@ module.exports.sourceJob = function(creep)
 /**
  * The carrier source is the nearest dropped energy
  *
- * @param creep Creep optional
+ * @param context RoomObject
  */
-module.exports.sources = function(creep)
+module.exports.sources = function(context)
 {
-	var source = creep.pos.findClosestByRange(FIND_DROPPED_ENERGY);
+	var source = context.pos.findClosestByRange(FIND_DROPPED_ENERGY);
 	return (source ? [source] : []);
 };
 
@@ -47,31 +47,31 @@ module.exports.sources = function(creep)
  * - the simple harvesters targets (extensions, then spawn), that need energy)
  * - upgraders
  *
- * @param [creep] Creep
+ * @param context RoomObject
  * @returns Creep[]|StructureExtension[]|StructureSpawn[]|StructureTower[]
  */
-module.exports.targets = function(creep)
+module.exports.targets = function(context)
 {
 	// priority to extensions, then spawn, that need energy
 	var targets = this.__proto__.targets(creep);
 	if (targets.length) return targets;
 	// next target : towers with less than 90% energy
 	targets = _.filter(
-		creep.pos.findClosestByRange(FIND_MY_STRUCTURES),
+		context.pos.findClosestByRange(FIND_MY_STRUCTURES),
 		structure => (structure.structureType == STRUCTURE_TOWER) && ((structure.hits / structure.hitsMax) < .9)
 	);
 	if (targets.length) return targets;
 	for (let ratio in [.5, .7, .9]) {
 		// next target : builder creeps
 		targets = _.filter(
-			creep.pos.findClosestByRange(FIND_MY_CREEPS),
+			context.pos.findClosestByRange(FIND_MY_CREEPS),
 			creep => (creep.memory.role == 'builder') && (creep.carry.energy / creep.carryCapacity < ratio)
 		);
 		if (targets.length) break;
 		// next target : upgrader creeps
 		if (!targets.length) {
 			targets = _.filter(
-				creep.pos.findClosestByRange(FIND_MY_CREEPS),
+				context.pos.findClosestByRange(FIND_MY_CREEPS),
 				creep => (creep.memory.role == 'upgrader') && (creep.carry.energy / creep.carryCapacity < ratio)
 			);
 		}

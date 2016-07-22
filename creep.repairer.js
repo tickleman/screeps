@@ -23,11 +23,11 @@ module.exports.sourceJob = function(creep)
 /**
  * The carrier source is the nearest dropped energy
  *
- * @param creep Creep
+ * @param context RoomObject
  */
-module.exports.sources = function(creep)
+module.exports.sources = function(context)
 {
-	var source = creep.pos.findClosestByRange(FIND_DROPPED_ENERGY);
+	var source = context.pos.findClosestByRange(FIND_DROPPED_ENERGY);
 	return source ? [source] : [];
 };
 
@@ -59,12 +59,12 @@ module.exports.targetJobDone = function(creep)
  * Targets are construction sites
  * If there are no construction sites : the builder becomes an upgrader
  *
- * @param creep Creep
+ * @param context RoomObject
  * @return ConstructionSite[]
  **/
-module.exports.targets = function(creep)
+module.exports.targets = function(context)
 {
-	var targets = _.filter(creep.room.find(FIND_STRUCTURES), structure => structure.hits < structure.hitsMax);
+	var targets = _.filter(context.room.find(FIND_STRUCTURES), structure => structure.hits < structure.hitsMax);
 	targets.sort(function(s1, s2) {
 		let r1 = s1.hits / s1.hitsMax;
 		let r2 = s2.hits / s2.hitsMax;

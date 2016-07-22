@@ -70,10 +70,10 @@ module.exports.targetJobDone = function()
 /**
  * Targets are the room controller
  *
- * @param creep Creep
+ * @param context RoomObject
  * @return StructureController[]
  */
-module.exports.targets = function(creep)
+module.exports.targets = function(context)
 {
-	return [creep.room.controller];
+	return [context.room.controller];
 };

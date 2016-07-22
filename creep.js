@@ -206,12 +206,12 @@ module.exports.sourceJobDone = function(creep)
  * This dispatches creeps to available sources access terrains.
  * You may return sources id or sources object here.
  *
- * @param creep Creep
+ * @param context RoomObject
  * @return string[] Sources id
  */
-module.exports.sources = function(creep)
+module.exports.sources = function(context)
 {
-	let source = rooms.get(creep.room, 'spawn');
+	let source = rooms.get(context.room, 'spawn');
 	return source ? [source] : [];
 };
 
@@ -285,21 +285,21 @@ module.exports.targetJobDone = function(creep)
 /**
  * Find an available target for the harvester : the first not filled-in spawn
  *
- * @param creep Creep
+ * @param context RoomObject
  * @return StructureSpawn[]
  **/
-module.exports.targets = function(creep)
+module.exports.targets = function(context)
 {
 	var targets;
 	// the nearest extension without energy into the current room
-	targets = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: structure =>
+	targets = context.pos.findClosestByPath(FIND_STRUCTURES, { filter: structure =>
 		(structure.energy < structure.energyCapacity)
 		&& (structure.structureType == STRUCTURE_EXTENSION)
 	});
 	targets = targets ? [targets] : [];
 	if (targets.length) return targets;
 	// the nearest spawn without energy into the current room
-	targets = _.filter(creep.room.find(FIND_STRUCTURES), structure =>
+	targets = _.filter(context.room.find(FIND_STRUCTURES), structure =>
 		(structure.energy < structure.energyCapacity)
 		&& (structure.structureType == STRUCTURE_SPAWN)
 	);
