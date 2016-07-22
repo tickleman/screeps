@@ -165,7 +165,7 @@ module.exports.calculate = function(source, destination, opts)
 	}
 	if (source_creep) {
 		source_creep.memory.path      = path;
-		source_creep.memory.path_step = 4;
+		delete source_creep.memory.path_step;
 	}
 	return path;
 };
@@ -357,24 +357,38 @@ module.exports.length = function(path)
  */
 module.exports.move = function(creep, path, step)
 {
-	var increment_step;
+	var increment_step = step ? false : true;
 	if (!path) path = creep.memory.path;
-	if (step)  increment_step = false;
-	else { step = creep.memory.path_step; increment_step = true; }
-	if (step >= path.length) return this.ARRIVED;
-	if (path[step] == this.WAYPOINT) {
-		if (increment_step) ++ creep.memory.path_step;
-		return this.WAYPOINT;
+	if (!step) step = creep.memory.path_step;
+
+	// if increment step
+	if (increment_step) {
+		// first move
+		if (!step) {
+			creep.memory.path_step = 4;
+			step = 4;
+		}
+		// increment step if the last move was done
+		else {
+			let next_pos = this.step(path, step - 3, true);
+			if (!(next_pos.x - creep.pos.x) && !(next_pos.y - creep.pos.y)) {
+				console.log(next_pos.x, '-', creep.pos.x, 'and', next_pos.x, '-', creep.pos.x);
+				creep.memory.path_step ++;
+				step ++;
+			}
+			else {
+				console.log(creep.name, creep.pos, '/', next_pos.x, ',', next_pos.y);
+				creep.say('no move');
+			}
+		}
 	}
-	var result = creep.move(path[step]);
-	if (!result && increment_step) creep.memory.path_step = ++ step;
-	if (path.substr(step, 1) == this.WAYPOINT) {
-		result = this.WAYPOINT;
-	}
-	if (!result && (step >= path.length)) {
-		result = this.ARRIVED;
-	}
-	return result;
+
+	// arrived / waypoint
+	if (step >= path.length)         return this.ARRIVED;
+	if (path[step] == this.WAYPOINT) return this.WAYPOINT;
+
+	// move
+	return creep.move(path[step]);
 };
 
 /**

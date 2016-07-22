@@ -61,15 +61,11 @@ module.exports.goToStart = function(creepjs, creep)
 	let moved = path.move(creep);
 	if (moved == path.ARRIVED) {
 		let room_memory = rooms.get(creep.memory.room, creep.memory.room_role, rooms.MEMORY);
-		if (room_memory.path) {
-			creep.memory.path = room_memory.path;
-			creep.memory.path_step = 4;
-		}
-		else {
-			delete creep.memory.path;
-			delete creep.memory.path_step;
-		}
+		if (room_memory.path) creep.memory.path = room_memory.path;
+		else delete creep.memory.path;
+		delete creep.memory.path_step;
 		creep.memory.step = 'sourceWork';
+		this.sourceWork(creepjs, creep);
 	}
 	else if (moved) {
 		creep.say('move:' + moved);
@@ -108,6 +104,7 @@ module.exports.goToTarget = function(creepjs, creep)
 	let moved = path.move(creep);
 	if ((moved == path.ARRIVED) || (moved == path.WAYPOINT)) {
 		creep.memory.step = 'targetWork';
+		this.targetWork(creepjs, creep);
 	}
 	else if (moved) {
 		creep.say('move:' + moved);
@@ -132,7 +129,6 @@ module.exports.targetWork = function(creepjs, creep)
 	}
 	if (creepjs.targetJobDone(creep, target)) {
 		creep.memory.step = 'goToSource';
-		creep.memory.path_step ++;
 		this.goToSource(creepjs, creep);
 	}
 };
@@ -141,17 +137,16 @@ module.exports.targetWork = function(creepjs, creep)
  * #6 : GO TO SOURCE
  * Go to source step
  *
- * @param creeps
+ * @param creepjs
  * @param creep Creep
  */
-module.exports.goToSource = function(creeps, creep)
+module.exports.goToSource = function(creepjs, creep)
 {
 	let moved = path.move(creep);
 	if (moved == path.ARRIVED) {
-		if (creep.memory.path_step) {
-			creep.memory.path_step = 4;
-		}
+		delete creep.memory.path_step;
 		creep.memory.step = 'sourceWork';
+		this.sourceWork(creepjs, creep);
 	}
 	else if (moved) {
 		creep.say('move:' + moved);
