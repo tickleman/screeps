@@ -2,8 +2,10 @@
  * The creep library : how to manage creeps with basic features that you can override
  */
 
+var basic   = require('./work.basic');
 var body    = require('./body');
 var names   = require('./names');
+var objects = require('./objects');
 var path    = require('./path');
 var rooms   = require('./rooms');
 var sources = require('./sources');
@@ -36,6 +38,16 @@ module.exports.ENERGY = 'ENERGY';
 module.exports.JOB_DONE = 'JOB_DONE';
 
 /**
+ * @type number
+ */
+module.exports.NO_SOURCE = 1;
+
+/**
+ * @type number
+ */
+module.exports.NO_TARGET = 2;
+
+/**
  * Body parts for a starter creep
  * CARRY, MOVE, WORK
  * - consume 200 energy units
@@ -61,30 +73,6 @@ module.exports.find_next_target = false;
 module.exports.role = 'creep';
 
 /**
- * Move to source / fill of energy
-* *
- * @param creep            Creep
- * @param find_next_target boolean if false, the target stays the same
- * @return boolean true if the creeps needs to fill, false if it is full
- **/
-module.exports.fill = function(creep, find_next_target)
-{
-	if (!this.isFull(creep, find_next_target)) {
-		var source = Game.getObjectById(creep.memory.source);
-		if (!source) {
-			source = this.findSource(creep);
-		}
-		if (source) {
-			if (this.sourceJob(creep, source) == ERR_NOT_IN_RANGE) {
-				creep.moveTo(source);
-			}
-		}
-		return true;
-	}
-	return false;
-};
-
-/**
  * Set the source of the creep and return the source.
  * If no available source, delete the source from memory and return undefined.
  *
@@ -96,9 +84,6 @@ module.exports.findSource = function(creep)
 	var sources = this.sources(creep);
 	if (sources.length) {
 		var source = sources[0];
-		if (typeof source == 'string') {
-			source = Game.getObjectById(source);
-		}
 		if (creep instanceof Creep) {
 			creep.say('source');
 			creep.memory.source = source.id;
@@ -109,7 +94,7 @@ module.exports.findSource = function(creep)
 		creep.say('no source');
 		delete creep.memory.source;
 	}
-	return undefined;
+	return null;
 };
 
 /**
@@ -122,7 +107,7 @@ module.exports.findSource = function(creep)
 module.exports.findSourceId = function(creep)
 {
 	var source = this.findSource(creep);
-	return source ? source.id : undefined;
+	return source ? source.id : null;
 };
 
 /**
@@ -136,17 +121,18 @@ module.exports.findTarget = function(creep)
 {
 	var targets = this.targets(creep);
 	if (targets.length) {
+		var target = targets[0];
 		if (creep instanceof Creep) {
 			creep.say('target');
-			creep.memory.target = targets[0].id;
+			creep.memory.target = target.id;
 		}
-		return targets[0];
+		return target;
 	}
 	if (creep instanceof Creep) {
 		creep.say('no target');
 		delete creep.memory.target;
 	}
-	return undefined;
+	return null;
 };
 
 /**
@@ -159,31 +145,33 @@ module.exports.findTarget = function(creep)
 module.exports.findTargetId = function(creep)
 {
 	var target = this.findTarget(creep);
-	return target ? target.id : undefined;
+	return target ? target.id : null;
 };
 
 /**
- * Return true if the creep is full of energy
- * Store the full information into its memory
+ * Returns the next source, or null if keep the same source or no source available (current source is kept)
  *
- * @param creep            Creep
- * @param find_next_target boolean if false, the target stays the same
- * @return boolean
+ * @param creep Creep
+ * @return RoomObject|null
  */
-module.exports.isFull = function(creep, find_next_target)
+module.exports.nextSource = function(creep)
 {
-	if (creep.memory.full) {
-		if (!creep.carry.energy) {
-			delete creep.memory.full;
-			if (find_next_target) {
-				creep.memory.target = this.findTarget(creep);
-			}
-		}
-	}
-	else if (creep.carry.energy == creep.carryCapacity) {
-		creep.memory.full = true;
-	}
-	return creep.memory.full;
+	return (!creep.memory.source || (creep.carry.energy / creep.carryCapacity < .5))
+		? this.findSource(creep)
+		: null;
+};
+
+/**
+ * Returns the next source, or null if keep the same target or no target available (current target is kept)
+ *
+ * @param creep Creep
+ * @return RoomObject|null
+ */
+module.exports.nextTarget = function(creep)
+{
+	return (!creep.memory.target || (creep.carry.energy / creep.carryCapacity > .4))
+		? this.findTarget(creep)
+		: null;
 };
 
 /**
@@ -191,12 +179,25 @@ module.exports.isFull = function(creep, find_next_target)
  * Or how it gets its energy from source
  *
  * @param creep  Creep
- * @param source Source
- * @return number
+ * @return number 0 if no error, error code if error during the job
  */
-module.exports.sourceJob = function(creep, source)
+module.exports.sourceJob = function(creep)
 {
-	return creep.harvest(source);
+	let source = objects.get(creep, creep.memory.source);
+	//noinspection JSCheckFunctionSignatures
+	return source ? creep.harvest(source) : this.NO_SOURCE;
+};
+
+/**
+ * Return true if the creep is full of energy
+ * Store the full information into its memory
+ *
+ * @param creep Creep
+ * @return boolean
+ */
+module.exports.sourceJobDone = function(creep)
+{
+	return (creep.carry.energy / creep.carryCapacity > .8);
 };
 
 /**
@@ -205,17 +206,13 @@ module.exports.sourceJob = function(creep, source)
  * This dispatches creeps to available sources access terrains.
  * You may return sources id or sources object here.
  *
+ * @param creep Creep
  * @return string[] Sources id
  */
-module.exports.sources = function()
+module.exports.sources = function(creep)
 {
-	var source = sources.availableSourceId();
-	// no available source id ? they must be at least one affected to a dead creep : cleanup
-	if (!source) {
-		sources.memorize(true);
-		source = sources.availableSourceId(true);
-	}
-	return [source];
+	let source = rooms.get(creep.room, 'spawn');
+	return source ? [source] : [];
 };
 
 /**
@@ -261,24 +258,24 @@ module.exports.spawn = function(options)
  * The work the creep must do at its target
  * The default is to transfer its energy to the target
  *
- * @param creep  Creep
- * @param target object
+ * @param creep Creep
  * @return number
  */
-module.exports.targetJob = function(creep, target)
+module.exports.targetJob = function(creep)
 {
-	return creep.transfer(target, RESOURCE_ENERGY);
+	let target = objects.get(creep, creep.memory.target);
+	return target ? creep.transfer(target, RESOURCE_ENERGY) : this.NO_TARGET;
 };
 
 /**
  * Job is done when the target is filled with energy
  *
- * @param creep  Creep
- * @param target object
+ * @param creep Creep
  * @return boolean
  */
-module.exports.targetJobDone = function(creep, target)
+module.exports.targetJobDone = function(creep)
 {
+	let target = objects.get(creep, creep.memory.target);
 	if (!target || !creep.carry.energy) return true;
 	return (target instanceof Creep)
 		? (target.carry.energy / target.carryCapacity > .8)
@@ -288,29 +285,21 @@ module.exports.targetJobDone = function(creep, target)
 /**
  * Find an available target for the harvester : the first not filled-in spawn
  *
- * @param [creep] Creep
+ * @param creep Creep
  * @return StructureSpawn[]
  **/
 module.exports.targets = function(creep)
 {
 	var targets;
-	if (creep) {
-		targets = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: structure =>
-			(structure.energy < structure.energyCapacity)
-			&& (structure.structureType == STRUCTURE_EXTENSION)
-		});
-		targets = targets ? [targets] : [];
-	}
-	else {
-		targets = _.filter(Game.spawns.Spawn.room.find(FIND_STRUCTURES), structure =>
-			(structure.energy < structure.energyCapacity)
-			&& (structure.structureType == STRUCTURE_EXTENSION)
-		);
-	}
+	// the nearest extension without energy into the current room
+	targets = creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: structure =>
+		(structure.energy < structure.energyCapacity)
+		&& (structure.structureType == STRUCTURE_EXTENSION)
+	});
+	targets = targets ? [targets] : [];
 	if (targets.length) return targets;
-	// the default target is the first spawn without energy into the current room
-	var room = creep ? creep.room : Game.spawns.Spawn.room;
-	targets = _.filter(room.find(FIND_STRUCTURES), structure =>
+	// the nearest spawn without energy into the current room
+	targets = _.filter(creep.room.find(FIND_STRUCTURES), structure =>
 		(structure.energy < structure.energyCapacity)
 		&& (structure.structureType == STRUCTURE_SPAWN)
 	);
@@ -318,30 +307,12 @@ module.exports.targets = function(creep)
 };
 
 /**
- * The default work for a creep : fill in, move to target, do the work
+ * Let's work ! work depends on creep role and work mode
  *
  * @param creep Creep
  **/
 module.exports.work = function(creep)
 {
 	if (creep.memory.room_role) work.work(this, creep);
-	else                        this.workBasic(creep);
-};
-
-/**
- * Basic not planned work : search source, fill, search target, target work, then loop
- *
- * @param creep Creep
- */
-module.exports.workBasic = function(creep)
-{
-	if (!this.fill(creep, this.find_next_target)) {
-		let target = Game.getObjectById(creep.memory.target);
-		if (!target || this.targetJobDone(creep, target)) {
-			target = this.findTarget(creep);
-		}
-		if (this.targetJob(creep, target) == ERR_NOT_IN_RANGE) {
-			creep.moveTo(target);
-		}
-	}
+	else                        basic.work(this, creep);
 };

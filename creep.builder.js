@@ -1,4 +1,6 @@
 
+var objects = require('./objects');
+
 module.exports.__proto__ = require('./creep');
 
 /**
@@ -18,7 +20,7 @@ module.exports.role = 'builder';
  *
  * @return boolean true
  **/
-module.exports.isFull = function()
+module.exports.sourceJobDone = function()
 {
 	return true;
 };
@@ -36,13 +38,13 @@ module.exports.sources = function()
 /**
  * The target job is to build the target
  *
- * @param creep  Creep
- * @param target StructureController
- * @return integer
+ * @param creep Creep
+ * @return number
  */
-module.exports.targetJob = function(creep, target)
+module.exports.targetJob = function(creep)
 {
-	return creep.build(target);
+	let target = objects.get(creep, creep.memory.target);
+	return target ? creep.build(target) : this.NO_TARGET;
 };
 
 /**
@@ -59,11 +61,10 @@ module.exports.targetJobDone = function()
  * Targets are construction sites
  * If there are no construction sites : the builder becomes an upgrader
  *
- * @param [creep] Creep
+ * @param creep Creep
  * @return ConstructionSite[]
  **/
 module.exports.targets = function(creep)
 {
-	var room = creep ? creep.room : Game.spawns.Spawn.room;
-	return room.find(FIND_CONSTRUCTION_SITES);
+	return creep.room.find(FIND_CONSTRUCTION_SITES);
 };

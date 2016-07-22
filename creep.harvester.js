@@ -24,17 +24,7 @@ module.exports.body_parts = [MOVE, WORK, WORK, WORK, WORK, WORK];
  *
  * @return boolean false
  **/
-module.exports.isFull = function()
+module.exports.sourceJobDone = function()
 {
 	return false;
-};
-
-/**
- * This creep has no target
- *
- * @returns array []
- */
-module.exports.targets = function()
-{
-	return [];
 };

@@ -80,7 +80,7 @@ module.exports.goToStart = function(creepjs, creep)
  */
 module.exports.sourceWork = function(creepjs, creep)
 {
-	if (!creepjs.fill(creep)) {
+	if (creepjs.sourceJobDone(creep) || creepjs.sourceJob(creep)) {
 		if (creep.memory.path) {
 			creep.memory.step_pos = 4;
 			creep.memory.step = 'goToTarget';
@@ -119,15 +119,9 @@ module.exports.goToTarget = function(creepjs, creep)
  */
 module.exports.targetWork = function(creepjs, creep)
 {
-	let target = objects.get(creep, creep.memory.target);
-	if ((!target && creep.memory.target) || (target && (target.id != creep.memory.target))) {
-		creep.memory.target = target ? target.id : target;
-	}
-	let error = creepjs.targetJob(creep, target);
-	if (error) {
-		creep.say(error.toString());
-	}
-	if (creepjs.targetJobDone(creep, target)) {
+	let error;
+	if (creepjs.targetJobDone(creep) || (error = creepjs.targetJob(creep))) {
+		if (error) creep.say('work:' + error);
 		creep.memory.step = 'goToSource';
 		this.goToSource(creepjs, creep);
 	}

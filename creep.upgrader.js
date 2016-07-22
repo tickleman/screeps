@@ -8,6 +8,8 @@
  * This is the first creep that starts the colony.
  */
 
+var objects = require('./objects');
+
 module.exports.__proto__ = require('./creep');
 
 /**
@@ -27,7 +29,7 @@ module.exports.role = 'upgrader';
  *
  * @return boolean true
  **/
-module.exports.isFull = function()
+module.exports.sourceJobDone = function()
 {
 	return true;
 };
@@ -45,13 +47,14 @@ module.exports.sources = function()
 /**
  * The target job is to upgrade the controller
  *
- * @param creep  Creep
- * @param target StructureController
- * @returns integer
+ * @param creep Creep
+ * @returns number
  */
-module.exports.targetJob = function(creep, target)
+module.exports.targetJob = function(creep)
 {
-	return creep.upgradeController(target);
+	let target = objects.get(creep, creep.memory.target);
+	//noinspection JSCheckFunctionSignatures
+	return target ? creep.upgradeController(target) : this.NO_TARGET;
 };
 
 /**
@@ -67,9 +70,10 @@ module.exports.targetJobDone = function()
 /**
  * Targets are the room controller
  *
+ * @param creep Creep
  * @return StructureController[]
  */
-module.exports.targets = function()
+module.exports.targets = function(creep)
 {
-	return [Game.spawns.Spawn.room.controller];
+	return [creep.room.controller];
 };

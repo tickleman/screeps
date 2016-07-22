@@ -5,6 +5,8 @@
  * - bring this energy to extensions and spawn
  */
 
+var objects = require('./objects');
+
 module.exports.__proto__ = require('./creep');
 
 /**
@@ -14,13 +16,6 @@ module.exports.__proto__ = require('./creep');
 module.exports.body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
 
 /**
- * Finds a new target each time it finishes filling in
- *
- * @type boolean
- */
-module.exports.find_next_target = true;
-
-/**
  * Its role : specialized in energy transportation
  */
 module.exports.role = 'carrier';
@@ -28,12 +23,12 @@ module.exports.role = 'carrier';
 /**
  * The carrier source work is to pickup the dropped energy
  *
- * @param creep  Creep
- * @param source energy
+ * @param creep Creep
  */
-module.exports.sourceJob = function(creep, source)
+module.exports.sourceJob = function(creep)
 {
-	return creep.pickup(source);
+	let source = objects.get(creep, creep.memory.source);
+	return source ? creep.pickup() : this.NO_SOURCE;
 };
 
 /**
@@ -43,8 +38,7 @@ module.exports.sourceJob = function(creep, source)
  */
 module.exports.sources = function(creep)
 {
-	var position = creep ? creep.pos : Game.spawns.Spawn.pos;
-	var source = position.findClosestByRange(FIND_DROPPED_ENERGY);
+	var source = creep.pos.findClosestByRange(FIND_DROPPED_ENERGY);
 	return (source ? [source] : []);
 };
 
@@ -61,26 +55,27 @@ module.exports.targets = function(creep)
 	// priority to extensions, then spawn, that need energy
 	var targets = this.__proto__.targets(creep);
 	if (targets.length) return targets;
-	var room = creep ? creep.room : Game.spawns.Spawn.room;
 	// next target : towers with less than 90% energy
 	targets = _.filter(
-		room.find(FIND_MY_STRUCTURES),
+		creep.pos.findClosestByRange(FIND_MY_STRUCTURES),
 		structure => (structure.structureType == STRUCTURE_TOWER) && ((structure.hits / structure.hitsMax) < .9)
 	);
-	if (targets.length) {
-		return targets;
-	}
-	// next target : builder creeps
-	targets = _.filter(
-		room.find(FIND_MY_CREEPS),
-		creep => (creep.memory.role == 'builder') && (creep.carry.energy < creep.carryCapacity)
-	);
-	// next target : upgrader creeps
-	if (!targets.length) {
+	if (targets.length) return targets;
+	for (let ratio in [.5, .7, .9]) {
+		// next target : builder creeps
 		targets = _.filter(
-			room.find(FIND_MY_CREEPS),
-			creep => (creep.memory.role == 'upgrader') && (creep.carry.energy < creep.carryCapacity)
+			creep.pos.findClosestByRange(FIND_MY_CREEPS),
+			creep => (creep.memory.role == 'builder') && (creep.carry.energy / creep.carryCapacity < ratio)
 		);
+		if (targets.length) break;
+		// next target : upgrader creeps
+		if (!targets.length) {
+			targets = _.filter(
+				creep.pos.findClosestByRange(FIND_MY_CREEPS),
+				creep => (creep.memory.role == 'upgrader') && (creep.carry.energy / creep.carryCapacity < ratio)
+			);
+		}
+		if (targets.length) break;
 	}
 	// the creep that have the less energy first
 	targets.sort(function(creep1, creep2) {

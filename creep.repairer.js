@@ -1,74 +1,70 @@
 
+var objects = require('./objects');
+
 module.exports.__proto__ = require('./creep');
 
 module.exports.body_parts = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, WORK, WORK];
 
-/**
- * @type string
- */
 module.exports.role = 'repairer';
 
 /**
  * The carrier source work is to pickup the dropped energy
  *
- * @param creep  Creep
- * @param source energy
+ * @param creep Creep
+ * @return number
  */
-module.exports.sourceJob = function(creep, source)
+module.exports.sourceJob = function(creep)
 {
-	return creep.pickup(source);
+	let source = objects.get(creep, creep.memory.source);
+	//noinspection JSCheckFunctionSignatures
+	return source ? creep.pickup(source) : this.NO_SOURCE;
 };
 
 /**
  * The carrier source is the nearest dropped energy
  *
- * @param creep Creep optional
+ * @param creep Creep
  */
 module.exports.sources = function(creep)
 {
-	var position = creep ? creep.pos : Game.spawns.Spawn.pos;
-	var source = position.findClosestByRange(FIND_DROPPED_ENERGY);
-	return (source ? [source] : []);
+	var source = creep.pos.findClosestByRange(FIND_DROPPED_ENERGY);
+	return source ? [source] : [];
 };
 
 /**
  * The target job is to build the target
  *
- * @param creep  Creep
- * @param target StructureController
- * @return integer
+ * @param creep Creep
+ * @return number
  */
-module.exports.targetJob = function(creep, target)
+module.exports.targetJob = function(creep)
 {
-	return creep.repair(target);
+	var target = objects.get(creep, creep.memory.target);
+	return target ? creep.repair(target) : this.NO_TARGET;
 };
 
 /**
  * Job is done each time the creep energy is zero (new target) and if the target is fully repaired
  *
- * @param creep  Creep
- * @param target Structure
+ * @param creep Creep
  * @return boolean
  */
-module.exports.targetJobDone = function(creep, target)
+module.exports.targetJobDone = function(creep)
 {
-	return (target.hits == target.hitsMax) || !creep.carry.energy;
+	var target = objects.get(creep, creep.memory.target);
+	return !target || (target.hits == target.hitsMax) || !creep.carry.energy;
 };
 
 /**
  * Targets are construction sites
  * If there are no construction sites : the builder becomes an upgrader
  *
- * @param [creep] Creep
+ * @param creep Creep
  * @return ConstructionSite[]
  **/
 module.exports.targets = function(creep)
 {
-	var room = creep ? creep.room : Game.spawns.Spawn.room;
-	var targets = _.filter(
-		room.find(FIND_STRUCTURES),
-		structure => structure.hits < structure.hitsMax
-	);
+	var targets = _.filter(creep.room.find(FIND_STRUCTURES), structure => structure.hits < structure.hitsMax);
 	targets.sort(function(s1, s2) {
 		let r1 = s1.hits / s1.hitsMax;
 		let r2 = s2.hits / s2.hitsMax;
