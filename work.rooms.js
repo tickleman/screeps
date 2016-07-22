@@ -124,7 +124,7 @@ module.exports.targetWork = function(creepjs, creep)
 {
 	let target = objects.get(creep, creep.memory.target);
 	if ((!target && creep.memory.target) || (target.id != creep.memory.target)) {
-		creep.memory.target = target.id;
+		creep.memory.target = target ? target.id : target;
 	}
 	let error = creepjs.targetJob(creep, target);
 	if (error) {
