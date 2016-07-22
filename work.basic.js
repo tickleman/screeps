@@ -1,4 +1,6 @@
 
+var objects = require('./objects');
+
 /**
  * Source work : if source job is not done, then move to source, then do the job
  *
@@ -11,7 +13,7 @@ module.exports.sourceWork = function(creepjs, creep)
 	if (source) creep.memory.source = source.id ? source.id : source;
 	if (!creepjs.sourceJobDone(creep)) {
 		let error = creepjs.sourceJob(creep);
-		if (error == ERR_NOT_IN_RANGE) creep.moveTo(creep.memory.source);
+		if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.source));
 		else creep.say('source:' + error);
 	}
 	else {
@@ -31,8 +33,8 @@ module.exports.targetWork = function(creepjs, creep)
 	if (target) creep.memory.target = target.id ? target.id : target;
 	if (!creepjs.targetJobDone(creep)) {
 		let error = creepjs.targetJob(creep);
-		if (error == ERR_NOT_IN_RANGE) creep.moveTo(creep.memory.target);
-		else creep.say('target' + error);
+		if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.target));
+		else creep.say('target:' + error);
 	}
 	else {
 		creep.memory.step = 'sourceWork';
