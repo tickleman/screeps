@@ -6,6 +6,7 @@
  */
 
 var objects = require('./objects');
+var rooms   = require('./rooms');
 
 module.exports.__proto__ = require('./creep');
 
@@ -80,5 +81,8 @@ module.exports.targets = function(context)
 		FIND_MY_STRUCTURES,
 		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && !objects.energyFull(structure) }
 	);
+	if (target) return [target];
+	target = rooms.get(context.room, 'controller');
+	console.log(context, target);
 	return target ? [target] : [];
 };
