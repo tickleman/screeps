@@ -290,19 +290,17 @@ module.exports.targetJobDone = function(creep)
  **/
 module.exports.targets = function(context)
 {
-	var targets;
 	// the nearest extension without energy into the current room
 	let target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter:
 		structure => (structure.energy < structure.energyCapacity)
 		&& (structure.structureType == STRUCTURE_EXTENSION)
 	});
-	targets = target ? [target] : [];
-	if (targets.length) return targets;
+	if (target) return [target];
 	// the nearest spawn without energy into the current room
-	targets = context.pos.findClosestByRange(FIND_STRUCTURES, { filter:
+	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter:
 		structure => (structure.energy < structure.energyCapacity) && (structure.structureType == STRUCTURE_SPAWN)
 	});
-	return targets;
+	return target ? [target] : [];
 };
 
 /**
