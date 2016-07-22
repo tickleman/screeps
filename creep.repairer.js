@@ -64,7 +64,7 @@ module.exports.targetJobDone = function(creep)
  **/
 module.exports.targets = function(context)
 {
-	var target = context.findClosestByRange(
+	var target = context.pos.findClosestByRange(
 		FIND_STRUCTURES, { filter: structure => structure.hits < structure.hitsMax }
 	);
 	return target ? [target] : [];

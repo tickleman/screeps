@@ -299,7 +299,7 @@ module.exports.targets = function(context)
 	targets = target ? [target] : [];
 	if (targets.length) return targets;
 	// the nearest spawn without energy into the current room
-	targets = context.findClosestByRange(FIND_STRUCTURES, { filter:
+	targets = context.pos.findClosestByRange(FIND_STRUCTURES, { filter:
 		structure => (structure.energy < structure.energyCapacity) && (structure.structureType == STRUCTURE_SPAWN)
 	});
 	return targets;
