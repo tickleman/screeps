@@ -28,7 +28,8 @@ module.exports.role = 'carrier';
 module.exports.sourceJob = function(creep)
 {
 	let source = objects.get(creep, creep.memory.source);
-	return source ? creep.pickup() : this.NO_SOURCE;
+	//noinspection JSCheckFunctionSignatures
+	return source ? creep.pickup(source) : this.NO_SOURCE;
 };
 
 /**
