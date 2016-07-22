@@ -107,9 +107,9 @@ module.exports.calculate = function(source, destination, opts)
 	if (opts.valorize      === undefined)  opts.valorize      = this.valorize;
 	if (opts.ignore_creeps === undefined)  opts.ignore_creeps = this.ignore_creeps;
 	if (opts.DEBUG         === undefined)  opts.DEBUG         = this.DEBUG;
-	if (this.DEBUG) console.log('calculate.source = ' + source.x + ', ' + source.y);
-	if (this.DEBUG) console.log('calculate.destination = ' + destination.x + ', ' + destination.y);
-	if (this.DEBUG) console.log('calculate.range = ' + opts.range);
+	if (opts.DEBUG) console.log('calculate.source = ' + source.x + ', ' + source.y);
+	if (opts.DEBUG) console.log('calculate.destination = ' + destination.x + ', ' + destination.y);
+	if (opts.DEBUG) console.log('calculate.range = ' + opts.range);
 	//noinspection JSUnusedGlobalSymbols Used by search()
 	var path = PathFinder.search(
 		source,
@@ -178,11 +178,12 @@ module.exports.calculate = function(source, destination, opts)
  */
 module.exports.calculateTwoWay = function(source, destination, opts)
 {
-	if (source.pos)      source      = source.pos;
-	if (destination.pos) destination = destination.pos;
-	if (this.DEBUG) console.log('source = ' + source.x + ', ' + source.y);
-	if (this.DEBUG) console.log('destination = ' + destination.x + ', ' + destination.y);
-	if (this.DEBUG) console.log('range = ' + opts.range);
+	if (source.pos)               source      = source.pos;
+	if (destination.pos)          destination = destination.pos;
+	if (opts.DEBUG === undefined) opts.DEBUG  = this.DEBUG;
+	if (opts.DEBUG) console.log('source = ' + source.x + ', ' + source.y);
+	if (opts.DEBUG) console.log('destination = ' + destination.x + ', ' + destination.y);
+	if (opts.DEBUG) console.log('range = ' + opts.range);
 
 	// calculate path
 	var accumulate_exclude = opts.accumulate_exclude;
@@ -196,8 +197,8 @@ module.exports.calculateTwoWay = function(source, destination, opts)
 	back_source      = this.toRoomPosition(back_source);
 	back_destination = this.toRoomPosition(back_destination);
 	opts.exclude.pop();
-	if (this.DEBUG) console.log('back_source = '      + back_source.x      + ', ' + back_source.y);
-	if (this.DEBUG) console.log('back_destination = ' + back_destination.x + ', ' + back_destination.y);
+	if (opts.DEBUG) console.log('back_source = '      + back_source.x      + ', ' + back_source.y);
+	if (opts.DEBUG) console.log('back_destination = ' + back_destination.x + ', ' + back_destination.y);
 
 	// calculate return
 	var range        = opts.range;
@@ -372,12 +373,12 @@ module.exports.move = function(creep, path, step)
 		else {
 			let next_pos = this.step(path, step - 3, true);
 			if (!(next_pos.x - creep.pos.x) && !(next_pos.y - creep.pos.y)) {
-				console.log(next_pos.x, '-', creep.pos.x, 'and', next_pos.x, '-', creep.pos.x);
+				if (this.DEBUG) console.log(next_pos.x, '-', creep.pos.x, 'and', next_pos.x, '-', creep.pos.x);
 				creep.memory.path_step ++;
 				step ++;
 			}
 			else {
-				console.log(creep.name, creep.pos, '/', next_pos.x, ',', next_pos.y);
+				if (this.DEBUG) console.log(creep.name, creep.pos, '/', next_pos.x, ',', next_pos.y);
 				creep.say('no move');
 			}
 		}
