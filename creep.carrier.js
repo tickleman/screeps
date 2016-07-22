@@ -53,7 +53,7 @@ module.exports.sources = function(context)
 module.exports.targets = function(context)
 {
 	// priority to extensions, then spawn, that need energy
-	var targets = this.__proto__.targets(creep);
+	var targets = this.__proto__.targets(context);
 	if (targets.length) return targets;
 	// next target : towers with less than 90% energy
 	targets = _.filter(
