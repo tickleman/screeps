@@ -15,7 +15,7 @@ module.exports.sourceWork = function(creepjs, creep)
 	if (!creepjs.sourceJobDone(creep)) {
 		let error = creepjs.sourceJob(creep);
 		if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.source));
-		else if (error) creep.say('source:' + messages.error(error));
+		else if (error) creep.say('s:' + messages.error(error));
 	}
 	else {
 		creep.memory.step = 'targetWork';
@@ -35,7 +35,7 @@ module.exports.targetWork = function(creepjs, creep)
 	if (!creepjs.targetJobDone(creep)) {
 		let error = creepjs.targetJob(creep);
 		if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.target));
-		else if (error) creep.say('target:' + messages.error(error));
+		else if (error) creep.say('t:' + messages.error(error));
 	}
 	else {
 		creep.memory.step = 'sourceWork';

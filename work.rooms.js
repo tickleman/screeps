@@ -69,7 +69,7 @@ module.exports.goToStart = function(creepjs, creep)
 		this.sourceWork(creepjs, creep);
 	}
 	else if (moved) {
-		creep.say('move:' + messages.error(moved));
+		creep.say('m:' + messages.error(moved));
 	}
 };
 
@@ -108,7 +108,7 @@ module.exports.goToTarget = function(creepjs, creep)
 		this.targetWork(creepjs, creep);
 	}
 	else if (moved) {
-		creep.say('move:' + messages.error(moved));
+		creep.say('m:' + messages.error(moved));
 	}
 };
 
@@ -122,7 +122,7 @@ module.exports.targetWork = function(creepjs, creep)
 {
 	let error;
 	if (creepjs.targetJobDone(creep) || (error = creepjs.targetJob(creep))) {
-		if (error) creep.say('work:' + messages.error(error));
+		if (error) creep.say('w:' + messages.error(error));
 		creep.memory.step = 'goToSource';
 		this.goToSource(creepjs, creep);
 	}
@@ -144,6 +144,6 @@ module.exports.goToSource = function(creepjs, creep)
 		this.sourceWork(creepjs, creep);
 	}
 	else if (moved) {
-		creep.say('move:' + messages.error(moved));
+		creep.say('m:' + messages.error(moved));
 	}
 };
