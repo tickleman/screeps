@@ -279,7 +279,7 @@ module.exports.targetJob = function(creep, target)
  */
 module.exports.targetJobDone = function(creep, target)
 {
-	if (!creep.carry.energy) return true;
+	if (!target || !creep.carry.energy) return true;
 	return (target instanceof Creep)
 		? (target.carry.energy / target.carryCapacity > .8)
 		: (target.energy / target.energyCapacity > .8);
