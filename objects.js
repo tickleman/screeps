@@ -9,7 +9,7 @@ var rooms = require('./rooms');
 module.exports.get = function(context, target)
 {
 	// already a room object or position
-	if ((target instanceof RoomObject) || (target instanceof RoomPosition)) {
+	if ((target instanceof RoomObject) || (target instanceof RoomPosition) || !target) {
 		return target;
 	}
 	if (context instanceof RoomObject) context = context.pos;
