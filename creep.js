@@ -237,8 +237,8 @@ module.exports.spawn = function(options)
 	if (body_parts && !options.spawn.canCreateCreep(body_parts)) {
 		if (!options.name)   options.name   = names.chooseName();
 		if (!options.role)   options.role   = this.role;
-		if (!options.source) options.source = this.findSource();
-		if (!options.target) options.target = this.findTarget();
+		if (!options.source) options.source = this.findSource(options.spawn);
+		if (!options.target) options.target = this.findTarget(options.spawn);
 		// source / target id
 		if (options.source && (options.source instanceof RoomObject)) options.source = options.source.id;
 		if (options.target && (options.target instanceof RoomObject)) options.target = options.target.id;
