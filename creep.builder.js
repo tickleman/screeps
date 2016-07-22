@@ -69,6 +69,6 @@ module.exports.targetJobDone = function()
  **/
 module.exports.targets = function(context)
 {
-	var target = context.findClosestByRange(FIND_CONSTRUCTION_SITES);
+	var target = context.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
 	return target ? [target] : [];
 };
