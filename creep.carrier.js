@@ -40,7 +40,7 @@ module.exports.sourceJob = function(creep)
 module.exports.sources = function(context)
 {
 	var source = context.pos.findClosestByRange(FIND_DROPPED_ENERGY);
-	return (source ? [source] : []);
+	return source ? [source] : [];
 };
 
 /**
@@ -57,28 +57,27 @@ module.exports.targets = function(context)
 	var targets = this.__proto__.targets(context);
 	if (targets.length) return targets;
 	// next target : towers with less than 90% energy
-	targets = _.filter(
-		context.pos.findClosestByRange(FIND_MY_STRUCTURES),
-		structure => (structure.structureType == STRUCTURE_TOWER) && ((structure.hits / structure.hitsMax) < .9)
+	var target = context.pos.findClosestByRange(
+		FIND_MY_STRUCTURES,
+		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && ((structure.hits / structure.hitsMax) < .9) }
 	);
-	if (targets.length) return targets;
+	if (target) return [target];
 	for (let ratio in [.5, .7, .9]) {
 		// next target : builder creeps
-		targets = _.filter(
-			context.pos.findClosestByRange(FIND_MY_CREEPS),
-			creep => (creep.memory.role == 'builder') && (creep.carry.energy / creep.carryCapacity < ratio)
+		target = context.pos.findClosestByRange(
+			FIND_MY_CREEPS,
+			{ filter: creep => (creep.memory.role == 'builder') && (creep.carry.energy / creep.carryCapacity < ratio) }
 		);
-		if (targets.length) break;
+		if (target) break;
 		// next target : upgrader creeps
-		if (!targets.length) {
-			targets = _.filter(
-				context.pos.findClosestByRange(FIND_MY_CREEPS),
-				creep => (creep.memory.role == 'upgrader') && (creep.carry.energy / creep.carryCapacity < ratio)
-			);
-		}
-		if (targets.length) break;
+		target = context.pos.findClosestByRange(
+			FIND_MY_CREEPS,
+			{ filter: creep => (creep.memory.role == 'upgrader') && (creep.carry.energy / creep.carryCapacity < ratio) }
+		);
+		if (target) break;
 	}
 	// the creep that have the less energy first
+	/*
 	targets.sort(function(creep1, creep2) {
 		var fill1 = creep1.carry.energy / creep1.carryCapacity;
 		var fill2 = creep2.carry.energy / creep2.carryCapacity;
@@ -86,5 +85,6 @@ module.exports.targets = function(context)
 		if (fill1 > fill2) return 1;
 		return 0;
 	});
-	return targets;
+	*/
+	return target ? [target] : [];
 };

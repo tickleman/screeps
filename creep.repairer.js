@@ -64,13 +64,8 @@ module.exports.targetJobDone = function(creep)
  **/
 module.exports.targets = function(context)
 {
-	var targets = _.filter(context.room.find(FIND_STRUCTURES), structure => structure.hits < structure.hitsMax);
-	targets.sort(function(s1, s2) {
-		let r1 = s1.hits / s1.hitsMax;
-		let r2 = s2.hits / s2.hitsMax;
-		if (r1 < r2) return -1;
-		if (r1 > r2) return 1;
-		return 0;
-	});
-	return targets;
+	var target = context.findClosestByRange(
+		FIND_STRUCTURES, { filter: structure => structure.hits < structure.hitsMax }
+	);
+	return target ? [target] : [];
 };

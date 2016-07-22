@@ -80,5 +80,6 @@ module.exports.targetJobDone = function()
  */
 module.exports.targets = function(context)
 {
-	return [context.room.controller];
+	var target = context.room.controller;
+	return target ? [target] : [];
 };
