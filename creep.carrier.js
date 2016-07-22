@@ -82,7 +82,14 @@ module.exports.targets = function(context)
 		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && !objects.energyFull(structure) }
 	);
 	if (target) return [target];
-	target = rooms.get(context.room, 'controller');
-	console.log(context, target);
+	target = context.pos.findClosestByRange(
+		FIND_MY_STRUCTURES,
+		{ filter: structure => (structure.structureType == STRUCTURE_CONTAINER) && !objects.energyFull(structure) }
+	);
+	if (target) return [target];
+	target = context.pos.findClosestByRange(
+		FIND_MY_STRUCTURES,
+		{ filter: structure => (structure.structureType == STRUCTURE_STORAGE) }
+	);
 	return target ? [target] : [];
 };
