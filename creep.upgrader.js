@@ -52,9 +52,14 @@ module.exports.sources = function()
  */
 module.exports.targetJob = function(creep)
 {
-	let target = objects.get(creep, creep.memory.target);
-	//noinspection JSCheckFunctionSignatures
-	return target ? creep.upgradeController(target) : this.NO_TARGET;
+	if (creep.carry.energy) {
+		let target = objects.get(creep, creep.memory.target);
+		if (target) {
+			//noinspection JSCheckFunctionSignatures
+			creep.upgradeController(target);
+		}
+	}
+	return 0;
 };
 
 /**

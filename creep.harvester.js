@@ -28,3 +28,13 @@ module.exports.sourceJobDone = function()
 {
 	return false;
 };
+
+/**
+ * @param creep Creep
+ * @return number 0
+ */
+module.exports.sourceJob = function(creep)
+{
+	module.exports.__proto__.sourceJob(creep);
+	return 0;
+};

@@ -43,8 +43,11 @@ module.exports.sources = function()
  */
 module.exports.targetJob = function(creep)
 {
-	let target = objects.get(creep, creep.memory.target);
-	return target ? creep.build(target) : this.NO_TARGET;
+	if (creep.carry.energy) {
+		let target = objects.get(creep, creep.memory.target);
+		if (target) creep.build(target);
+	}
+	return 0;
 };
 
 /**
