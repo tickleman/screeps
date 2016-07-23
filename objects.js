@@ -25,7 +25,7 @@ var can = function(creep, what)
  * @param object RoomObject
  * @return number damage ratio (0 = wreck, 1 = ok)
  */
-module.exports.damage = function(object)
+module.exports.hitsRatio = function(object)
 {
 	return object.hitsMax ? (object.hits / object.hitsMax) : 1;
 };
