@@ -36,14 +36,17 @@ module.exports.spawning = function(creepjs, creep)
 {
 	var position = rooms.getRoomPosition(creep.room, creep.memory.room_role);
 	if (position) {
-		let ignore_creeps = path.ignore_creeps;
-		path.ignore_creeps = false;
-		path.calculate(creep, position, { source_range: 0 });
-		path.ignore_creeps = ignore_creeps;
-		creep.memory.step = 'goToStart';
-		creep.memory.source = rooms.get(creep.memory.room, creep.memory.room_role, 'source');
-		creep.memory.target = rooms.get(creep.memory.room, creep.memory.room_role, 'target');
-		this.goToStart(creepjs, creep);
+		if (!(position.x - creep.pos.x) && !(position.y - creep.pos.y)) {
+			creep.memory.step = 'sourceWork';
+			this.sourceWork(creepjs, creep);
+		}
+		else {
+			path.calculate(creep, position, { ignore_creeps: false, source_range: 0 });
+			creep.memory.step  = 'goToStart';
+			creep.memory.source = rooms.get(creep.memory.room, creep.memory.room_role, 'source');
+			creep.memory.target = rooms.get(creep.memory.room, creep.memory.room_role, 'target');
+			this.goToStart(creepjs, creep);
+		}
 	}
 	else {
 		creep.say('no pos');
