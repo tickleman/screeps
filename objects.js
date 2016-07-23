@@ -1,5 +1,6 @@
 
 var rooms = require('./rooms');
+var tests = require('./tests');
 
 var cache = {};
 
@@ -20,6 +21,11 @@ var can = function(creep, what)
 	}
 	return what ? false : parts;
 };
+
+/**
+ * @type boolean
+ */
+module.exports.DEBUG = true;
 
 /**
  * @param object RoomObject
@@ -153,7 +159,9 @@ module.exports.energyFull = function(object)
 module.exports.getEnergy = function(creep, source, allow_dismantle)
 {
 	var creep_can = can(creep);
+	if (this.DEBUG) console.log(creep, 'getEnergy', source, tests.dump(creep_can));
 	if (creep_can[CARRY]) {
+		if (this.DEBUG) console.log('- can carry');
 		if (source instanceof Creep)              return source.transfer(creep, RESOURCE_ENERGY);
 		if (source instanceof Resource)           return creep.pickup(source);
 		if (source instanceof StructureContainer) return creep.withdraw(source, RESOURCE_ENERGY);
@@ -166,15 +174,18 @@ module.exports.getEnergy = function(creep, source, allow_dismantle)
 		if (source instanceof StructureTower)     return creep.withdraw(source, RESOURCE_ENERGY);
 	}
 	if (creep_can[WORK]) {
+		if (this.DEBUG) console.log('- can work');
 		if (source instanceof Mineral) return creep.harvest(source);
 		if (source instanceof Source)  return creep.harvest(source);
 		if (allow_dismantle && source.my && (source instanceof Structure)) return creep.dismantle(source);
 	}
 	if (!source.my) {
+		if (this.DEBUG) console.log('- not mine');
 		if (creep_can[CLAIM] && source instanceof StructureController) return creep.attackController(source);
 		if (creep_can[ATTACK])                                         return creep.attack(source);
 		if (creep_can[RANGED_ATTACK])                                  return creep.rangedAttack(source);
 	}
+	if (this.DEBUG) console.log('- invalid source');
 	return ERR_INVALID_TARGET;
 };
 
@@ -188,14 +199,18 @@ module.exports.getEnergy = function(creep, source, allow_dismantle)
 module.exports.putEnergy = function(creep, target)
 {
 	var creep_can = can(creep);
+	if (this.DEBUG) console.log(creep, 'putEnergy', target, tests.dump(creep_can));
 	if (creep_can[HEAL]) {
+		if (this.DEBUG) console.log('- can heal');
 		if ((target instanceof Creep) && this.wounded(target)) return creep.heal(target);
 	}
 	if (creep_can[WORK]) {
+		if (this.DEBUG) console.log('- can work');
 		if ((target instanceof Structure) && this.wounded(target)) return creep.repair(target);
 		if (target instanceof ConstructionSite)    return creep.build(target);
 		if (target instanceof StructureController) return creep.upgradeController(target);
 	}
+	if (this.DEBUG) console.log('- try transfer / drop');
 	if (target instanceof Creep)              return creep.transfer(target);
 	if (target instanceof Resource)           return creep.drop(RESOURCE_ENERGY);
 	if (target instanceof RoomPosition)       return creep.drop(RESOURCE_ENERGY);
@@ -207,6 +222,7 @@ module.exports.putEnergy = function(creep, target)
 	if (target instanceof StructureStorage)   return creep.transfer(target);
 	if (target instanceof StructureTerminal)  return creep.transfer(target);
 	if (target instanceof StructureTower)     return creep.transfer(target);
+	if (this.DEBUG) console.log('- invalid target');
 	return ERR_INVALID_TARGET;
 };
 
