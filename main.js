@@ -4,6 +4,7 @@ var builder    = require('./creep.builder');
 var carrier    = require('./creep.carrier');
 var harvester  = require('./creep.harvester');
 var creeps     = require('./creeps');
+var orders     = require('./orders');
 var repairer   = require('./creep.repairer');
 var rooms      = require('./rooms');
 var tower      = require('./structure.tower');
@@ -43,6 +44,9 @@ module.exports.loop = function ()
 
 	// free dead creeps
 	creeps.freeDeadCreeps();
+
+	// give orders using flags position and name
+	for (let flag in Game.flags) if (Game.flags.hasOwnProperty(flag)) orders.give(Game.flags[flag]);
 
 	// spawn the first needed creep
 	rooms.forEach(function(room) {
