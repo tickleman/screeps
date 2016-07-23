@@ -211,17 +211,17 @@ module.exports.putEnergy = function(creep, target)
 		if (target instanceof StructureController) return creep.upgradeController(target);
 	}
 	if (this.DEBUG) console.log('- try transfer / drop');
-	if (target instanceof Creep)              return creep.transfer(target);
+	if (target instanceof Creep)              return creep.transfer(target, RESOURCE_ENERGY);
 	if (target instanceof Resource)           return creep.drop(RESOURCE_ENERGY);
 	if (target instanceof RoomPosition)       return creep.drop(RESOURCE_ENERGY);
-	if (target instanceof StructureContainer) return creep.transfer(target);
-	if (target instanceof StructureExtension) return creep.transfer(target);
-	if (target instanceof StructureLink)      return creep.transfer(target);
-	if (target instanceof StructureNuker)     return creep.transfer(target);
-	if (target instanceof StructureSpawn)     return creep.transfer(target);
-	if (target instanceof StructureStorage)   return creep.transfer(target);
-	if (target instanceof StructureTerminal)  return creep.transfer(target);
-	if (target instanceof StructureTower)     return creep.transfer(target);
+	if (target instanceof StructureContainer) return creep.transfer(target, RESOURCE_ENERGY);
+	if (target instanceof StructureExtension) return creep.transfer(target, RESOURCE_ENERGY);
+	if (target instanceof StructureLink)      return creep.transfer(target, RESOURCE_ENERGY);
+	if (target instanceof StructureNuker)     return creep.transfer(target, RESOURCE_ENERGY);
+	if (target instanceof StructureSpawn)     return creep.transfer(target, RESOURCE_ENERGY);
+	if (target instanceof StructureStorage)   return creep.transfer(target, RESOURCE_ENERGY);
+	if (target instanceof StructureTerminal)  return creep.transfer(target, RESOURCE_ENERGY);
+	if (target instanceof StructureTower)     return creep.transfer(target, RESOURCE_ENERGY);
 	if (this.DEBUG) console.log('- invalid target');
 	return ERR_INVALID_TARGET;
 };
