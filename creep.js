@@ -2,14 +2,15 @@
  * The creep library : how to manage creeps with basic features that you can override
  */
 
-var basic   = require('./work.basic');
-var body    = require('./body');
-var names   = require('./names');
-var objects = require('./objects');
-var path    = require('./path');
-var rooms   = require('./rooms');
-var sources = require('./sources');
-var work    = require('./work.rooms');
+var basic    = require('./work.basic');
+var body     = require('./body');
+var messages = require('./messages');
+var names    = require('./names');
+var objects  = require('./objects');
+var path     = require('./path');
+var rooms    = require('./rooms');
+var sources  = require('./sources');
+var work     = require('./work.rooms');
 
 /**
  * Use sources() / targets() to find its initial source / target
@@ -215,8 +216,11 @@ module.exports.nextTarget = function(creep)
 module.exports.sourceJob = function(creep)
 {
 	let source = objects.get(creep, creep.memory.source);
+	if (this.DEBUG) console.log('s: source = ', source);
 	//noinspection JSCheckFunctionSignatures
-	return source ? objects.getEnergy(creep, source) : (this.single_source ? OK : this.NO_SOURCE);
+	let result = source ? objects.getEnergy(creep, source) : (this.single_source ? OK : this.NO_SOURCE);
+	if (this.DEBUG) console.log('s: result = ', messages.error(result));
+	return result;
 };
 
 /**
@@ -228,11 +232,25 @@ module.exports.sourceJob = function(creep)
  */
 module.exports.sourceJobDone = function(creep)
 {
-	if (!this.source_work) return true;
-	if (!this.target_work) return false;
+	if (!this.source_work) {
+		if (this.DEBUG) console.log('s: source job always done (no source work)');
+		return true;
+	}
+	if (!this.target_work) {
+		if (this.DEBUG) console.log('s: source job always continue (no target work');
+		return false;
+	}
 	let source = objects.get(creep, creep.memory.source);
-	if (!source || objects.energyFull(creep)) return true;
-	return (objects.energy(source) < 10) && (objects.energyRatio(creep) > .5);
+	if (this.DEBUG) console.log('s: source = ', source);
+	if (!source || objects.energyFull(creep)) {
+		if (this.DEBUG) console.log(source ? 's: source job done (energy full)' : 's: source job done (no source)');
+		return true;
+	}
+	let result = (objects.energy(source) < 10) && (objects.energyRatio(creep) > .5);
+	if (this.DEBUG) console.log(
+		result ? 's: source job done (source energy empty)' : 's: source job continue (need more energy)'
+	);
+	return result;
 };
 
 /**
@@ -299,9 +317,17 @@ module.exports.spawn = function(options)
  */
 module.exports.targetJob = function(creep)
 {
-	if (!creep.carry.energy) return this.wait_for_energy ? OK : ERR_NOT_ENOUGH_ENERGY;
+	if (!creep.carry.energy) {
+		if (this.DEBUG) {
+			console.log(this.wait_for_energy ? 't: job OK (wait for energy)' : 't: job NOT_ENOUGH_ENERGY');
+		}
+		return this.wait_for_energy ? OK : ERR_NOT_ENOUGH_ENERGY;
+	}
 	let target = objects.get(creep, creep.memory.target);
-	return target ? objects.putEnergy(creep, target) : (this.single_target ? OK : this.NO_TARGET);
+	if (this.DEBUG) console.log('t: target = ', target);
+	let result = target ? objects.putEnergy(creep, target) : (this.single_target ? OK : this.NO_TARGET);
+	if (this.DEBUG) console.log('t: result = ', messages.error(result));
+	return result;
 };
 
 /**
@@ -312,11 +338,25 @@ module.exports.targetJob = function(creep)
  */
 module.exports.targetJobDone = function(creep)
 {
-	if (!this.target_work) return true;
-	if (!this.source_work) return false;
+	if (!this.target_work) {
+		if (this.DEBUG) console.log('t: target job always done (no target work)');
+		return true;
+	}
+	if (!this.source_work) {
+		if (this.DEBUG) console.log('t: target job always continue (no source work)');
+		return false;
+	}
 	let target = objects.get(creep, creep.memory.target);
-	if (!target || !creep.carry.energy) return true;
-	return objects.energyFull(target);
+	if (this.DEBUG) console.log('t: target = ', target);
+	if (!target || !creep.carry.energy) {
+		if (this.DEBUG) console.log(target ? 't: target job done (no energy)' : 't: target job done (no target)');
+		return true;
+	}
+	let result = objects.energyFull(target);
+	if (this.DEBUG) console.log(
+		result ? 't: target job done (target energy full)' : 't: target job continue (target energy not full)'
+	);
+	return result;
 };
 
 /**
@@ -347,6 +387,7 @@ module.exports.targets = function(context)
  **/
 module.exports.work = function(creep)
 {
+	if (this.DEBUG) console.log('--- working', creep.name, creep.memory.role, creep.memory.room_role ? creep.memory.room_role : '-');
 	if (creep.memory.room_role) work.work(this, creep);
 	else                        basic.work(this, creep);
 };
