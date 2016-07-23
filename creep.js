@@ -216,7 +216,7 @@ module.exports.sourceJob = function(creep)
 {
 	let source = objects.get(creep, creep.memory.source);
 	//noinspection JSCheckFunctionSignatures
-	return source ? objects.getEnergy(source) : (this.single_source ? OK : this.NO_SOURCE);
+	return source ? objects.getEnergy(creep, source) : (this.single_source ? OK : this.NO_SOURCE);
 };
 
 /**
