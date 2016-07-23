@@ -11,8 +11,17 @@ module.exports.give = function(flag)
 		let creep = flag.pos.findClosestByRange(FIND_MY_CREEPS);
 		if (creep) {
 			creep.memory.step = flag.name.substr(5);
-			console.log(creep, ' step = ', creep.memory.step);
+			this.log(creep, flag.name);
 		}
 	}
 	flag.remove();
+};
+
+/**
+ * @param object RoomObject
+ * @param order  string
+ */
+module.exports.log = function(object, order)
+{
+	console.log('> ORDER', object, order);
 };
