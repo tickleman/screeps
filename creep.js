@@ -388,7 +388,13 @@ module.exports.targets = function(context)
 module.exports.work = function(creep)
 {
 	if (this.DEBUG) {
-		console.log('WORK', creep.name, creep.memory.role, creep.memory.room_role ? creep.memory.room_role : '-');
+		console.log(
+			'WORK',
+			creep.name,
+			creep.memory.role,
+			creep.memory.room_role ? creep.memory.room_role : 'basic',
+			creep.memory.step ? creep.memory.step : 'no-step'
+		);
 	}
 	if (creep.memory.room_role) rooms_work.work(this, creep);
 	else                        basic_work.work(this, creep);
