@@ -3,21 +3,21 @@
  * @type string[]
  */
 module.exports.ERRORS = {
-	'0':   'OK',
-	'-1':  'NOT-OWNER',
-	'-2':  'NO-PATH',
-	'-3':  'NAME-EXISTS',
-	'-4':  'BUSY',
-	'-5':  'NOT-FOUND',
-	'-6':  'NO-ENERGY',
-	'-7':  'BAD-TARGET',
-	'-8':  'FULL',
-	'-9':  'NO-RANGE',
-	'-10': 'INVALID-ARGS',
-	'-11': 'TIRED',
-	'-12': 'NO-BODY',
-	'-14': 'RCL-LOW',
-	'-15': 'GCL-LOW'
+	'0':   'ok',
+	'-1':  'not-own',
+	'-2':  'no-path',
+	'-3':  'name-exists',
+	'-4':  'busy',
+	'-5':  'not-found',
+	'-6':  'no-energy',
+	'-7':  'bad-target',
+	'-8':  'full',
+	'-9':  'no-range',
+	'-10': 'invalid-args',
+	'-11': 'tired',
+	'-12': 'no-body',
+	'-14': 'rcl-low',
+	'-15': 'gcl-low'
 };
 
 /**
