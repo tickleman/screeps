@@ -16,7 +16,7 @@ var can = function(creep, what)
 	if (!what) var parts = {};
 	for (let part in creep.body) if (creep.body.hasOwnProperty(part)) {
 		part = creep.body[part];
-		if (!what) parts[part] = true;
+		if (!what) parts[part.type] = true;
 		else if (part.type == what) return true;
 	}
 	return what ? false : parts;

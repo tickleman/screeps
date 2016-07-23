@@ -54,5 +54,6 @@ module.exports.work = function(creepjs, creep)
 	switch (creep.memory.step) {
 		case 'sourceWork': this.sourceWork(creepjs, creep); break;
 		case 'targetWork': this.targetWork(creepjs, creep); break;
+		default: creep.memory.step = 'sourceWork';
 	}
 };

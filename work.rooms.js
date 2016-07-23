@@ -22,6 +22,7 @@ module.exports.work = function(creepjs, creep)
 		case 'sourceWork': this.sourceWork(creepjs, creep); break;
 		case 'goToTarget': this.goToTarget(creepjs, creep); break;
 		case 'targetWork': this.targetWork(creepjs, creep); break;
+		default: creep.memory.step = 'sourceWork';
 	}
 };
 
