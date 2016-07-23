@@ -216,10 +216,10 @@ module.exports.nextTarget = function(creep)
 module.exports.sourceJob = function(creep)
 {
 	let source = objects.get(creep, creep.memory.source);
-	if (this.DEBUG) console.log('s: source = ', source);
+	if (this.DEBUG) console.log('s: source =', source);
 	//noinspection JSCheckFunctionSignatures
 	let result = source ? objects.getEnergy(creep, source) : (this.single_source ? OK : this.NO_SOURCE);
-	if (this.DEBUG) console.log('s: result = ', messages.error(result));
+	if (this.DEBUG) console.log('s: result =', messages.error(result));
 	return result;
 };
 
@@ -241,7 +241,7 @@ module.exports.sourceJobDone = function(creep)
 		return false;
 	}
 	let source = objects.get(creep, creep.memory.source);
-	if (this.DEBUG) console.log('s: source = ', source);
+	if (this.DEBUG) console.log('s: source =', source);
 	if (!source || objects.energyFull(creep)) {
 		if (this.DEBUG) console.log(source ? 's: source job done (energy full)' : 's: source job done (no source)');
 		return true;
@@ -324,9 +324,9 @@ module.exports.targetJob = function(creep)
 		return this.wait_for_energy ? OK : ERR_NOT_ENOUGH_ENERGY;
 	}
 	let target = objects.get(creep, creep.memory.target);
-	if (this.DEBUG) console.log('t: target = ', target);
+	if (this.DEBUG) console.log('t: target =', target);
 	let result = target ? objects.putEnergy(creep, target) : (this.single_target ? OK : this.NO_TARGET);
-	if (this.DEBUG) console.log('t: result = ', messages.error(result));
+	if (this.DEBUG) console.log('t: result =', messages.error(result));
 	return result;
 };
 
@@ -347,7 +347,7 @@ module.exports.targetJobDone = function(creep)
 		return false;
 	}
 	let target = objects.get(creep, creep.memory.target);
-	if (this.DEBUG) console.log('t: target = ', target);
+	if (this.DEBUG) console.log('t: target =', target);
 	if (!target || !creep.carry.energy) {
 		if (this.DEBUG) console.log(target ? 't: target job done (no energy)' : 't: target job done (no target)');
 		return true;
@@ -395,6 +395,8 @@ module.exports.work = function(creep)
 			creep.memory.room_role ? creep.memory.room_role : 'basic',
 			creep.memory.step ? creep.memory.step : 'no-step'
 		);
+		console.log('w: single source=', this.single_source, ', target=', this.single_target);
+		console.log('w: work source=',   this.source_work, ', target=', this.target_work);
 	}
 	if (creep.memory.room_role) rooms_work.work(this, creep);
 	else                        basic_work.work(this, creep);
