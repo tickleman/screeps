@@ -2,15 +2,15 @@
  * The creep library : how to manage creeps with basic features that you can override
  */
 
-var basic    = require('./work.basic');
-var body     = require('./body');
-var messages = require('./messages');
-var names    = require('./names');
-var objects  = require('./objects');
-var path     = require('./path');
-var rooms    = require('./rooms');
-var sources  = require('./sources');
-var work     = require('./work.rooms');
+var basic_work = require('./work.basic');
+var body       = require('./body');
+var messages   = require('./messages');
+var names      = require('./names');
+var objects    = require('./objects');
+var path       = require('./path');
+var rooms      = require('./rooms');
+var rooms_work = require('./work.rooms');
+var sources    = require('./sources');
 
 /**
  * Use sources() / targets() to find its initial source / target
@@ -387,7 +387,9 @@ module.exports.targets = function(context)
  **/
 module.exports.work = function(creep)
 {
-	if (this.DEBUG) console.log('--- working', creep.name, creep.memory.role, creep.memory.room_role ? creep.memory.room_role : '-');
-	if (creep.memory.room_role) work.work(this, creep);
-	else                        basic.work(this, creep);
+	if (this.DEBUG) {
+		console.log('WORK', creep.name, creep.memory.role, creep.memory.room_role ? creep.memory.room_role : '-');
+	}
+	if (creep.memory.room_role) rooms_work.work(this, creep);
+	else                        basic_work.work(this, creep);
 };
