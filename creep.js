@@ -395,8 +395,8 @@ module.exports.work = function(creep)
 			creep.memory.room_role ? creep.memory.room_role : 'basic',
 			creep.memory.step ? creep.memory.step : 'no-step'
 		);
-		console.log('w: single source=', this.single_source, ', target=', this.single_target);
-		console.log('w: work source=',   this.source_work, ', target=', this.target_work);
+		console.log('w: single source =', this.single_source, ', single target =', this.single_target);
+		console.log('w: source work =',   this.source_work, ', target work =', this.target_work);
 	}
 	if (creep.memory.room_role) rooms_work.work(this, creep);
 	else                        basic_work.work(this, creep);
