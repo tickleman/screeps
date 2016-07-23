@@ -13,7 +13,7 @@ module.exports.ERRORS = {
 	'-7':  'bad-target',
 	'-8':  'full',
 	'-9':  'no-range',
-	'-10': 'invalid-args',
+	'-10': 'bad-args',
 	'-11': 'tired',
 	'-12': 'no-body',
 	'-14': 'rcl-low',
