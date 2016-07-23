@@ -3,47 +3,15 @@ var objects = require('./objects');
 
 module.exports.__proto__ = require('./creep');
 
+/**
+ * Body parts for a repairer
+ * CARRY x 3, MOVE x 3, WORK x 3
+ * - consume 600 energy units
+ */
 module.exports.body_parts = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, WORK, WORK];
 
-module.exports.role = 'repairer';
-
-/**
- * The carrier source work is to pickup the dropped energy
- *
- * @param creep Creep
- * @return number
- */
-module.exports.sourceJob = function(creep)
-{
-	let source = objects.get(creep, creep.memory.source);
-	//noinspection JSCheckFunctionSignatures
-	return source ? creep.pickup(source) : this.NO_SOURCE;
-};
-
-/**
- * The carrier source is the nearest dropped energy
- *
- * @param context RoomObject
- */
-module.exports.sources = function(context)
-{
-	var source = context.pos.findClosestByRange(FIND_DROPPED_ENERGY);
-	return source ? [source] : [];
-};
-
-/**
- * The target job is to build the target
- *
- * @param creep Creep
- * @return number
- */
-module.exports.targetJob = function(creep)
-{
-	// no energy ? wait for some carrier
-	if (!creep.carry.energy) return 0;
-	var target = objects.get(creep, creep.memory.target);
-	return target ? creep.repair(target) : this.NO_TARGET;
-};
+module.exports.role        = 'repairer';
+module.exports.source_work = false;
 
 /**
  * Job is done each time the creep energy is zero (new target) and if the target is fully repaired
@@ -53,8 +21,11 @@ module.exports.targetJob = function(creep)
  */
 module.exports.targetJobDone = function(creep)
 {
-	var target = objects.get(creep, creep.memory.target);
-	return !creep.carry.energy || !target || (target.hits == target.hitsMax);
+	if (!this.target_work) return true;
+	if (!this.source_work) return false;
+	let target = objects.get(creep, creep.memory.target);
+	if (!target || !creep.carry.energy) return true;
+	return !objects.wounded(target);
 };
 
 /**
@@ -66,8 +37,6 @@ module.exports.targetJobDone = function(creep)
  **/
 module.exports.targets = function(context)
 {
-	var target = context.pos.findClosestByRange(
-		FIND_STRUCTURES, { filter: structure => structure.hits < structure.hitsMax }
-	);
+	var target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure => objects.wounded(structure) });
 	return target ? [target] : [];
 };

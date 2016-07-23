@@ -16,22 +16,7 @@ module.exports.__proto__ = require('./creep');
  */
 module.exports.body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
 
-/**
- * Its role : specialized in energy transportation
- */
 module.exports.role = 'carrier';
-
-/**
- * The carrier source work is to pickup the dropped energy
- *
- * @param creep Creep
- */
-module.exports.sourceJob = function(creep)
-{
-	let source = objects.get(creep, creep.memory.source);
-	//noinspection JSCheckFunctionSignatures
-	return source ? creep.pickup(source) : this.NO_SOURCE;
-};
 
 /**
  * The carrier source is the nearest dropped energy
@@ -41,6 +26,9 @@ module.exports.sourceJob = function(creep)
 module.exports.sources = function(context)
 {
 	var source = context.pos.findClosestByRange(FIND_DROPPED_ENERGY);
+	if (!source) source = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
+		(structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE)
+	});
 	return source ? [source] : [];
 };
 
@@ -65,31 +53,23 @@ module.exports.targets = function(context)
 	if (target) return [target];
 	for (let ratio in [.5, .7, .9]) {
 		// next target : builder creeps
-		target = context.pos.findClosestByRange(
-			FIND_MY_CREEPS,
-			{ filter: creep => (creep.memory.role == 'builder') && (objects.energyRatio(creep) < ratio) }
-		);
+		target = context.pos.findClosestByRange(FIND_MY_CREEPS, { filter: creep =>
+			(creep.memory.role == 'builder') && (objects.energyRatio(creep) < ratio)
+		});
 		if (target) return [target];
 		// next target : upgrader creeps
-		target = context.pos.findClosestByRange(
-			FIND_MY_CREEPS,
-			{ filter: creep => (creep.memory.role == 'upgrader') && (objects.energyRatio(creep) < ratio) }
-		);
+		target = context.pos.findClosestByRange(FIND_MY_CREEPS, { filter: creep =>
+			(creep.memory.role == 'upgrader') && (objects.energyRatio(creep) < ratio)
+		});
 		if (target) return [target];
 	}
-	target = context.pos.findClosestByRange(
-		FIND_MY_STRUCTURES,
-		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && !objects.energyFull(structure) }
-	);
+	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
+		(structure.structureType == STRUCTURE_TOWER) && !objects.energyFull(structure)
+	});
 	if (target) return [target];
-	target = context.pos.findClosestByRange(
-		FIND_MY_STRUCTURES,
-		{ filter: structure => (structure.structureType == STRUCTURE_CONTAINER) && !objects.energyFull(structure) }
-	);
-	if (target) return [target];
-	target = context.pos.findClosestByRange(
-		FIND_MY_STRUCTURES,
-		{ filter: structure => (structure.structureType == STRUCTURE_STORAGE) }
-	);
+	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
+		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
+		&& !objects.energyFull(structure)
+	});
 	return target ? [target] : [];
 };

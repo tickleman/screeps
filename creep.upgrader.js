@@ -19,58 +19,10 @@ module.exports.__proto__ = require('./creep');
  */
 module.exports.body_parts = [CARRY, CARRY, MOVE, WORK, WORK, WORK, WORK];
 
-/**
- * @type string
- */
-module.exports.role = 'upgrader';
-
-/**
- * Always full : we never fill the heavy upgrader : a carrier will bring him energy
- *
- * @return boolean true
- **/
-module.exports.sourceJobDone = function()
-{
-	return true;
-};
-
-/**
- * This creep has no source
- *
- * @returns array []
- */
-module.exports.sources = function()
-{
-	return [];
-};
-
-/**
- * The target job is to upgrade the controller
- *
- * @param creep Creep
- * @returns number
- */
-module.exports.targetJob = function(creep)
-{
-	if (creep.carry.energy) {
-		let target = objects.get(creep, creep.memory.target);
-		if (target) {
-			//noinspection JSCheckFunctionSignatures
-			creep.upgradeController(target);
-		}
-	}
-	return 0;
-};
-
-/**
- * The job is never done : controllers can always be upgraded
- *
- * @return boolean false
- */
-module.exports.targetJobDone = function()
-{
-	return false;
-};
+module.exports.role            = 'upgrader';
+module.exports.single_target   = true;
+module.exports.source_work     = false;
+module.exports.wait_for_energy = true;
 
 /**
  * Targets are the room controller

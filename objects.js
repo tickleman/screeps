@@ -4,6 +4,33 @@ var rooms = require('./rooms');
 var cache = {};
 
 /**
+ * Returns true if the creep can do the told job
+ *
+ * @param creep Creep
+ * @param [what] string ATTACK, CARRY, CLAIM, HEAL, MOVE, RANGED_ATTACK, TOUGH, WORK
+ * @returns boolean|object if what is not set, returns an object with { body_part: true }
+ */
+var can = function(creep, what)
+{
+	if (!what) var parts = {};
+	for (let part in creep.body) if (creep.body.hasOwnProperty(part)) {
+		part = creep.body[part];
+		if (!what) parts[part] = true;
+		else if (part.type == what) return true;
+	}
+	return what ? false : parts;
+};
+
+/**
+ * @param object RoomObject
+ * @return number damage ratio (0 = wreck, 1 = ok)
+ */
+module.exports.damage = function(object)
+{
+	return object.hitsMax ? (object.hits / object.hitsMax) : 1;
+};
+
+/**
  * @param context RoomObject|RoomPosition
  * @param target RoomObject|RoomPosition|string|number
  * @returns RoomObject|RoomPosition|null
@@ -113,4 +140,81 @@ module.exports.energyRatio = function(object)
 module.exports.energyFull = function(object)
 {
 	return this.energy(object) == this.energyCapacity(object);
+};
+
+/**
+ * Gets energy from any source
+ *
+ * @param creep             Creep
+ * @param source            RoomObject
+ * @param [allow_dismantle] boolean
+ * @returns number
+ */
+module.exports.getEnergy = function(creep, source, allow_dismantle)
+{
+	var creep_can = can(creep);
+	if (creep_can[CARRY]) {
+		if (source instanceof Creep)              return source.transfer(creep, RESOURCE_ENERGY);
+		if (source instanceof Resource)           return creep.pickup(source);
+		if (source instanceof StructureContainer) return creep.withdraw(source, RESOURCE_ENERGY);
+		if (source instanceof StructureExtension) return creep.withdraw(source, RESOURCE_ENERGY);
+		if (source instanceof StructureLink)      return creep.withdraw(source, RESOURCE_ENERGY);
+		if (source instanceof StructureNuker)     return creep.withdraw(source, RESOURCE_ENERGY);
+		if (source instanceof StructureSpawn)     return creep.withdraw(source, RESOURCE_ENERGY);
+		if (source instanceof StructureStorage)   return creep.withdraw(source, RESOURCE_ENERGY);
+		if (source instanceof StructureTerminal)  return creep.withdraw(source, RESOURCE_ENERGY);
+		if (source instanceof StructureTower)     return creep.withdraw(source, RESOURCE_ENERGY);
+	}
+	if (creep_can[WORK]) {
+		if (source instanceof Mineral) return creep.harvest(source);
+		if (source instanceof Source)  return creep.harvest(source);
+		if (allow_dismantle && source.my && (source instanceof Structure)) return creep.dismantle(source);
+	}
+	if (!source.my) {
+		if (creep_can[CLAIM] && source instanceof StructureController) return creep.attackController(source);
+		if (creep_can[ATTACK])                                         return creep.attack(source);
+		if (creep_can[RANGED_ATTACK])                                  return creep.rangedAttack(source);
+	}
+	return ERR_INVALID_TARGET;
+};
+
+/**
+ * Puts energy to target, depending on its need
+ *
+ * @param creep  Creep
+ * @param target RoomObject
+ * @returns number
+ */
+module.exports.putEnergy = function(creep, target)
+{
+	var creep_can = can(creep);
+	if (creep_can[HEAL]) {
+		if ((target instanceof Creep) && this.wounded(target)) return creep.heal(target);
+	}
+	if (creep_can[WORK]) {
+		if ((target instanceof Structure) && this.wounded(target)) return creep.repair(target);
+		if (target instanceof ConstructionSite)    return creep.build(target);
+		if (target instanceof StructureController) return creep.upgradeController(target);
+	}
+	if (target instanceof Creep)              return creep.transfer(target);
+	if (target instanceof Resource)           return creep.drop(RESOURCE_ENERGY);
+	if (target instanceof RoomPosition)       return creep.drop(RESOURCE_ENERGY);
+	if (target instanceof StructureContainer) return creep.transfer(target);
+	if (target instanceof StructureExtension) return creep.transfer(target);
+	if (target instanceof StructureLink)      return creep.transfer(target);
+	if (target instanceof StructureNuker)     return creep.transfer(target);
+	if (target instanceof StructureSpawn)     return creep.transfer(target);
+	if (target instanceof StructureStorage)   return creep.transfer(target);
+	if (target instanceof StructureTerminal)  return creep.transfer(target);
+	if (target instanceof StructureTower)     return creep.transfer(target);
+	return ERR_INVALID_TARGET;
+};
+
+/**
+ * @param object RoomObject
+ * @return boolean true if the object is wounded, false if it is fully healed
+ */
+module.exports.wounded = function(object)
+{
+	return !(object.hits == object.hitsMax);
 };
