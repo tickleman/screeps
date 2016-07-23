@@ -39,6 +39,8 @@ module.exports.sources = function(context)
  */
 module.exports.targetJob = function(creep)
 {
+	// no energy ? wait for some carrier
+	if (!creep.carry.energy) return 0;
 	var target = objects.get(creep, creep.memory.target);
 	return target ? creep.repair(target) : this.NO_TARGET;
 };

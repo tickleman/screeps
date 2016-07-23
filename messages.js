@@ -17,7 +17,9 @@ module.exports.ERRORS = {
 	'-11': 'tired',
 	'-12': 'no-body',
 	'-14': 'rcl-low',
-	'-15': 'gcl-low'
+	'-15': 'gcl-low',
+	'1':   'no-source',
+	'2':   'no-target'
 };
 
 /**
