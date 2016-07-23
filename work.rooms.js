@@ -83,7 +83,6 @@ module.exports.sourceWork = function(creepjs, creep)
 {
 	if (creepjs.sourceJobDone(creep) || creepjs.sourceJob(creep)) {
 		if (creep.memory.path) {
-			creep.memory.step_pos = 4;
 			creep.memory.step = 'goToTarget';
 			this.goToTarget(creepjs, creep);
 		}

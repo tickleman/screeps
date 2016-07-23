@@ -50,7 +50,7 @@ module.exports.targetWork = function(creepjs, creep)
  */
 module.exports.work = function(creepjs, creep)
 {
-	if (!creep.memory.step) creep.memory.step = 'sourceWork';
+	if (!creep.memory.step && !creep.spawning) creep.memory.step = 'sourceWork';
 	switch (creep.memory.step) {
 		case 'sourceWork': this.sourceWork(creepjs, creep); break;
 		case 'targetWork': this.targetWork(creepjs, creep); break;
