@@ -142,23 +142,19 @@ module.exports.canWorkTarget = function(creep)
  * Set the source of the creep and return the source.
  * If no available source, delete the source from memory and returns null.
  *
- * @param creep Creep
+ * @param context RoomObject
  * @return object source
  */
-module.exports.findSource = function(creep)
+module.exports.findSource = function(context)
 {
-	creep.say('source');
-	var sources = this.sources(creep);
+	if (context instanceof Creep) context.say('source');
+	var sources = this.sources(context);
 	if (sources.length) {
 		var source = sources[0];
-		if (creep instanceof Creep) {
-			creep.memory.source = source.id;
-		}
+		if (context instanceof Creep) context.memory.source = source.id;
 		return source;
 	}
-	if (creep instanceof Creep) {
-		delete creep.memory.source;
-	}
+	if (context instanceof Creep) delete context.memory.source;
 	return null;
 };
 
@@ -179,23 +175,19 @@ module.exports.findSourceId = function(creep)
  * Set the target of the creep and returns the target.
  * If no available target, delete the target from memory and return null.
  *
- * @param creep Creep
+ * @param context RoomObject
  * @return object target
  */
-module.exports.findTarget = function(creep)
+module.exports.findTarget = function(context)
 {
-	creep.say('target');
-	var targets = this.targets(creep);
+	if (context instanceof Creep) context.say('source');
+	var targets = this.targets(context);
 	if (targets.length) {
 		var target = targets[0];
-		if (creep instanceof Creep) {
-			creep.memory.target = target.id;
-		}
+		if (context instanceof Creep) context.memory.target = target.id;
 		return target;
 	}
-	if (creep instanceof Creep) {
-		delete creep.memory.target;
-	}
+	if (context instanceof Creep) delete context.memory.target;
 	return null;
 };
 

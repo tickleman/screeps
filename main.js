@@ -61,7 +61,13 @@ module.exports.loop = function ()
 		let spawn = rooms.get(room, 'spawn');
 		if (spawn && !spawn.spawning) {
 			// spawn the first needed creep
-			if (!main.count[room.name]) {
+			if (
+				main.count[room.name]
+				|| (
+					(objects.energy(room) < 500)
+					 && (!rooms.get(room, 'spawn_harvester', 'creep') || !rooms.get(room, 'spawn_carrier', 'creep'))
+				)
+			) {
 				main.spawnSimpleCreep(room, 'carrier', 1, true);
 			}
 			// spawn other creeps
@@ -128,7 +134,7 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
  */
 module.exports.spawnSimpleCreep = function(room, role, cnt, accept_little)
 {
- 	if (this.count[room.name][role] && (this.count[room.name][role] >= cnt)) return false;
+ 	if (this.count[room.name] && this.count[room.name][role] && (this.count[room.name][role] >= cnt)) return false;
 	let spawn = rooms.get(room, 'spawn');
 	if (creep_of[role].targets(spawn).length) {
 		console.log('wish to spawn a ', role);
