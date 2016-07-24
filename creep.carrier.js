@@ -19,20 +19,6 @@ module.exports.body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE
 module.exports.role = 'carrier';
 
 /**
- * The carrier source is the nearest dropped energy
- *
- * @param context RoomObject
- */
-module.exports.sources = function(context)
-{
-	var source = context.pos.findClosestByRange(FIND_DROPPED_ENERGY);
-	if (!source) source = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE)
-	});
-	return source ? [source] : [];
-};
-
-/**
  * The targets are :
  * - the simple harvesters targets (extensions, then spawn), that need energy)
  * - upgraders
@@ -42,11 +28,18 @@ module.exports.sources = function(context)
  */
 module.exports.targets = function(context)
 {
-	// priority to extensions, then spawn, that need energy
-	var targets = this.__proto__.targets(context);
-	if (targets.length) return targets;
+	// the nearest extension without energy into the current room
+	var target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
+		(structure.structureType == STRUCTURE_EXTENSION) && !objects.energyFull(structure)
+	});
+	if (target) return [target];
+	// the nearest spawn without energy into the current room
+	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
+		(structure.structureType == STRUCTURE_SPAWN) && !objects.energyFull(structure)
+	});
+	if (target) return [target];
 	// next target : towers with less than 90% energy
-	var target = context.pos.findClosestByRange(
+	target = context.pos.findClosestByRange(
 		FIND_MY_STRUCTURES,
 		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && (objects.energyRatio(structure) < .9) }
 	);
