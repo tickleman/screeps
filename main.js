@@ -33,10 +33,13 @@ var structure_of = {
 module.exports.loop = function ()
 {
 	var main = this;
-	this.count    = creeps.count();
+
+	// reset caches
+	creeps.cache  = undefined;
 	objects.cache = {};
 	rooms.rooms   = {};
 
+	this.count = creeps.count();
 	if (!rooms.memorized()) rooms.memorize();
 
 	// free dead creeps
@@ -45,16 +48,21 @@ module.exports.loop = function ()
 	// give orders using flags position and name
 	for (let flag in Game.flags) if (Game.flags.hasOwnProperty(flag)) orders.give(Game.flags[flag]);
 
-	// spawn the first needed creep
+	// spawn creeps
 	rooms.forEach(function(room) {
 		let spawn = rooms.get(room, 'spawn');
-		if (spawn && !spawn.spawning) {
-			if (
+		if (spawn && !spawn.spawning && main.count[room.name]) {
+			// spawn the first needed creep
+			if (!Object.keys(main.count[room.name]).length) {
+				main.spawnSimpleCreep(room, 'carrier', 1, true);
+			}
+			// spawn other creeps
+			else if (
 				   main.spawnRoleCreep(room, 'spawn_harvester', true)
 				|| main.spawnRoleCreep(room, 'spawn_carrier', true)
-				|| main.spawnRoleCreep(room, 'controller_upgrader', true)
-				|| main.spawnRoleCreep(room, 'controller_harvester', true)
-				|| main.spawnRoleCreep(room, 'controller_carrier', true)
+				|| main.spawnRoleCreep(room, 'controller_upgrader')
+				|| main.spawnRoleCreep(room, 'controller_harvester')
+				|| main.spawnRoleCreep(room, 'controller_carrier')
 				|| main.spawnSimpleCreep(room, 'builder', 1)
 				|| main.spawnSimpleCreep(room, 'repairer', 1)
 				|| main.spawnSimpleCreep(room, 'carrier', 3)
@@ -112,18 +120,19 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
 };
 
 /**
- * @param room Room
- * @param role string @example 'builder'
- * @param cnt  number
+ * @param room            Room
+ * @param role            string @example 'builder'
+ * @param cnt             number
+ * @param [accept_little] boolean @default false
  * @returns boolean
  */
-module.exports.spawnSimpleCreep = function(room, role, cnt)
+module.exports.spawnSimpleCreep = function(room, role, cnt, accept_little)
 {
- 	if (this.count[role] && (this.count[role] >= cnt)) return false;
+ 	if (this.count[room.name][role] && (this.count[room.name][role] >= cnt)) return false;
 	let spawn = rooms.get(room, 'spawn');
 	if (creep_of[role].targets(spawn).length) {
 		console.log('wish to spawn a ', role);
-		let creep = creep_of[role].spawn({ accept_little: true, role: role, spawn: spawn });
+		let creep = creep_of[role].spawn({ accept_little: accept_little, role: role, spawn: spawn });
 		if (creep) {
 			console.log('spawned a ', role);
 			return true;

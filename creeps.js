@@ -27,15 +27,17 @@ module.exports =
  */
 module.exports.count = function()
 {
+	if (this.cache) return this.cache;
 	var count = {};
 	for (let creep in Game.creeps) if (Game.creeps.hasOwnProperty(creep)) {
 		creep = Game.creeps[creep];
-		if (!count[creep.memory.role]) {
-			count[creep.memory.role] = 0;
+		if (!count[creep.room.name]) count[creep.room.name] = {};
+		if (!count[creep.room.name][creep.memory.role]) {
+			count[creep.room.name][creep.memory.role] = 0;
 		}
-		count[creep.memory.role] ++;
+		count[creep.room.name][creep.memory.role] ++;
 	}
-	return count;
+	return this.cache = count;
 };
 
 /**
