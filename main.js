@@ -27,7 +27,7 @@ var creep_of = {
  * @type object|tower[]
  */
 var structure_of = {
-	STRUCTURE_TOWER: tower
+	'tower': tower
 };
 
 module.exports.loop = function ()
@@ -44,6 +44,14 @@ module.exports.loop = function ()
 
 	// free dead creeps
 	creeps.freeDeadCreeps();
+
+	// structures work
+	for (let structure in Game.structures) if (Game.structures.hasOwnProperty(structure)) {
+		structure = Game.structures[structure];
+		if (structure.my && structure_of[structure.structureType]) {
+			structure_of[structure.structureType].run(structure);
+		}
+	}
 
 	// give orders using flags position and name
 	for (let flag in Game.flags) if (Game.flags.hasOwnProperty(flag)) orders.give(Game.flags[flag]);
@@ -79,14 +87,6 @@ module.exports.loop = function ()
 		}
 	});
 
-	// structures work
-	for (let structure in Game.structures) if (Game.structures.hasOwnProperty(structure)) {
-		structure = Game.structures[structure];
-		if (structure.my && structure_of[structure.structureType]) {
-			structure_of[structure.structureType].run(structure);
-		}
-	}
-
 };
 
 /**
@@ -107,8 +107,10 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
 		if (role && spawn) {
 			let creep = creep_of[role].spawn({ accept_little: accept_little, role: role, spawn: spawn });
 			if (creep) {
-				creep.memory.room      = room.name;
-				creep.memory.room_role = room_role;
+				creep.memory.room          = room.name;
+				creep.memory.room_role     = room_role;
+				if (rooms.get(room, room_role, 'source')) creep.memory.single_source = true;
+				if (rooms.get(room, room_role, 'target')) creep.memory.single_target = true;
 				rooms.setCreep(room, room_role, creep);
 				return true;
 			}
