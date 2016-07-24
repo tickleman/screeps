@@ -87,7 +87,7 @@ module.exports.sourceWork = function(creepjs, creep)
 {
 	let error = creepjs.sourceWork(creep);
 	if (error) {
-		creep.say('s:' + error);
+		creep.say('s:' + messages.error(error));
 	}
 };
 
@@ -119,7 +119,7 @@ module.exports.targetWork = function(creepjs, creep)
 {
 	let error = creepjs.targetWork(creep);
 	if (error) {
-		creep.say('t:' + error);
+		creep.say('t:' + messages.error(error));
 	}
 };
 
