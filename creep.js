@@ -188,6 +188,7 @@ module.exports.findTargetId = function(creep)
  */
 module.exports.nextSource = function(creep)
 {
+	if (this.singleSource(creep)) return objects.get(creep, creep.memory.source);
 	return (!creep.memory.source || (objects.energy(objects.get(creep, creep.memory.source)) < 10))
 		? this.findSource(creep)
 		: null;
@@ -201,6 +202,7 @@ module.exports.nextSource = function(creep)
  */
 module.exports.nextTarget = function(creep)
 {
+	if (this.singleTarget(creep)) return objects.get(creep, creep.memory.target);
 	return (!creep.memory.target || (objects.energyRatio(objects.get(creep, creep.memory.target)) > .9))
 		? this.findTarget(creep)
 		: null;
@@ -282,15 +284,15 @@ module.exports.sourceJobDone = function(creep)
 		if (this.DEBUG) console.log('s: source job always done (no source work)');
 		return true;
 	}
-	if (!this.target_work) {
-		if (this.DEBUG) console.log('s: source job always continue (no target work');
-		return false;
-	}
 	let source = objects.get(creep, creep.memory.source);
 	if (this.DEBUG) console.log('s: source =', source);
 	if (!source || objects.energyFull(creep)) {
 		if (this.DEBUG) console.log(source ? 's: source job done (energy full)' : 's: source job done (no source)');
 		return true;
+	}
+	if (!this.target_work) {
+		if (this.DEBUG) console.log('s: source job always continue (no target work');
+		return false;
 	}
 	let result = (objects.energy(source) < 10) && (objects.energyRatio(creep) > .5);
 	if (this.DEBUG) console.log(
@@ -390,15 +392,15 @@ module.exports.targetJobDone = function(creep)
 		if (this.DEBUG) console.log('t: target job always done (no target work)');
 		return true;
 	}
-	if (!this.source_work) {
-		if (this.DEBUG) console.log('t: target job always continue (no source work)');
-		return false;
-	}
 	let target = objects.get(creep, creep.memory.target);
 	if (this.DEBUG) console.log('t: target =', target);
 	if (!target || !creep.carry.energy) {
 		if (this.DEBUG) console.log(target ? 't: target job done (no energy)' : 't: target job done (no target)');
 		return true;
+	}
+	if (!this.source_work) {
+		if (this.DEBUG) console.log('t: target job always continue (no source work)');
+		return false;
 	}
 	let result = objects.energyFull(target);
 	if (this.DEBUG) console.log(
