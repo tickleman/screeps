@@ -22,7 +22,7 @@ module.exports.work = function(creepjs, creep)
 		case 'sourceWork': this.sourceWork(creepjs, creep); break;
 		case 'goToTarget': this.goToTarget(creepjs, creep); break;
 		case 'targetWork': this.targetWork(creepjs, creep); break;
-		default: creep.memory.step = 'sourceWork';
+		default: creep.memory.step = 'spawning';
 	}
 };
 
@@ -85,19 +85,9 @@ module.exports.goToStart = function(creepjs, creep)
  */
 module.exports.sourceWork = function(creepjs, creep)
 {
-	if (!creepjs.source_work) {
-		creep.memory.step = 'targetWork';
-		return;
-	}
-	if (creepjs.sourceJobDone(creep) || creepjs.sourceJob(creep)) {
-		if (creep.memory.path) {
-			creep.memory.step = 'goToTarget';
-			this.goToTarget(creepjs, creep);
-		}
-		else {
-			creep.memory.step = 'targetWork';
-			this.targetWork(creepjs, creep);
-		}
+	let error = creepjs.sourceWork(creep);
+	if (error) {
+		creep.say('s:' + error);
 	}
 };
 
@@ -109,11 +99,7 @@ module.exports.sourceWork = function(creepjs, creep)
  */
 module.exports.goToTarget = function(creepjs, creep)
 {
-	if (!creepjs.source_work || !creepjs.target_work) {
-		creep.memory.step = creepjs.source_work ? 'sourceWork' : 'targetWork';
-		return;
-	}
-	let moved = path.move(creep);
+	let moved = creep.memory.path ? path.move(creep) : path.ARRIVED;
 	if ((moved == path.ARRIVED) || (moved == path.WAYPOINT)) {
 		creep.memory.step = 'targetWork';
 		this.targetWork(creepjs, creep);
@@ -131,15 +117,9 @@ module.exports.goToTarget = function(creepjs, creep)
  */
 module.exports.targetWork = function(creepjs, creep)
 {
-	if (!creepjs.target_work) {
-		creep.memory.step = 'sourceWork';
-		return;
-	}
-	let error;
-	if (creepjs.targetJobDone(creep) || (error = creepjs.targetJob(creep))) {
-		if (error) creep.say('w:' + messages.error(error));
-		creep.memory.step = 'goToSource';
-		this.goToSource(creepjs, creep);
+	let error = creepjs.targetWork(creep);
+	if (error) {
+		creep.say('t:' + error);
 	}
 };
 
@@ -152,11 +132,7 @@ module.exports.targetWork = function(creepjs, creep)
  */
 module.exports.goToSource = function(creepjs, creep)
 {
-	if (!creepjs.source_work || !creepjs.target_work) {
-		creep.memory.step = creepjs.source_work ? 'sourceWork' : 'targetWork';
-		return;
-	}
-	let moved = path.move(creep);
+	let moved = creep.memory.path ? path.move(creep) : path.ARRIVED;
 	if (moved == path.ARRIVED) {
 		delete creep.memory.path_step;
 		creep.memory.step = 'sourceWork';

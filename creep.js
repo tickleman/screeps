@@ -49,6 +49,21 @@ module.exports.NO_SOURCE = 1;
 module.exports.NO_TARGET = 2;
 
 /**
+ * @type number
+ */
+module.exports.SOURCE_WORK_OFF = 3;
+
+/**
+ * @type number
+ */
+module.exports.TARGET_WORK_OFF = 4;
+
+/**
+ * @type number
+ */
+module.exports.WAIT = 5;
+
+/**
  * Body parts for a starter creep
  * CARRY, MOVE, WORK
  * - consume 200 energy units
@@ -100,9 +115,28 @@ module.exports.source_work = true;
 module.exports.target_work = true;
 
 /**
- * @type boolean If true, stays near target and wait for energy instead of going to source to get some
+ * Returns true if the creep can continue its source work, without any consideration about its source state
+ *
+ * Default behaviour : the creep is not full of energy
+ *
+ * @param creep
  */
-module.exports.wait_for_energy = false;
+module.exports.canWorkSource = function(creep)
+{
+	return !objects.energyFull(creep);
+};
+
+/**
+ * Returns true if the creep can continue its target work, without any consideration about its target state
+ *
+ * Default behaviour : the creep has energy
+ *
+ * @param creep
+ */
+module.exports.canWorkTarget = function(creep)
+{
+	return objects.energy(creep) > 0;
+};
 
 /**
  * Set the source of the creep and return the source.
@@ -113,17 +147,16 @@ module.exports.wait_for_energy = false;
  */
 module.exports.findSource = function(creep)
 {
+	creep.say('source');
 	var sources = this.sources(creep);
 	if (sources.length) {
 		var source = sources[0];
 		if (creep instanceof Creep) {
-			creep.say('source');
 			creep.memory.source = source.id;
 		}
 		return source;
 	}
 	if (creep instanceof Creep) {
-		creep.say('no source');
 		delete creep.memory.source;
 	}
 	return null;
@@ -151,17 +184,16 @@ module.exports.findSourceId = function(creep)
  */
 module.exports.findTarget = function(creep)
 {
+	creep.say('target');
 	var targets = this.targets(creep);
 	if (targets.length) {
 		var target = targets[0];
 		if (creep instanceof Creep) {
-			creep.say('target');
 			creep.memory.target = target.id;
 		}
 		return target;
 	}
 	if (creep instanceof Creep) {
-		creep.say('no target');
 		delete creep.memory.target;
 	}
 	return null;
@@ -181,34 +213,6 @@ module.exports.findTargetId = function(creep)
 };
 
 /**
- * Returns the next source, or null if keep the same source or no source available (current source is kept)
- *
- * @param creep Creep
- * @return RoomObject|null
- */
-module.exports.nextSource = function(creep)
-{
-	if (this.singleSource(creep)) return objects.get(creep, creep.memory.source);
-	return (!creep.memory.source || (objects.energy(objects.get(creep, creep.memory.source)) < 10))
-		? this.findSource(creep)
-		: null;
-};
-
-/**
- * Returns the next source, or null if keep the same target or no target available (current target is kept)
- *
- * @param creep Creep
- * @return RoomObject|null
- */
-module.exports.nextTarget = function(creep)
-{
-	if (this.singleTarget(creep)) return objects.get(creep, creep.memory.target);
-	return (!creep.memory.target || (objects.energyRatio(objects.get(creep, creep.memory.target)) > .9))
-		? this.findTarget(creep)
-		: null;
-};
-
-/**
  * Returns true if creep has only one source
  *
  * @param creep
@@ -216,9 +220,7 @@ module.exports.nextTarget = function(creep)
  */
 module.exports.singleSource = function(creep)
 {
-	return (creep.memory['single_source'] !== undefined)
-		? creep.memory.single_source
-		: this.single_source;
+	return (creep.memory['single_source'] !== undefined) ? creep.memory.single_source : this.single_source;
 };
 
 /**
@@ -229,17 +231,31 @@ module.exports.singleSource = function(creep)
  */
 module.exports.singleTarget = function(creep)
 {
-	return (creep.memory['single_target'] !== undefined)
-		? creep.memory.single_target
-		: this.single_target;
+	return (creep.memory['single_target'] !== undefined) ? creep.memory.single_target : this.single_target;
 };
 
 /**
- * Source number of creeps into the source
+ * Gets the creep source ready for work
+ * - if the current one still exists and source job is not done, returns it
+ * - if find next source, returns it
+ * - if the current one does not exist anymore and no other source was found, returns null
+ *
+ * @param creep Creep
+ * @returns RoomObject|null
+ */
+module.exports.source = function(creep)
+{
+	let source = objects.get(creep, creep.memory.source);
+	if (!source || this.sourceJobDone(creep)) source = this.singleSource(creep) ? null : this.findSource(creep);
+	return source;
+};
+
+/**
+ * Count number of creeps into the source
  * If context is a creep, don't count this creep as creeps affected to the source
  *
- * @param source  Source
- * @param [context] RoomObject
+ * @param source    RoomObject
+ * @param [context] RoomObject If is a creep, does not count this creep
  * @returns number
  */
 module.exports.sourceCount = function(source, context)
@@ -265,8 +281,7 @@ module.exports.sourceJob = function(creep)
 {
 	let source = objects.get(creep, creep.memory.source);
 	if (this.DEBUG) console.log('s: source =', source);
-	//noinspection JSCheckFunctionSignatures
-	let result = source ? objects.getEnergy(creep, source) : (this.singleSource(creep) ? OK : this.NO_SOURCE);
+	let result = objects.getEnergy(creep, source);
 	if (this.DEBUG) console.log('s: result =', messages.error(result));
 	return result;
 };
@@ -280,21 +295,9 @@ module.exports.sourceJob = function(creep)
  */
 module.exports.sourceJobDone = function(creep)
 {
-	if (!this.source_work) {
-		if (this.DEBUG) console.log('s: source job always done (no source work)');
-		return true;
-	}
 	let source = objects.get(creep, creep.memory.source);
 	if (this.DEBUG) console.log('s: source =', source);
-	if (!source || (objects.energyCapacity(creep) && objects.energyFull(creep))) {
-		if (this.DEBUG) console.log(source ? 's: source job done (energy full)' : 's: source job done (no source)');
-		return true;
-	}
-	if (!this.target_work) {
-		if (this.DEBUG) console.log('s: source job always continue (no target work');
-		return false;
-	}
-	let result = (objects.energy(source) < 10) && (objects.energyRatio(creep) > .5);
+	let result = !objects.energy(source);
 	if (this.DEBUG) console.log(
 		result ? 's: source job done (source energy empty)' : 's: source job continue (need more energy)'
 	);
@@ -317,6 +320,35 @@ module.exports.sources = function(context)
 	});
 	if (!source) source = context.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
 	return source ? [source] : [];
+};
+
+/**
+ * The common source work algorithm
+ *
+ * @param creep Creep
+ * @returns number OK if worked well, else an ERR_ constant
+ */
+module.exports.sourceWork = function(creep)
+{
+	if (!this.source_work) {
+		creep.memory.step = 'goToTarget';
+		return this.SOURCE_WORK_OFF;
+	}
+
+	if (!this.canWorkSource(creep)) {
+		if (this.target_work && this.canWorkTarget(creep) && this.target(creep)) {
+			creep.memory.step = 'goToTarget';
+			return OK;
+		}
+		return this.WAIT;
+	}
+
+	if (!this.source(creep)) {
+		if (this.target_work && this.canWorkTarget(creep) && this.target(creep)) creep.memory.step = 'goToTarget';
+		return this.NO_SOURCE;
+	}
+
+	return this.sourceJob(creep);
 };
 
 /**
@@ -359,6 +391,43 @@ module.exports.spawn = function(options)
 };
 
 /**
+ * Gets the creep target ready for work
+ * - if the current one still exists and target job is not done, returns it
+ * - if find next target, returns it
+ * - if the current one does not exist anymore and no other target was found, returns null
+ *
+ * @param creep Creep
+ * @returns RoomObject|null
+ */
+module.exports.target = function(creep)
+{
+	let target = objects.get(creep, creep.memory.target);
+	if (!target || this.targetJobDone(creep)) target = this.singleTarget(creep) ? null : this.findTarget(creep);
+	return target;
+};
+
+/**
+ * Count number of creeps into the target
+ * If context is a creep, don't count this creep as creeps affected to the target
+ *
+ * @param target    RoomObject
+ * @param [context] RoomObject If is a creep, does not count this creep
+ * @returns number
+ */
+module.exports.targetCount = function(target, context)
+{
+	var count = 0;
+	for (let creep_name in Memory.creeps) if (Memory.creeps.hasOwnProperty(creep_name)) {
+		let creep = Memory.creeps[creep_name];
+		if ((creep.target == target.id) && (!context || !context.name || (context.name != creep_name))) {
+			count ++;
+		}
+	}
+	return count;
+};
+
+
+/**
  * The work the creep must do at its target
  * The default is to transfer its energy to the target
  *
@@ -367,15 +436,9 @@ module.exports.spawn = function(options)
  */
 module.exports.targetJob = function(creep)
 {
-	if (!creep.carry.energy) {
-		if (this.DEBUG) {
-			console.log(this.wait_for_energy ? 't: job OK (wait for energy)' : 't: job NOT_ENOUGH_ENERGY');
-		}
-		return this.wait_for_energy ? OK : ERR_NOT_ENOUGH_ENERGY;
-	}
 	let target = objects.get(creep, creep.memory.target);
 	if (this.DEBUG) console.log('t: target =', target);
-	let result = target ? objects.putEnergy(creep, target) : (this.singleTarget(creep) ? OK : this.NO_TARGET);
+	let result = objects.putEnergy(creep, target);
 	if (this.DEBUG) console.log('t: result =', messages.error(result));
 	return result;
 };
@@ -388,20 +451,8 @@ module.exports.targetJob = function(creep)
  */
 module.exports.targetJobDone = function(creep)
 {
-	if (!this.target_work) {
-		if (this.DEBUG) console.log('t: target job always done (no target work)');
-		return true;
-	}
 	let target = objects.get(creep, creep.memory.target);
 	if (this.DEBUG) console.log('t: target =', target);
-	if (!target || (objects.energyCapacity(creep) && !objects.energy(creep))) {
-		if (this.DEBUG) console.log(target ? 't: target job done (no energy)' : 't: target job done (no target)');
-		return true;
-	}
-	if (!this.source_work) {
-		if (this.DEBUG) console.log('t: target job always continue (no source work)');
-		return false;
-	}
 	let result = objects.energyFull(target);
 	if (this.DEBUG) console.log(
 		result ? 't: target job done (target energy full)' : 't: target job continue (target energy not full)'
@@ -420,21 +471,50 @@ module.exports.targets = function(context)
 	if (!this.target_work) return [];
 	// the nearest extension without energy into the current room
 	let target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_EXTENSION) && !objects.energyFull(structure)
+	(structure.structureType == STRUCTURE_EXTENSION) && !objects.energyFull(structure)
 	});
 	if (target) return [target];
 	// the nearest spawn without energy into the current room
 	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_SPAWN) && !objects.energyFull(structure)
+	(structure.structureType == STRUCTURE_SPAWN) && !objects.energyFull(structure)
 	});
 	if (target) return [target];
 	// the nearest container or storage
 	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
-		&& !objects.energyFull(structure)
+	((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
+	&& !objects.energyFull(structure)
 
 	});
 	return target ? [target] : [];
+};
+
+/**
+ * The common target work algorithm
+ *
+ * @param creep Creep
+ * @returns number OK if worked well, else an ERR_ constant
+ */
+module.exports.targetWork = function(creep)
+{
+	if (!this.target_work) {
+		creep.memory.step = 'goToSource';
+		return this.TARGET_WORK_OFF;
+	}
+
+	if (!this.canWorkTarget(creep)) {
+		if (this.source_work && this.canWorkSource(creep) && this.source(creep)) {
+			creep.memory.step = 'goToSource';
+			return OK;
+		}
+		return this.WAIT;
+	}
+
+	if (!this.target(creep)) {
+		if (this.source_work && this.canWorkSource(creep) && this.source(creep)) creep.memory.step = 'goToSource';
+		return this.NO_TARGET;
+	}
+
+	return this.targetJob(creep);
 };
 
 /**

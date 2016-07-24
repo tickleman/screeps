@@ -12,21 +12,6 @@ module.exports.body_parts = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, WORK, 
 
 module.exports.role        = 'repairer';
 module.exports.source_work = false;
-module.exports.wait_for_energy = true;
-
-/**
- * Returns the next source, or null if keep the same target or no target available (current target is kept)
- *
- * @param creep Creep
- * @return RoomObject|null
- */
-module.exports.nextTarget = function(creep)
-{
-	if (this.singleTarget(creep)) return objects.get(creep, creep.memory.target);
-	return (!creep.memory.target || !objects.wounded(objects.get(creep, creep.memory.target)))
-		? this.findTarget(creep)
-		: null;
-};
 
 /**
  * Job is done each time the creep energy is zero (new target) and if the target is fully repaired
@@ -36,17 +21,13 @@ module.exports.nextTarget = function(creep)
  */
 module.exports.targetJobDone = function(creep)
 {
-	if (!this.target_work) {
-		if (this.DEBUG) console.log('t: target job always done (no target work)');
-		return true;
-	}
 	let target = objects.get(creep, creep.memory.target);
-	if (!target || !objects.energy(creep) || !objects.wounded(target)) return true;
-	if (!this.source_work) {
-		if (this.DEBUG) console.log('t: target job always continue (no source work)');
-		return false;
-	}
-	return !objects.wounded(target);
+	if (this.DEBUG) console.log('t: target =', target);
+	let result = !objects.wounded(target);
+	if (this.DEBUG) console.log(
+		result ? 't: target job done (target hits full)' : 't: target job continue (target hits not full)'
+	);
+	return result;
 };
 
 /**

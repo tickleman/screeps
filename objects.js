@@ -143,6 +143,8 @@ module.exports.energyRatio = function(object)
 };
 
 /**
+ * Returns true if the object energy is full (equals its energy capacity)
+ *
  * @param object RoomObject
  * @returns boolean
  */

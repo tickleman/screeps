@@ -10,16 +10,15 @@ module.exports.__proto__ = require('./creep');
  */
 module.exports.body_parts = [CARRY, CARRY, MOVE, WORK, WORK, WORK, WORK];
 
-module.exports.role            = 'builder';
-module.exports.source_work     = false;
-module.exports.wait_for_energy = true;
+module.exports.role        = 'builder';
+module.exports.source_work = false;
 
 /**
  * Targets are construction sites
  * If there are no construction sites : the builder becomes an upgrader
  *
  * @param context RoomObject
- * @return ConstructionSite[]
+ * @returns ConstructionSite[]
  **/
 module.exports.targets = function(context)
 {

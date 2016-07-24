@@ -19,10 +19,19 @@ module.exports.__proto__ = require('./creep');
  */
 module.exports.body_parts = [CARRY, CARRY, MOVE, WORK, WORK, WORK, WORK];
 
-module.exports.role            = 'upgrader';
-module.exports.single_target   = true;
-module.exports.source_work     = false;
-module.exports.wait_for_energy = true;
+module.exports.role          = 'upgrader';
+module.exports.single_target = true;
+module.exports.source_work   = false;
+
+/**
+ * Target job is never true
+ *
+ * @returns boolean We can always upgrade a controller
+ */
+module.exports.targetJobDone = function()
+{
+	return false;
+};
 
 /**
  * Targets are the room controller

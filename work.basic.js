@@ -10,16 +10,9 @@ var objects  = require('./objects');
  */
 module.exports.sourceWork = function(creepjs, creep)
 {
-	let source = creepjs.nextSource(creep);
-	if (source) creep.memory.source = source.id ? source.id : source;
-	if (!creepjs.sourceJobDone(creep)) {
-		let error = creepjs.sourceJob(creep);
-		if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.source));
-		else if (error) creep.say('s:' + messages.error(error));
-	}
-	else {
-		creep.memory.step = 'targetWork';
-	}
+	let error = creepjs.sourceWork(creep);
+	if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.source));
+	else if (error) creep.say('s:' + messages.error(error));
 };
 
 /**
@@ -30,16 +23,9 @@ module.exports.sourceWork = function(creepjs, creep)
  */
 module.exports.targetWork = function(creepjs, creep)
 {
-	let target = creepjs.nextTarget(creep);
-	if (target) creep.memory.target = target.id ? target.id : target;
-	if (!creepjs.targetJobDone(creep)) {
-		let error = creepjs.targetJob(creep);
-		if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.target));
-		else if (error) creep.say('t:' + messages.error(error));
-	}
-	else {
-		creep.memory.step = 'sourceWork';
-	}
+	let error = creepjs.targetWork(creep);
+	if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.target));
+	else if (error) creep.say('t:' + messages.error(error));
 };
 
 /**
@@ -50,10 +36,15 @@ module.exports.targetWork = function(creepjs, creep)
  */
 module.exports.work = function(creepjs, creep)
 {
-	if (!creep.memory.step && !creep.spawning) creep.memory.step = 'sourceWork';
+	if (!creep.memory.step) creep.memory.step = 'spawning';
+	switch (creep.memory.step) {
+		case 'spawning':   if (!creep.spawning) creep.memory.step = 'sourceWork'; break;
+		case 'goToSource': creep.memory.step = 'sourceWork'; break;
+		case 'goToTarget': creep.memory.step = 'targetWork'; break;
+	}
 	switch (creep.memory.step) {
 		case 'sourceWork': this.sourceWork(creepjs, creep); break;
 		case 'targetWork': this.targetWork(creepjs, creep); break;
-		default: creep.memory.step = 'sourceWork';
+		default: creep.memory.step = 'spawning';
 	}
 };

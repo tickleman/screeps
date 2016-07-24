@@ -109,7 +109,6 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
 			if (creep) {
 				creep.memory.room      = room.name;
 				creep.memory.room_role = room_role;
-				creep.memory.step      = 'spawning';
 				rooms.setCreep(room, room_role, creep);
 				return true;
 			}

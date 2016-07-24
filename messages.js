@@ -19,7 +19,10 @@ module.exports.ERRORS = {
 	'-14': 'rcl-low',
 	'-15': 'gcl-low',
 	'1':   'no-source',
-	'2':   'no-target'
+	'2':   'no-target',
+	'3':   'source-off',
+	'4':   'target-off',
+	'5':   'wait'
 };
 
 /**

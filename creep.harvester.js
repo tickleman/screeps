@@ -5,6 +5,8 @@
  * - it harvests the energy (10 / tick) and throw it on the ground
  */
 
+var objects = require('./objects');
+
 module.exports.__proto__ = require('./creep');
 
 /**
@@ -17,6 +19,18 @@ module.exports.body_parts = [MOVE, WORK, WORK, WORK, WORK, WORK];
 module.exports.role          = 'harvester';
 module.exports.single_source = true;
 module.exports.target_work   = false;
+
+/**
+ * Returns true if the creep can continue its source work, without any consideration about its source state
+ *
+ * Default behaviour : the creep is not full of energy
+ *
+ * @param creep
+ */
+module.exports.canWorkSource = function(creep)
+{
+	return !objects.energyCapacity(creep) || !objects.energyFull(creep);
+};
 
 /**
  * Select the source with the minimum count of harvesters.
