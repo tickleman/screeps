@@ -63,7 +63,7 @@ module.exports.loop = function ()
 				|| main.spawnRoleCreep(room, 'controller_upgrader', true)
 				|| main.spawnRoleCreep(room, 'controller_harvester', true)
 				|| main.spawnRoleCreep(room, 'controller_carrier', true)
-				|| main.spawnSimpleCreep(room, 'carrier', 3)
+				|| main.spawnSimpleCreep(room, 'carrier', 3, true)
 				|| main.spawnSimpleCreep(room, 'builder', 1)
 				|| main.spawnSimpleCreep(room, 'repairer', 1)
 			) {
