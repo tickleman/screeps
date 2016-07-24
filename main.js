@@ -111,7 +111,6 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
 				creep.memory.room_role = room_role;
 				creep.memory.step      = 'spawning';
 				rooms.setCreep(room, room_role, creep);
-				console.log('spawned a ', room_role);
 				return true;
 			}
 		}
@@ -134,7 +133,6 @@ module.exports.spawnSimpleCreep = function(room, role, cnt, accept_little)
 		console.log('wish to spawn a ', role);
 		let creep = creep_of[role].spawn({ accept_little: accept_little, role: role, spawn: spawn });
 		if (creep) {
-			console.log('spawned a ', role);
 			return true;
 		}
 	}
