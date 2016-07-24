@@ -44,15 +44,14 @@ module.exports.targets = function(context)
 		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && (objects.energyRatio(structure) < .9) }
 	);
 	if (target) return [target];
+	// next target : builder and upgrader creeps
 	for (let ratio in [.5, .7, .9]) {
-		// next target : builder creeps
 		target = context.pos.findClosestByRange(FIND_MY_CREEPS, { filter: creep =>
 			(creep.memory.role == 'builder') && (objects.energyRatio(creep) < ratio)
 		});
 		if (target) return [target];
-		// next target : upgrader creeps
 		target = context.pos.findClosestByRange(FIND_MY_CREEPS, { filter: creep =>
-			(creep.memory.role == 'upgrader') && (objects.energyRatio(creep) < ratio)
+			(creep.memory.role == 'repairer') && (objects.energyRatio(creep) < ratio)
 		});
 		if (target) return [target];
 	}
