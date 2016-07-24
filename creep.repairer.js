@@ -21,10 +21,16 @@ module.exports.source_work = false;
  */
 module.exports.targetJobDone = function(creep)
 {
-	if (!this.target_work) return true;
-	if (!this.source_work) return false;
+	if (!this.target_work) {
+		if (this.DEBUG) console.log('t: target job always done (no target work)');
+		return true;
+	}
 	let target = objects.get(creep, creep.memory.target);
 	if (!target || !creep.carry.energy) return true;
+	if (!this.source_work) {
+		if (this.DEBUG) console.log('t: target job always continue (no source work)');
+		return false;
+	}
 	return !objects.wounded(target);
 };
 
