@@ -61,13 +61,7 @@ module.exports.loop = function ()
 		let spawn = rooms.get(room, 'spawn');
 		if (spawn && !spawn.spawning) {
 			// spawn the first needed creep
-			if (
-				main.count[room.name]
-				|| (
-					(objects.energy(room) < 500)
-					 && (!rooms.get(room, 'spawn_harvester', 'creep') || !rooms.get(room, 'spawn_carrier', 'creep'))
-				)
-			) {
+			if (!main.count[room.name]) {
 				main.spawnSimpleCreep(room, 'carrier', 1, true);
 			}
 			// spawn other creeps
