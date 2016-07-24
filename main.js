@@ -59,9 +59,9 @@ module.exports.loop = function ()
 	// spawn creeps
 	rooms.forEach(function(room) {
 		let spawn = rooms.get(room, 'spawn');
-		if (spawn && !spawn.spawning && main.count[room.name]) {
+		if (spawn && !spawn.spawning) {
 			// spawn the first needed creep
-			if (!Object.keys(main.count[room.name]).length) {
+			if (!main.count[room.name]) {
 				main.spawnSimpleCreep(room, 'carrier', 1, true);
 			}
 			// spawn other creeps
