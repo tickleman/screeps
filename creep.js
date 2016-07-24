@@ -188,7 +188,7 @@ module.exports.findTargetId = function(creep)
  */
 module.exports.nextSource = function(creep)
 {
-	return (!creep.memory.source || (creep.carry.energy / creep.carryCapacity < .5))
+	return (!creep.memory.source || (objects.energy(objects.get(creep, creep.memory.source)) < 10))
 		? this.findSource(creep)
 		: null;
 };
@@ -201,7 +201,7 @@ module.exports.nextSource = function(creep)
  */
 module.exports.nextTarget = function(creep)
 {
-	return (!creep.memory.target || (creep.carry.energy / creep.carryCapacity > .4))
+	return (!creep.memory.target || (objects.energyRatio(objects.get(creep, creep.creep.memory.target)) > .9))
 		? this.findTarget(creep)
 		: null;
 };
