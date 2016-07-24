@@ -16,7 +16,7 @@ module.exports.run = function(tower)
 				Memory.towers[tower.id] = { action: 'attack', target: closest_hostile.id };
 			}
 			// then, repair most damaged structures (but keep enough energy in case of attack
-			else if ((tower.energy / tower.energyCapacity) > .8) {
+			else if ((tower.energy / tower.energyCapacity) > .85) {
 				let most_damaged_percent = 1;
 				let most_damaged_structure = null;
 				let secondary_damaged_percent = 1;

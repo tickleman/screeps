@@ -38,10 +38,10 @@ module.exports.targets = function(context)
 		(structure.structureType == STRUCTURE_SPAWN) && !objects.energyFull(structure)
 	});
 	if (target) return [target];
-	// next target : towers with less than 90% energy
+	// next target : towers with less than 70% of energy
 	target = context.pos.findClosestByRange(
 		FIND_MY_STRUCTURES,
-		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && (objects.energyRatio(structure) < .9) }
+		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && (objects.energyRatio(structure) < .8) }
 	);
 	if (target) return [target];
 	// next target : builder and upgrader creeps
@@ -55,10 +55,12 @@ module.exports.targets = function(context)
 		});
 		if (target) return [target];
 	}
+	// towers with less than 100% of energy
 	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
 		(structure.structureType == STRUCTURE_TOWER) && !objects.energyFull(structure)
 	});
 	if (target) return [target];
+	// container and storage with available energy
 	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
 		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
 		&& !objects.energyFull(structure)
