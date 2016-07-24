@@ -22,7 +22,7 @@ module.exports.AUTO = 'AUTO';
 /**
  * @type boolean
  */
-module.exports.DEBUG = true;
+module.exports.DEBUG = false;
 
 /**
  * This value for spawn() enables the automatic available source terrain finder

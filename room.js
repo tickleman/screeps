@@ -12,7 +12,7 @@ var tasks = require('./tasks');
 /**
  * @type boolean
  */
-module.exports.DEBUG = true;
+module.exports.DEBUG = false;
 
 /**
  * @type RoomObject

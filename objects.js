@@ -23,7 +23,7 @@ var can = function(creep, what)
 /**
  * @type boolean
  */
-module.exports.DEBUG = true;
+module.exports.DEBUG = false;
 
 /**
  * @type object

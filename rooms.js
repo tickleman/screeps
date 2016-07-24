@@ -46,6 +46,29 @@ module.exports.MEMORY = 'MEMORY';
 module.exports.rooms = {};
 
 /**
+ * Copy creep name into all room_roles having the same role if at the same position
+ *
+ * @example source_roole_role = source_harvester : source_harvester.creep -> controller_harvester.creep
+ * @param room             Room|string
+ * @param source_room_role string
+ */
+module.exports.copyRoleCreep = function(room, source_room_role)
+{
+	var room_name = (room instanceof Room) ? room.name : room;
+	var role = Memory.rooms[room_name][source_room_role].role;
+	var source_pos = this.getPos(room, source_room_role);
+	if (role) {
+		for (let room_role in Memory.rooms[room_name]) if (Memory.rooms[room_name].hasOwnProperty(room_role)) {
+			let object = Memory.rooms[room_name][room_role];
+			let pos = this.getPos(room, room_role);
+			if (object.role == role && !(pos.x - source_pos.x) && !(pos.y - source_pos.y)) {
+				Memory.rooms[room_name][room_role].creep = Memory.rooms[room_name][source_room_role].creep;
+			}
+		}
+	}
+};
+
+/**
  * @param callback callable
  * @returns Creep[]
  */
@@ -296,5 +319,6 @@ module.exports.setCreep = function(room, object_name, creep)
 {
 	var room_name = (room instanceof Room) ? room.name : room;
 	Memory.rooms[room_name][object_name].creep = creep.name;
+	this.copyRoleCreep(room, object_name, Memory.rooms[room_name][object_name].role);
 	this.rooms[room_name][object_name] = creep;
 };
