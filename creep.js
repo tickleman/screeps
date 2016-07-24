@@ -286,7 +286,7 @@ module.exports.sourceJobDone = function(creep)
 	}
 	let source = objects.get(creep, creep.memory.source);
 	if (this.DEBUG) console.log('s: source =', source);
-	if (!source || objects.energyFull(creep)) {
+	if (!source || (objects.energyCapacity(creep) && objects.energyFull(creep))) {
 		if (this.DEBUG) console.log(source ? 's: source job done (energy full)' : 's: source job done (no source)');
 		return true;
 	}
@@ -394,7 +394,7 @@ module.exports.targetJobDone = function(creep)
 	}
 	let target = objects.get(creep, creep.memory.target);
 	if (this.DEBUG) console.log('t: target =', target);
-	if (!target || !creep.carry.energy) {
+	if (!target || (objects.energyCapacity(creep) && !objects.energy(creep))) {
 		if (this.DEBUG) console.log(target ? 't: target job done (no energy)' : 't: target job done (no target)');
 		return true;
 	}
