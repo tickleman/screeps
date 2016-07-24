@@ -17,3 +17,24 @@ module.exports.body_parts = [MOVE, WORK, WORK, WORK, WORK, WORK];
 module.exports.role          = 'harvester';
 module.exports.single_source = true;
 module.exports.target_work   = false;
+
+/**
+ * Select the source with the minimum count of harvesters.
+ *
+ * @param context RoomObject
+ * @return string[] Sources id
+ */
+module.exports.sources = function(context)
+{
+	if (!this.source_work) return [];
+	var min_count  = 99;
+	var min_source = null;
+	for (let source of context.room.find(FIND_SOURCES_ACTIVE)) {
+		let count = this.sourceCount(source, context);
+		if (count < min_count) {
+			min_count  = count;
+			min_source = source;
+		}
+	}
+	return min_source ? [min_source] : [];
+};
