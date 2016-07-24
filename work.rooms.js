@@ -109,7 +109,7 @@ module.exports.sourceWork = function(creepjs, creep)
 module.exports.goToTarget = function(creepjs, creep)
 {
 	if (!creepjs.source_work || !creepjs.target_work) {
-		creep.memory.step = 'sourceWork';
+		creep.memory.step = creepjs.source_work ? 'sourceWork' : 'targetWork';
 	}
 	let moved = path.move(creep);
 	if ((moved == path.ARRIVED) || (moved == path.WAYPOINT)) {
@@ -150,7 +150,7 @@ module.exports.targetWork = function(creepjs, creep)
 module.exports.goToSource = function(creepjs, creep)
 {
 	if (!creepjs.source_work || !creepjs.target_work) {
-		creep.memory.step = 'targetWork';
+		creep.memory.step = creepjs.source_work ? 'sourceWork' : 'targetWork';
 	}
 	let moved = path.move(creep);
 	if (moved == path.ARRIVED) {
