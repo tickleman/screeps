@@ -2,6 +2,8 @@
  * Functions on Game.creeps
  */
 
+var rooms = require('./rooms');
+
 module.exports =
 {
 
@@ -86,7 +88,7 @@ module.exports.freeDeadCreeps = function()
 {
 	this.forEachDeadCreep(function() {
 		if (this.room && this.room_role) {
-			delete Memory.rooms[this.room][this.room_role].creep;
+			rooms.removeRoleCreep(this.room, this.room_role);
 		}
 	}, true);
 };

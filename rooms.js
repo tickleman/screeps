@@ -55,13 +55,13 @@ module.exports.rooms = {};
 module.exports.copyRoleCreep = function(room, source_room_role)
 {
 	var room_name = (room instanceof Room) ? room.name : room;
-	var role = Memory.rooms[room_name][source_room_role].role;
+	var source_role = Memory.rooms[room_name][source_room_role].role;
 	var source_pos = this.getPos(room, source_room_role);
-	if (role) {
+	if (source_role) {
 		for (let room_role in Memory.rooms[room_name]) if (Memory.rooms[room_name].hasOwnProperty(room_role)) {
 			let object = Memory.rooms[room_name][room_role];
 			let pos = this.getPos(room, room_role);
-			if (object.role == role && !(pos.x - source_pos.x) && !(pos.y - source_pos.y)) {
+			if ((object.role == source_role) && !(pos.x - source_pos.x) && !(pos.y - source_pos.y)) {
 				Memory.rooms[room_name][room_role].creep = Memory.rooms[room_name][source_room_role].creep;
 			}
 		}
@@ -306,6 +306,29 @@ module.exports.of = function(object)
 	if (object instanceof RoomObject)   return object.room;
 	if (object instanceof RoomPosition) return Game.rooms[object.roomName];
 	return null;
+};
+
+/**
+ * Remove creep name from all room_roles having the same role if at the same position
+ *
+ * @example source_roole_role = source_harvester : source_harvester.creep -> controller_harvester.creep
+ * @param room             Room|string
+ * @param source_room_role string
+ */
+module.exports.removeRoleCreep = function(room, source_room_role)
+{
+	var room_name = (room instanceof Room) ? room.name : room;
+	var source_role = Memory.rooms[room_name][source_room_role].role;
+	var source_pos = this.getPos(room, source_room_role);
+	if (source_role) {
+		for (let room_role in Memory.rooms[room_name]) if (Memory.rooms[room_name].hasOwnProperty(room_role)) {
+			let object = Memory.rooms[room_name][room_role];
+			let pos = this.getPos(room, room_role);
+			if ((object.role == source_role) && !(pos.x - source_pos.x) && !(pos.y - source_pos.y)) {
+				delete Memory.rooms[room_name][room_role].creep;
+			}
+		}
+	}
 };
 
 /**
