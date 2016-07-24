@@ -60,12 +60,12 @@ module.exports.loop = function ()
 			else if (
 				   main.spawnRoleCreep(room, 'spawn_harvester', true)
 				|| main.spawnRoleCreep(room, 'spawn_carrier', true)
-				|| main.spawnRoleCreep(room, 'controller_upgrader')
-				|| main.spawnRoleCreep(room, 'controller_harvester')
-				|| main.spawnRoleCreep(room, 'controller_carrier')
+				|| main.spawnRoleCreep(room, 'controller_upgrader', true)
+				|| main.spawnRoleCreep(room, 'controller_harvester', true)
+				|| main.spawnRoleCreep(room, 'controller_carrier', true)
+				|| main.spawnSimpleCreep(room, 'carrier', 3)
 				|| main.spawnSimpleCreep(room, 'builder', 1)
 				|| main.spawnSimpleCreep(room, 'repairer', 1)
-				|| main.spawnSimpleCreep(room, 'carrier', 3)
 			) {
 				return true;
 			}
