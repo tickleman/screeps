@@ -12,6 +12,7 @@ module.exports.body_parts = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, WORK, WORK, 
 
 module.exports.role        = 'repairer';
 module.exports.source_work = false;
+module.exports.wait_for_energy = true;
 
 /**
  * Returns the next source, or null if keep the same target or no target available (current target is kept)
