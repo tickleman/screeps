@@ -21,11 +21,6 @@ module.exports =
 };
 
 /**
- * Rooms cache (filled-in from memory only when needed)
- */
-var rooms = {};
-
-/**
  * Changes an object to something we can store in memory : only its id and position
  *
  * @var object RoomObject
@@ -44,6 +39,11 @@ var toMemoryObject = function(object)
 };
 
 module.exports.MEMORY = 'MEMORY';
+
+/**
+ * Rooms cache (filled-in from memory only when needed)
+ */
+module.exports.rooms = {};
 
 /**
  * @param callback callable
@@ -84,24 +84,24 @@ module.exports.get = function(room, object_name, property)
 		return Memory.rooms[room_name][object_name][property];
 	}
 
-	if (!rooms[room_name]) {
-		rooms[room_name] = {};
+	if (!this.rooms[room_name]) {
+		this.rooms[room_name] = {};
 	}
-	if (!rooms[room_name][object_name]) {
+	if (!this.rooms[room_name][object_name]) {
 		if (Memory.rooms[room_name][object_name].creep) {
-			rooms[room_name][object_name] = Game.creeps[Memory.rooms[room_name][object_name].creep];
+			this.rooms[room_name][object_name] = Game.creeps[Memory.rooms[room_name][object_name].creep];
 		}
 		else if (Memory.rooms[room_name][object_name].id) {
-			rooms[room_name][object_name] = Game.getObjectById(Memory.rooms[room_name][object_name].id);
+			this.rooms[room_name][object_name] = Game.getObjectById(Memory.rooms[room_name][object_name].id);
 		}
 		else {
-			rooms[room_name][object_name] = Game.rooms[room_name].getPositionAt(
+			this.rooms[room_name][object_name] = Game.rooms[room_name].getPositionAt(
 				Memory.rooms[room_name][object_name].x,
 				Memory.rooms[room_name][object_name].y
 			);
 		}
 	}
-	return rooms[room_name][object_name];
+	return this.rooms[room_name][object_name];
 };
 
 /**
@@ -225,7 +225,7 @@ module.exports.memorize = function(reset)
 				target: 'controller_upgrader'
 			};
 
-			rooms[room.name]        = cache;
+			this.rooms[room.name]        = cache;
 			Memory.rooms[room.name] = memory;
 			Path.cost(save_cost);
 		}
@@ -296,5 +296,5 @@ module.exports.setCreep = function(room, object_name, creep)
 {
 	var room_name = (room instanceof Room) ? room.name : room;
 	Memory.rooms[room_name][object_name].creep = creep.name;
-	rooms[room_name][object_name] = creep;
+	this.rooms[room_name][object_name] = creep;
 };

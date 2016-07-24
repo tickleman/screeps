@@ -4,18 +4,12 @@ var builder    = require('./creep.builder');
 var carrier    = require('./creep.carrier');
 var harvester  = require('./creep.harvester');
 var creeps     = require('./creeps');
+var objects    = require('./objects');
 var orders     = require('./orders');
 var repairer   = require('./creep.repairer');
 var rooms      = require('./rooms');
 var tower      = require('./structure.tower');
 var upgrader   = require('./creep.upgrader');
-
-/**
- * count existing creeps
- *
- * @var object number[] key is the creep role
- */
-var count = creeps.count();
 
 /**
  * @type object|base_creep[]
@@ -39,6 +33,9 @@ var structure_of = {
 module.exports.loop = function ()
 {
 	var main = this;
+	this.count    = creeps.count();
+	objects.cache = {};
+	rooms.rooms   = {};
 
 	if (!rooms.memorized()) rooms.memorize();
 
@@ -122,7 +119,7 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
  */
 module.exports.spawnSimpleCreep = function(room, role, cnt)
 {
-	if (count[role] && (count[role] >= cnt)) return false;
+ 	if (this.count[role] && (this.count[role] >= cnt)) return false;
 	let spawn = rooms.get(room, 'spawn');
 	if (creep_of[role].targets(spawn).length) {
 		console.log('wish to spawn a ', role);
