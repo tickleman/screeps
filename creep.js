@@ -201,7 +201,7 @@ module.exports.nextSource = function(creep)
  */
 module.exports.nextTarget = function(creep)
 {
-	return (!creep.memory.target || (objects.energyRatio(objects.get(creep, creep.creep.memory.target)) > .9))
+	return (!creep.memory.target || (objects.energyRatio(objects.get(creep, creep.memory.target)) > .9))
 		? this.findTarget(creep)
 		: null;
 };
