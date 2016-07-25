@@ -404,7 +404,7 @@ module.exports.spawn = function(opts)
 	if (!opts.spawn && opts.source) opts.spawn = rooms.get(rooms.nameOf(opts.source), 'spawn');
 	if (!opts.spawn && opts.target) opts.spawn = rooms.get(rooms.nameOf(opts.target), 'spawn');
 	// body parts
-	var body_parts = opts.body_parts ? this.body_parts : opts.body_parts;
+	var body_parts = opts.body_parts ? opts.body_parts : this.body_parts;
 	if (opts.accept_little && opts.spawn.canCreateCreep(body_parts)) {
 		body_parts = body.parts(body_parts, opts.spawn.room.energyAvailable);
 	}
