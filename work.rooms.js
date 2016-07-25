@@ -117,7 +117,7 @@ module.exports.goToTarget = function(creepjs, creep)
 module.exports.targetWork = function(creepjs, creep)
 {
 	let error = creepjs.targetWork(creep);
-	if (error == creepjs.NEXT_STEP) creepjs.nextStep('goToSource');
+	if (error == creepjs.NEXT_STEP) creepjs.nextStep(creep, 'goToSource');
 	else if (error)                 creep.say('t:' + messages.error(error));
 };
 
