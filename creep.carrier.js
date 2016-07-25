@@ -85,12 +85,12 @@ module.exports.targets = function(context)
 	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
 		(structure.structureType == STRUCTURE_TOWER) && needsEnergy(structure)
 	});
-	if (target) { this.setTargetDuration(5); return [target]; }
+	if (target) { this.setTargetDuration(context, 5); return [target]; }
 	// container and storage with available energy
 	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
 		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
 		&& needsEnergy(structure)
 	});
-	if (target) { this.setTargetDuration(1); return [target]; }
+	if (target) { this.setTargetDuration(context, 1); return [target]; }
 	return [];
 };
