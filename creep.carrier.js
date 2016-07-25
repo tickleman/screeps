@@ -19,6 +19,34 @@ module.exports.body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE
 module.exports.role = 'carrier';
 
 /**
+ * Returns true if the target needs energy.
+ * A margin of 10 energy units is kept as target may have used its energy since the last transfer.
+ *
+ * @param target
+ */
+var needsEnergy = function(target)
+{
+	return (objects.energyCapacity(target) - objects.energy(target)) > 10;
+};
+
+/**
+ * Job is done when the target is almost filled with energy
+ *
+ * @param creep Creep
+ * @return boolean
+ */
+module.exports.targetJobDone = function(creep)
+{
+	let target = objects.get(creep, creep.memory.target);
+	if (this.DEBUG) console.log('t: target =', target);
+	let result = !needsEnergy(target);
+	if (this.DEBUG) console.log(
+		result ? 't: target job done (target energy full)' : 't: target job continue (target energy not full)'
+	);
+	return result;
+};
+
+/**
  * The targets are :
  * - the simple harvesters targets (extensions, then spawn), that need energy)
  * - upgraders
@@ -30,12 +58,12 @@ module.exports.targets = function(context)
 {
 	// the nearest extension without energy into the current room
 	var target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_EXTENSION) && !objects.energyFull(structure)
+		(structure.structureType == STRUCTURE_EXTENSION) && needsEnergy(structure)
 	});
 	if (target) return [target];
 	// the nearest spawn without energy into the current room
 	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_SPAWN) && !objects.energyFull(structure)
+		(structure.structureType == STRUCTURE_SPAWN) && needsEnergy(structure)
 	});
 	if (target) return [target];
 	// next target : towers with less than 70% of energy
@@ -57,13 +85,13 @@ module.exports.targets = function(context)
 	}
 	// towers with less than 100% of energy
 	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_TOWER) && !objects.energyFull(structure)
+		(structure.structureType == STRUCTURE_TOWER) && needsEnergy(structure)
 	});
 	if (target) return [target];
 	// container and storage with available energy
 	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
 		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
-		&& !objects.energyFull(structure)
+		&& needsEnergy(structure)
 	});
 	return target ? [target] : [];
 };
