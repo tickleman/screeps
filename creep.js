@@ -330,6 +330,13 @@ module.exports.sourceCount = function(source, context)
  */
 module.exports.sourceJob = function(creep)
 {
+	if (
+		!this.target_work
+		&& (creep.memory.source_duration !== undefined)
+		&& !creep.memory.source_duration--
+	) {
+		delete creep.memory.source;
+	}
 	let source = objects.get(creep, creep.memory.source);
 	if (this.DEBUG) console.log('s: source =', source);
 	let result = objects.getEnergy(creep, source);
@@ -490,6 +497,13 @@ module.exports.targetCount = function(target, context)
  */
 module.exports.targetJob = function(creep)
 {
+	if (
+		!this.source_work
+		&& (creep.memory.target_duration !== undefined)
+		&& !creep.memory.target_duration--
+	) {
+		delete creep.memory.target;
+	}
 	let target = objects.get(creep, creep.memory.target);
 	if (this.DEBUG) console.log('t: target =', target);
 	let result = objects.putEnergy(creep, target);

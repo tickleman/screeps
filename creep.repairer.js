@@ -52,6 +52,6 @@ module.exports.targets = function(context)
 			target         = structure;
 		}
 	}
-	if (target) { this.setTargetDuration(context, 10); return [target]; }
+	if (target) { this.setTargetDuration(context, 20); return [target]; }
 	return [];
 };
