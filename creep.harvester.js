@@ -12,7 +12,7 @@ module.exports.__proto__ = require('./creep');
 /**
  * Body parts for a heavy harvester
  * MOVE, WORK x 5
- * - consume 550 energy units
+ * - consumes 550 energy units
  */
 module.exports.body_parts = [MOVE, WORK, WORK, WORK, WORK, WORK];
 

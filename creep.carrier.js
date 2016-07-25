@@ -12,7 +12,9 @@ module.exports.__proto__ = require('./creep');
 
 /**
  * Body parts for a fast carrier
- * CARRY x 5, MOVE x5, consumes 500 energy units, moves 250 energy / tick
+ * CARRY x 5, MOVE x5
+ * - consumes 500 energy units
+ * - moves 250 energy / tick
  */
 module.exports.body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
 

@@ -6,7 +6,7 @@ module.exports.__proto__ = require('./creep');
 /**
  * Body parts for a heavy builder
  * CARRY x 3, MOVE, WORK x 3
- * - consume 500 energy units
+ * - consumes 500 energy units
  */
 module.exports.body_parts = [CARRY, CARRY, CARRY, MOVE, WORK, WORK, WORK];
 
