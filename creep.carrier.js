@@ -73,7 +73,7 @@ module.exports.targets = function(context)
 	);
 	if (target) return [target];
 	// next target : builder and upgrader creeps
-	for (let ratio in [.5, .7, .9]) {
+	for (let ratio in [.2, .8]) {
 		target = context.pos.findClosestByRange(FIND_MY_CREEPS, { filter: creep =>
 			(creep.memory.role == 'builder') && (objects.energyRatio(creep) < ratio)
 		});
