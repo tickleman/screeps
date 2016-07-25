@@ -10,7 +10,6 @@ var objects    = require('./objects');
 var path       = require('./path');
 var rooms      = require('./rooms');
 var rooms_work = require('./work.rooms');
-var sources    = require('./sources');
 
 /**
  * Use sources() / targets() to find its initial source / target
