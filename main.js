@@ -74,7 +74,6 @@ module.exports.loop = function ()
 				|| main.spawnSimpleCreep(room, 'carrier', 3, true)
 				|| main.spawnSimpleCreep(room, 'builder', 1)
 				|| main.spawnSimpleCreep(room, 'repairer', 1)
-				|| main.spawnSimpleCreep(room, 'carrier', 4)
 			) {
 				return true;
 			}
