@@ -75,11 +75,11 @@ module.exports.targets = function(context)
 	);
 	if (target) { this.setTargetDuration(context, 1); return [target]; }
 	// next target : builder and upgrader creeps
-	for (let ratio in [.2, .8]) {
+	for (let ratio in [.3, .7]) {
 		target = context.pos.findClosestByRange(FIND_MY_CREEPS, { filter: creep =>
 			((creep.memory.role == 'builder') || (creep.memory.role == 'repairer')) && (objects.energyRatio(creep) < ratio)
 		});
-		if (target) return [target];
+		if (target) { this.setTargetDuration(context, 1); return [target]; }
 	}
 	// towers with less than 100% of energy
 	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
