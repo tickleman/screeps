@@ -73,15 +73,11 @@ module.exports.targets = function(context)
 		FIND_MY_STRUCTURES,
 		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && (objects.energyRatio(structure) < .8) }
 	);
-	if (target) return [target];
+	if (target) { this.setTargetDuration(context, 1); return [target]; }
 	// next target : builder and upgrader creeps
 	for (let ratio in [.2, .8]) {
 		target = context.pos.findClosestByRange(FIND_MY_CREEPS, { filter: creep =>
-			(creep.memory.role == 'builder') && (objects.energyRatio(creep) < ratio)
-		});
-		if (target) return [target];
-		target = context.pos.findClosestByRange(FIND_MY_CREEPS, { filter: creep =>
-			(creep.memory.role == 'repairer') && (objects.energyRatio(creep) < ratio)
+			((creep.memory.role == 'builder') || (creep.memory.role == 'repairer')) && (objects.energyRatio(creep) < ratio)
 		});
 		if (target) return [target];
 	}
@@ -89,11 +85,12 @@ module.exports.targets = function(context)
 	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
 		(structure.structureType == STRUCTURE_TOWER) && needsEnergy(structure)
 	});
-	if (target) return [target];
+	if (target) { this.setTargetDuration(5); return [target]; }
 	// container and storage with available energy
 	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
 		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
 		&& needsEnergy(structure)
 	});
-	return target ? [target] : [];
+	if (target) { this.setTargetDuration(1); return [target]; }
+	return [];
 };

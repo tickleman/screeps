@@ -40,5 +40,6 @@ module.exports.targetJobDone = function(creep)
 module.exports.targets = function(context)
 {
 	var target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure => objects.wounded(structure) });
-	return target ? [target] : [];
+	if (target) { this.setTargetDuration(creep, 10); return [target]; }
+	return [];
 };

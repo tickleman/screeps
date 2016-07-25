@@ -146,7 +146,10 @@ module.exports.canWorkTarget = function(creep)
  */
 module.exports.findSource = function(context)
 {
-	if (context instanceof Creep) context.say('source');
+	if (context instanceof Creep) {
+		context.say('source');
+		delete context.memory.source_duration;
+	}
 	var sources = this.sources(context);
 	if (sources.length) {
 		var source = sources[0];
@@ -179,7 +182,10 @@ module.exports.findSourceId = function(creep)
  */
 module.exports.findTarget = function(context)
 {
-	if (context instanceof Creep) context.say('target');
+	if (context instanceof Creep) {
+		context.say('target');
+		delete context.memory.target_duration;
+	}
 	var targets = this.targets(context);
 	if (targets.length) {
 		var target = targets[0];
@@ -201,6 +207,38 @@ module.exports.findTargetId = function(creep)
 {
 	var target = this.findTarget(creep);
 	return target ? target.id : null;
+};
+
+/**
+ * Sets source duration.
+ * Call it from sources() in order to change source after an amount source.next switches
+ * If duration is not set, stays unlimited (remove source_duration from memory)
+ *
+ * @param creep      Creep
+ * @param [duration] number
+ */
+module.exports.setSourceDuration = function(creep, duration)
+{
+	if (!this.single_source && (creep instanceof Creep)) {
+		if (duration === undefined) delete creep.memory.source_duration;
+		else creep.memory.source_duration = duration;
+	}
+};
+
+/**
+ * Sets target duration.
+ * Call it from targets() in order to change target after an amount of target.next switches
+ * If duration is not set, stays unlimited (remove source_duration from memory)
+ *
+ * @param creep      Creep
+ * @param [duration] number
+ */
+module.exports.setTargetDuration = function(creep, duration)
+{
+	if (!this.single_target && (creep instanceof Creep)) {
+		if (duration === undefined) delete creep.memory.target_duration;
+		else creep.memory.target_duration = duration;
+	}
 };
 
 /**
@@ -236,8 +274,11 @@ module.exports.singleTarget = function(creep)
  */
 module.exports.source = function(creep)
 {
+	let force  = (creep.memory.source_duration !== undefined) && !creep.memory.source_duration--;
 	let source = objects.get(creep, creep.memory.source);
-	if (!source || this.sourceJobDone(creep)) source = this.singleSource(creep) ? null : this.findSource(creep);
+	if (force || !source || this.sourceJobDone(creep)) {
+		source = this.singleSource(creep) ? null : this.findSource(creep);
+	}
 	return source;
 };
 
@@ -305,12 +346,19 @@ module.exports.sourceJobDone = function(creep)
 module.exports.sources = function(context)
 {
 	if (!this.source_work) return [];
+
 	var source = context.pos.findClosestByRange(FIND_DROPPED_ENERGY);
-	if (!source) source = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
+	if (source) return [source];
+
+	source = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
 		(structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE)
 	});
-	if (!source) source = context.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
-	return source ? [source] : [];
+	if (source) { this.setSourceDuration(context, 1); return [source]; }
+
+	source = context.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
+	if (source) { this.setSourceDuration(context, 1); return [source]; }
+
+	return [];
 };
 
 /**
@@ -345,37 +393,37 @@ module.exports.sourceWork = function(creep)
 /**
  * Spawn a creep, giving it a role, source and target (optionals)
  *
- * @param [options] {{ target: RoomObject|RoomPosition|string, source: RoomObject|RoomPosition|string, role: string,
+ * @param [opts] {{ target: RoomObject|RoomPosition|string, source: RoomObject|RoomPosition|string, role: string,
  *                     name: string }}
  * @return Creep|null
  */
-module.exports.spawn = function(options)
+module.exports.spawn = function(opts)
 {
-	if (!options) options = {};
+	if (!opts) opts = {};
 	// spawn
-	if (!options.spawn && options.source) options.spawn = rooms.get(rooms.nameOf(options.source), 'spawn');
-	if (!options.spawn && options.target) options.spawn = rooms.get(rooms.nameOf(options.target), 'spawn');
+	if (!opts.spawn && opts.source) opts.spawn = rooms.get(rooms.nameOf(opts.source), 'spawn');
+	if (!opts.spawn && opts.target) opts.spawn = rooms.get(rooms.nameOf(opts.target), 'spawn');
 	// body parts
-	var body_parts = this.body_parts;
-	if (options.accept_little && options.spawn.canCreateCreep(body_parts)) {
-		body_parts = body.parts(body_parts, options.spawn.room.energyAvailable);
+	var body_parts = opts.body_parts ? this.body_parts : opts.body_parts;
+	if (opts.accept_little && opts.spawn.canCreateCreep(body_parts)) {
+		body_parts = body.parts(body_parts, opts.spawn.room.energyAvailable);
 	}
 	// create creep
-	if (body_parts && !options.spawn.canCreateCreep(body_parts)) {
-		if (!options.name)   options.name   = names.chooseName();
-		if (!options.role)   options.role   = this.role;
-		if (!options.source) options.source = this.findSource(options.spawn);
-		if (!options.target) options.target = this.findTarget(options.spawn);
+	if (body_parts && !opts.spawn.canCreateCreep(body_parts)) {
+		if (!opts.name)   opts.name   = names.chooseName();
+		if (!opts.role)   opts.role   = this.role;
+		if (!opts.source) opts.source = this.findSource(opts.spawn);
+		if (!opts.target) opts.target = this.findTarget(opts.spawn);
 		// source / target id
-		if (options.source && (options.source instanceof RoomObject)) options.source = options.source.id;
-		if (options.target && (options.target instanceof RoomObject)) options.target = options.target.id;
+		if (opts.source && (opts.source instanceof RoomObject)) opts.source = opts.source.id;
+		if (opts.target && (opts.target instanceof RoomObject)) opts.target = opts.target.id;
 		// prepare creep memory
-		var memory = { role: options.role };
-		if (options.source) memory.source = options.source;
-		if (options.target) memory.target = options.target;
+		var memory = { role: opts.role };
+		if (opts.source) memory.source = opts.source;
+		if (opts.target) memory.target = opts.target;
 		// spawn a new creep
-		var creep_name = options.spawn.createCreep(body_parts, options.name, memory);
-		console.log('spawns ' + options.role + ' ' + creep_name);
+		var creep_name = opts.spawn.createCreep(body_parts, opts.name, memory);
+		console.log('spawns ' + opts.role + ' ' + creep_name);
 		return Game.creeps[creep_name];
 	}
 	return null;
@@ -392,8 +440,11 @@ module.exports.spawn = function(options)
  */
 module.exports.target = function(creep)
 {
+	let force  = (creep.memory.target_duration !== undefined) && !creep.memory.target_duration--;
 	let target = objects.get(creep, creep.memory.target);
-	if (!target || this.targetJobDone(creep)) target = this.singleTarget(creep) ? null : this.findTarget(creep);
+	if (force || !target || this.targetJobDone(creep)) {
+		target = this.singleTarget(creep) ? null : this.findTarget(creep);
+	}
 	return target;
 };
 
@@ -460,23 +511,27 @@ module.exports.targetJobDone = function(creep)
 module.exports.targets = function(context)
 {
 	if (!this.target_work) return [];
+
 	// the nearest extension without energy into the current room
 	let target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-	(structure.structureType == STRUCTURE_EXTENSION) && !objects.energyFull(structure)
+		(structure.structureType == STRUCTURE_EXTENSION) && !objects.energyFull(structure)
 	});
 	if (target) return [target];
+
 	// the nearest spawn without energy into the current room
 	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-	(structure.structureType == STRUCTURE_SPAWN) && !objects.energyFull(structure)
+		(structure.structureType == STRUCTURE_SPAWN) && !objects.energyFull(structure)
 	});
 	if (target) return [target];
+
 	// the nearest container or storage
 	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-	((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
-	&& !objects.energyFull(structure)
-
+		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
+		&& !objects.energyFull(structure)
 	});
-	return target ? [target] : [];
+	if (target) { this.setTargetDuration(context, 1); return [target] }
+
+	return [];
 };
 
 /**
