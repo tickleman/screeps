@@ -39,7 +39,19 @@ module.exports.targetJobDone = function(creep)
  **/
 module.exports.targets = function(context)
 {
-	var target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure => objects.wounded(structure) });
+	let structures     = context.room.find(FIND_STRUCTURES, { filter: structure => objects.wounded(structure) });
+	let min_range      = 99;
+	let min_hits_ratio = 1;
+	let target         = null;
+	for (let structure of structures) {
+		let hits_ratio = Math.round(objects.hitsRatio(structure) * 10);
+		let range = (hits_ratio <= min_hits_ratio) ? objects.range(context, structure) : 99;
+		if ((hits_ratio < min_hits_ratio) || (range < min_range)) {
+			min_hits_ratio = hits_ratio;
+			min_range      = range;
+			target         = structure;
+		}
+	}
 	if (target) { this.setTargetDuration(context, 10); return [target]; }
 	return [];
 };

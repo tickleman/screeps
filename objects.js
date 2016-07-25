@@ -232,6 +232,20 @@ module.exports.putEnergy = function(creep, target)
 };
 
 /**
+ * Gets range, in an arbitrary unit, between source and target.
+ * Used for range comparisons, not to know the real distance between points.
+ *
+ * @param source RoomObject|RoomPosition
+ * @param target RoomObject|RoomPosition
+ */
+module.exports.range = function(source, target)
+{
+	if (source instanceof RoomObject) source = source.pos;
+	if (target instanceof RoomObject) target = target.pos;
+	return Math.abs(target.x - source.x) + Math.abs(target.y - source.y);
+};
+
+/**
  * @param object RoomObject
  * @return boolean true if the object is wounded, false if it is fully healed
  */
