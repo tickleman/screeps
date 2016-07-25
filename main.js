@@ -67,7 +67,7 @@ module.exports.loop = function ()
 			// spawn other creeps
 			else if (
 				   main.spawnRoleCreep(room, 'spawn_harvester', true)
-				|| main.spawnRoleCreep(room, 'spawn_carrier', true)
+				|| ((main.count[room.name].carrier > 1) ? false : main.spawnRoleCreep(room, 'spawn_carrier', true))
 				|| main.spawnRoleCreep(room, 'controller_upgrader', true)
 				|| main.spawnRoleCreep(room, 'controller_harvester', true)
 				|| main.spawnRoleCreep(room, 'controller_carrier', true)
