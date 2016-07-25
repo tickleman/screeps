@@ -40,6 +40,11 @@ module.exports.JOB_DONE = 'JOB_DONE';
 /**
  * @type number
  */
+module.exports.NEXT_STEP = 5;
+
+/**
+ * @type number
+ */
 module.exports.NO_SOURCE = 1;
 
 /**
@@ -50,17 +55,7 @@ module.exports.NO_TARGET = 2;
 /**
  * @type number
  */
-module.exports.SOURCE_WORK_OFF = 3;
-
-/**
- * @type number
- */
-module.exports.TARGET_WORK_OFF = 4;
-
-/**
- * @type number
- */
-module.exports.WAIT = 5;
+module.exports.WAIT = 3;
 
 /**
  * Body parts for a starter creep
@@ -210,6 +205,31 @@ module.exports.findTargetId = function(creep)
 };
 
 /**
+ * Switch to the next step
+ *
+ * @param creep Creep
+ * @param step  string
+ */
+module.exports.nextStep = function(creep, step)
+{
+	creep.memory.step = step;
+	if (
+		(step == 'sourceWork')
+		&& (creep.memory.source_duration !== undefined)
+		&& !creep.memory.source_duration--
+	) {
+		delete creep.memory.source;
+	}
+	if (
+		(step == 'targetWork')
+		&& (creep.memory.target_duration !== undefined)
+		&& !creep.memory.target_duration--
+	) {
+		delete creep.memory.target;
+	}
+};
+
+/**
  * Sets source duration.
  * Call it from sources() in order to change source after an amount source.next switches
  * If duration is not set, stays unlimited (remove source_duration from memory)
@@ -274,9 +294,8 @@ module.exports.singleTarget = function(creep)
  */
 module.exports.source = function(creep)
 {
-	let force  = (creep.memory.source_duration !== undefined) && !creep.memory.source_duration--;
 	let source = objects.get(creep, creep.memory.source);
-	if (force || !source || this.sourceJobDone(creep)) {
+	if (!source || this.sourceJobDone(creep)) {
 		source = this.singleSource(creep) ? null : this.findSource(creep);
 	}
 	return source;
@@ -365,25 +384,19 @@ module.exports.sources = function(context)
  * The common source work algorithm
  *
  * @param creep Creep
- * @returns number OK if worked well, else an ERR_ constant
+ * @returns number OK if worked well, NEXT_STEP, or an ERR_ constant
  */
 module.exports.sourceWork = function(creep)
 {
-	if (!this.source_work) {
-		creep.memory.step = 'goToTarget';
-		return this.SOURCE_WORK_OFF;
-	}
+	if (!this.source_work) return this.NEXT_STEP;
 
 	if (!this.canWorkSource(creep)) {
-		if (this.target_work && this.canWorkTarget(creep) && this.target(creep)) {
-			creep.memory.step = 'goToTarget';
-			return OK;
-		}
+		if (this.target_work && this.canWorkTarget(creep) && this.target(creep)) return this.NEXT_STEP;
 		return this.WAIT;
 	}
 
 	if (!this.source(creep)) {
-		if (this.target_work && this.canWorkTarget(creep) && this.target(creep)) creep.memory.step = 'goToTarget';
+		if (this.target_work && this.canWorkTarget(creep) && this.target(creep)) return this.NEXT_STEP;
 		return this.NO_SOURCE;
 	}
 
@@ -440,9 +453,8 @@ module.exports.spawn = function(opts)
  */
 module.exports.target = function(creep)
 {
-	let force  = (creep.memory.target_duration !== undefined) && !creep.memory.target_duration--;
 	let target = objects.get(creep, creep.memory.target);
-	if (force || !target || this.targetJobDone(creep)) {
+	if (!target || this.targetJobDone(creep)) {
 		target = this.singleTarget(creep) ? null : this.findTarget(creep);
 	}
 	return target;
@@ -542,21 +554,15 @@ module.exports.targets = function(context)
  */
 module.exports.targetWork = function(creep)
 {
-	if (!this.target_work) {
-		creep.memory.step = 'goToSource';
-		return this.TARGET_WORK_OFF;
-	}
+	if (!this.target_work) return this.NEXT_STEP;
 
 	if (!this.canWorkTarget(creep)) {
-		if (this.source_work && this.canWorkSource(creep) && this.source(creep)) {
-			creep.memory.step = 'goToSource';
-			return OK;
-		}
+		if (this.source_work && this.canWorkSource(creep) && this.source(creep)) return this.NEXT_STEP;
 		return this.WAIT;
 	}
 
 	if (!this.target(creep)) {
-		if (this.source_work && this.canWorkSource(creep) && this.source(creep)) creep.memory.step = 'goToSource';
+		if (this.source_work && this.canWorkSource(creep) && this.source(creep)) return this.NEXT_STEP;
 		return this.NO_TARGET;
 	}
 

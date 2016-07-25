@@ -11,8 +11,9 @@ var objects  = require('./objects');
 module.exports.sourceWork = function(creepjs, creep)
 {
 	let error = creepjs.sourceWork(creep);
-	if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.source));
-	else if (error) creep.say('s:' + messages.error(error));
+	if (error == creepjs.NEXT_STEP) creepjs.nextStep(creep, 'targetWork');
+	if (error == ERR_NOT_IN_RANGE)  creep.moveTo(objects.get(creep, creep.memory.source));
+	else if (error)                 creep.say('s:' + messages.error(error));
 };
 
 /**
@@ -24,8 +25,9 @@ module.exports.sourceWork = function(creepjs, creep)
 module.exports.targetWork = function(creepjs, creep)
 {
 	let error = creepjs.targetWork(creep);
-	if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.target));
-	else if (error) creep.say('t:' + messages.error(error));
+	if (error == creepjs.NEXT_STEP)     creepjs.nextStep(creep, 'sourceWork');
+	else if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.target));
+	else if (error)                     creep.say('t:' + messages.error(error));
 };
 
 /**
@@ -36,15 +38,15 @@ module.exports.targetWork = function(creepjs, creep)
  */
 module.exports.work = function(creepjs, creep)
 {
-	if (!creep.memory.step) creep.memory.step = 'spawning';
+	if (!creep.memory.step) creepjs.nextStep(creep, 'spawning');
 	switch (creep.memory.step) {
-		case 'spawning':   if (!creep.spawning) creep.memory.step = 'sourceWork'; break;
-		case 'goToSource': creep.memory.step = 'sourceWork'; break;
-		case 'goToTarget': creep.memory.step = 'targetWork'; break;
+		case 'spawning':   if (!creep.spawning) creepjs.nextStep(creep, 'sourceWork'); break;
+		case 'goToSource': creepjs.nextStep(creep, 'sourceWork'); break;
+		case 'goToTarget': creepjs.nextStep(creep, 'targetWork'); break;
 	}
 	switch (creep.memory.step) {
 		case 'sourceWork': this.sourceWork(creepjs, creep); break;
 		case 'targetWork': this.targetWork(creepjs, creep); break;
-		default: creep.memory.step = 'spawning';
+		default: creepjs.nextStep(creep, 'spawning');
 	}
 };
