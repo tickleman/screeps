@@ -180,7 +180,7 @@ module.exports.findSourceId = function(creep)
  */
 module.exports.findTarget = function(context)
 {
-	if (context instanceof Creep) context.say('source');
+	if (context instanceof Creep) context.say('target');
 	var targets = this.targets(context);
 	if (targets.length) {
 		var target = targets[0];
