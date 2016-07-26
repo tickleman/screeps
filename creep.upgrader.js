@@ -14,10 +14,10 @@ module.exports.__proto__ = require('./creep');
 
 /**
  * Body parts for a heavy harvester
- * CARRY x 2, MOVE, WORK x 5
- * - consume 550 energy units
+ * CARRY x 3, MOVE, WORK x 5
+ * - consumes 700 energy units
  */
-module.exports.body_parts = [CARRY, CARRY, MOVE, WORK, WORK, WORK, WORK];
+module.exports.body_parts = [CARRY, CARRY, CARRY, MOVE, WORK, WORK, WORK, WORK, WORK];
 
 module.exports.role          = 'upgrader';
 module.exports.single_target = true;
