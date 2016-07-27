@@ -130,8 +130,9 @@ module.exports.spawnSimpleCreep = function(room, role, cnt, accept_little)
 {
  	if (this.count[room.name] && this.count[room.name][role] && (this.count[room.name][role] >= cnt)) return false;
 	let spawn = rooms.get(room, 'spawn');
+	console.log(role, 'targets ?');
 	if (creep_of[role].targets(spawn).length) {
-		console.log('wish to spawn a ', role);
+		console.log('> wish to spawn a ', role);
 		let creep = creep_of[role].spawn({ accept_little: accept_little, role: role, spawn: spawn });
 		if (creep) {
 			return true;
