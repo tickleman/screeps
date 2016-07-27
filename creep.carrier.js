@@ -68,7 +68,7 @@ module.exports.targets = function(context)
 		(structure.structureType == STRUCTURE_SPAWN) && needsEnergy(structure)
 	});
 	if (target) return [target];
-	// next target : towers with less than 70% of energy
+	// next target : towers with less than 80% of energy
 	target = context.pos.findClosestByRange(
 		FIND_MY_STRUCTURES,
 		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && (objects.energyRatio(structure) < .8) }

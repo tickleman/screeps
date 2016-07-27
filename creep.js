@@ -145,6 +145,9 @@ module.exports.findSource = function(context)
 		context.say('source');
 		delete context.memory.source_duration;
 	}
+	else {
+		console.log(context, 'source');
+	}
 	var sources = this.sources(context);
 	if (sources.length) {
 		var source = sources[0];
@@ -180,6 +183,9 @@ module.exports.findTarget = function(context)
 	if (context instanceof Creep) {
 		context.say('target');
 		delete context.memory.target_duration;
+	}
+	else {
+		console.log(context, 'target');
 	}
 	var targets = this.targets(context);
 	if (targets.length) {
