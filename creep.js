@@ -151,8 +151,12 @@ module.exports.findSource = function(context)
 	}
 	var sources = shorter_path.sort(context, this.sources(context));
 	if (sources.length) {
-		var source = sources[0];
-		if (context instanceof Creep) context.memory.source = source.id;
+		var source = sources.shift();
+		if (context instanceof Creep) {
+			context.memory.source = source.id;
+			if (sources.length) context.memory.sources = objects.toIds(sources);
+			else delete context.memory.sources;
+		}
 		return source;
 	}
 	if (context instanceof Creep) delete context.memory.source;
@@ -190,8 +194,12 @@ module.exports.findTarget = function(context)
 	}
 	var targets = shorter_path.sort(context, this.targets(context));
 	if (targets.length) {
-		var target = targets[0];
-		if (context instanceof Creep) context.memory.target = target.id;
+		var target = targets.shift();
+		if (context instanceof Creep) {
+			context.memory.target = target.id;
+			if (targets.length) context.memory.targets = objects.toIds(targets);
+			else delete context.memory.targets;
+		}
 		return target;
 	}
 	if (context instanceof Creep) delete context.memory.target;
