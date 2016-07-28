@@ -67,10 +67,7 @@ module.exports.loop = function ()
 			// spawn other creeps
 			else if (
 				   main.spawnRoleCreep(room, 'spawn_harvester', { accept_little: true })
-				|| (
-					(main.count[room.name].carrier > 1)
-					? false : main.spawnRoleCreep(room, 'spawn_carrier', { accept_little: true })
-				 )
+				|| main.spawnSpawnCarrier(room)
 				|| main.spawnRoleCreep(room, 'controller_upgrader', { accept_little: true })
 				|| main.spawnRoleCreep(room, 'controller_harvester', { accept_little: true })
 				|| main.spawnRoleCreep(room, 'controller_carrier', { accept_little: true })
@@ -90,6 +87,17 @@ module.exports.loop = function ()
 		}
 	});
 
+};
+
+/**
+ * @param room
+ * @returns boolean
+ */
+module.exports.spawnSpawnCarrier = function(room)
+{
+	return (this.count[room.name].carrier < 2)
+		? this.spawnRoleCreep(room, 'spawn_carrier', { accept_little: true })
+		: false;
 };
 
 /**
