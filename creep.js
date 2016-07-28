@@ -143,8 +143,13 @@ module.exports.canWorkTarget = function(creep)
 module.exports.findSource = function(context)
 {
 	if (context instanceof Creep) {
-		context.say('source');
 		delete context.memory.source_duration;
+		if (context.memory.sources) {
+			context.memory.source = context.memory.sources.shift();
+			if (!context.memory.sources.length) delete context.memory.sources;
+			return context.memory.source;
+		}
+		context.say('source');
 	}
 	else {
 		console.log(context, 'source');
@@ -186,8 +191,13 @@ module.exports.findSourceId = function(creep)
 module.exports.findTarget = function(context)
 {
 	if (context instanceof Creep) {
-		context.say('target');
 		delete context.memory.target_duration;
+		if (context.memory.sources) {
+			context.memory.source = context.memory.sources.shift();
+			if (!context.memory.sources.length) delete context.memory.sources;
+			return context.memory.source;
+		}
+		context.say('target');
 	}
 	else {
 		console.log(context, 'target');
