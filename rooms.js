@@ -108,10 +108,10 @@ module.exports.get = function(room, object_name, property)
 		return Memory.rooms[room_name][object_name] ? Memory.rooms[room_name][object_name][property] : null;
 	}
 
-	if (!this.rooms[room_name]) {
+	if (this.rooms[room_name] === undefined) {
 		this.rooms[room_name] = {};
 	}
-	if (!this.rooms[room_name][object_name]) {
+	if (this.rooms[room_name][object_name] === undefined) {
 		if (Memory.rooms[room_name][object_name] && Memory.rooms[room_name][object_name].creep) {
 			this.rooms[room_name][object_name] = Game.creeps[Memory.rooms[room_name][object_name].creep];
 		}
@@ -125,7 +125,7 @@ module.exports.get = function(room, object_name, property)
 			);
 		}
 		else {
-			this.rooms[room_name][object_name] = {};
+			this.rooms[room_name][object_name] = null;
 		}
 	}
 	return this.rooms[room_name][object_name];
