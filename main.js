@@ -10,8 +10,8 @@ var repairer        = require('./creep.repairer');
 var rooms           = require('./rooms');
 var spawner         = require('./spawner');
 var tower           = require('./structure.tower');
-var trans_carrier   = require('./trans_carrier');
-var trans_harvester = require('./trans_harvester');
+var trans_carrier   = require('./creep.trans_carrier');
+var trans_harvester = require('./creep.trans_harvester');
 var upgrader        = require('./creep.upgrader');
 
 /**
