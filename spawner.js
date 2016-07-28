@@ -49,7 +49,13 @@ module.exports.spawnHarvester = function(main, room)
 	let opts = { accept_little: true };
 	// rooms has two STRUCTURE_LINK ? harvester must have a CARRY body part to store energy before transfer into link
 	let links;
-	if (!rooms.has(room, 'spawn_harvester') && ((links = room.find(STRUCTURE_LINK)).length >= 2)) {
+	if (
+		!rooms.has(room, 'spawn_harvester')
+		&& (
+			(links = room.find(FIND_MY_STRUCTURES, { filter: structure => structure.structureType == STRUCTURE_LINK })).length
+			>= 2
+		)
+	) {
 		let role = rooms.get(room, 'spawn_harvester', 'role');
 		if (role) {
 			opts.body_parts = main.creep_of[role].body_parts;
