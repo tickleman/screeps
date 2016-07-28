@@ -62,18 +62,21 @@ module.exports.loop = function ()
 		if (spawn && !spawn.spawning) {
 			// spawn the first needed creep
 			if (!main.count[room.name]) {
-				main.spawnSimpleCreep(room, 'carrier', 1, true);
+				main.spawnSimpleCreep(room, { accept_little: true, count: 1, role: 'carrier' });
 			}
 			// spawn other creeps
 			else if (
-				   main.spawnRoleCreep(room, 'spawn_harvester', true)
-				|| ((main.count[room.name].carrier > 1) ? false : main.spawnRoleCreep(room, 'spawn_carrier', true))
-				|| main.spawnRoleCreep(room, 'controller_upgrader',  true)
-				|| main.spawnRoleCreep(room, 'controller_harvester', true)
-				|| main.spawnRoleCreep(room, 'controller_carrier',   true)
-				|| main.spawnSimpleCreep(room, 'carrier', 3, true)
-				|| main.spawnSimpleCreep(room, 'builder', 1)
-				|| main.spawnSimpleCreep(room, 'repairer', 1)
+				   main.spawnRoleCreep(room, 'spawn_harvester', { accept_little: true })
+				|| (
+					(main.count[room.name].carrier > 1)
+					? false : main.spawnRoleCreep(room, 'spawn_carrier', { accept_little: true })
+				 )
+				|| main.spawnRoleCreep(room, 'controller_upgrader', { accept_little: true })
+				|| main.spawnRoleCreep(room, 'controller_harvester', { accept_little: true })
+				|| main.spawnRoleCreep(room, 'controller_carrier', { accept_little: true })
+				|| main.spawnSimpleCreep(room, { accept_little: true, count: 3, role: 'carrier' })
+				|| main.spawnSimpleCreep(room, { count: 1, role: 'builder' })
+				|| main.spawnSimpleCreep(room, { count: 1, role: 'repairer' })
 			) {
 				return true;
 			}
@@ -90,22 +93,25 @@ module.exports.loop = function ()
 };
 
 /**
- * @param room            Room
- * @param room_role       string @example 'spawn_harvester'
- * @param [accept_little] boolean @default false
+ * @param room      Room
+ * @param room_role string @example 'spawn_harvester'
+ * @param [opts]    object spawn options
  * @returns boolean
  */
-module.exports.spawnRoleCreep = function(room, room_role, accept_little)
+module.exports.spawnRoleCreep = function(room, room_role, opts)
 {
+	if (!opts) opts = {};
 	if (room.controller.level == 1) {
-		accept_little = true;
+		opts.accept_little = true;
 	}
 	if (!rooms.has(room, room_role)) {
 		console.log('wish to spawn a ', room_role);
 		let role  = rooms.get(room, room_role, 'role');
-		let spawn = rooms.get(room, 'spawn');
+		let spawn = opts.spawn ? opts.spawn : rooms.get(room, 'spawn');
 		if (role && spawn) {
-			let creep = creep_of[role].spawn({ accept_little: accept_little, role: role, spawn: spawn });
+			if (!opts.role)  opts.role  = role;
+			if (!opts.spawn) opts.spawn = spawn;
+			let creep = creep_of[role].spawn(opts);
 			if (creep) {
 				creep.memory.room          = room.name;
 				creep.memory.room_role     = room_role;
@@ -120,20 +126,22 @@ module.exports.spawnRoleCreep = function(room, room_role, accept_little)
 };
 
 /**
- * @param room            Room
- * @param role            string @example 'builder'
- * @param cnt             number
- * @param [accept_little] boolean @default false
+ * @param room   Room
+ * @param [opts] object spawn options
  * @returns boolean
  */
-module.exports.spawnSimpleCreep = function(room, role, cnt, accept_little)
+module.exports.spawnSimpleCreep = function(room, opts)
 {
- 	if (this.count[room.name] && this.count[room.name][role] && (this.count[room.name][role] >= cnt)) return false;
-	let spawn = rooms.get(room, 'spawn');
-	console.log(role, 'targets ?');
-	if (creep_of[role].targets(spawn).length) {
-		console.log('> wish to spawn a ', role);
-		let creep = creep_of[role].spawn({ accept_little: accept_little, role: role, spawn: spawn });
+	if (!opts) opts = {};
+	if (this.count[room.name] && this.count[room.name][opts.role] && (this.count[room.name][opts.role] >= opts.count)) {
+		return false;
+	}
+	let spawn = opts.spawn ? opts.spawn : rooms.get(room, 'spawn');
+	console.log(opts.role, 'targets ?');
+	if (creep_of[opts.role].targets(spawn).length) {
+		console.log('> wish to spawn a ', opts.role);
+		if (!opts.spawn) opts.spawn = spawn;
+		let creep = creep_of[opts.role].spawn(opts);
 		if (creep) {
 			return true;
 		}
