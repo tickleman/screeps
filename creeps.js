@@ -93,7 +93,8 @@ module.exports.freeDeadCreeps = function()
 		if (this.room && this.room_role) {
 			rooms.removeRoleCreep(this.room, this.room_role);
 		}
-		for (let flag of Game.flags) {
+		for (let flag in Game.flags) if (Game.flags.hasOwnProperty(flag)) {
+			flag = Game.flags[flag];
 			if (flag.memory.carrier   && (flag.memory.carrier   == creep_name)) delete flag.memory.carrier;
 			if (flag.memory.harvester && (flag.memory.harvester == creep_name)) delete flag.memory.harvester;
 		}
