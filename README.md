@@ -104,6 +104,32 @@ Works with tasks planned into rooms.js :
     * path : if set, the start to go from the source to the target, then come back
     * path_step : if set, the actual move step of the creep (path[path_step]). Begins with 4.
 
+# Future algorithms
+
+## Carriers
+
+* spawn-extensions-réserve :
+1/ source
+2/ extension la plus proche du spawn
+(recharger en se déplaçant)
+3/ extension la plus éloignée du spawn
+(recharger en se déplaçant)
+4/ extension la plus proche du spawn
+5/ spawn
+6/ réserve
+
+* builders
+calcule le path vers le builder 1 seule fois
+on recacule la distance arrivée-position builder à chaque déplacement du builder
+si cette distance est > 10, on recalcule le path immédiatement
+à l'arrivée du carrier, on recalcule le path si le builder s'est déplacé
+
+* réparateurs
+idem builders
+
+* controller
+l'algorithme actuel convient
+
 # Development environment
 
 I am using PhpStorm under Linux Mint (/Ubuntu/Debian).
