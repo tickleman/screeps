@@ -1,5 +1,7 @@
 
-var rooms = require('./rooms');
+var objects      = require('./objects');
+var rooms        = require('./rooms');
+var shorter_path = require('./shorter_path');
 
 module.exports.room = function(main, room)
 {
@@ -44,7 +46,21 @@ module.exports.spawnCarrier = function(main, room)
  */
 module.exports.spawnHarvester = function(main, room)
 {
-	return this.roleCreep(main, room, 'spawn_harvester', { accept_little: true });
+	let opts = { accept_little: true };
+	// rooms has two STRUCTURE_LINK ? harvester must have a CARRY body part to store energy before transfer into link
+	let links;
+	if (!rooms.has(room, 'spawn_harvester') && ((links = room.find(STRUCTURE_LINK)).length >= 2)) {
+		let role = rooms.get(room, 'spawn_harvester', 'role');
+		if (role) {
+			opts.body_parts = main.creep_of[role].body_parts;
+			opts.body_parts.push(CARRY);
+		}
+	}
+	let creep = this.roleCreep(main, room, 'spawn_harvester', opts);
+	if (creep && opts.body_parts) {
+		creep.memory.link = shorter_path.sort(objects.get(creep, 'spawn_source'), links).shift().id;
+	}
+	return creep;
 };
 
 /**

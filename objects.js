@@ -3,24 +3,6 @@ var rooms = require('./rooms');
 var tests = require('./tests');
 
 /**
- * Returns true if the creep can do the told job
- *
- * @param creep Creep
- * @param [what] string ATTACK, CARRY, CLAIM, HEAL, MOVE, RANGED_ATTACK, TOUGH, WORK
- * @returns boolean|object if what is not set, returns an object with { body_part: true }
- */
-var can = function(creep, what)
-{
-	if (!what) var parts = {};
-	for (let part in creep.body) if (creep.body.hasOwnProperty(part)) {
-		part = creep.body[part];
-		if (!what) parts[part.type] = true;
-		else if (part.type == what) return true;
-	}
-	return what ? false : parts;
-};
-
-/**
  * @type boolean
  */
 module.exports.DEBUG = false;
@@ -37,6 +19,24 @@ module.exports.cache = {};
 module.exports.hitsRatio = function(object)
 {
 	return object.hitsMax ? (object.hits / object.hitsMax) : 1;
+};
+
+/**
+ * Returns true if the creep can do the told job
+ *
+ * @param creep Creep
+ * @param [what] string ATTACK, CARRY, CLAIM, HEAL, MOVE, RANGED_ATTACK, TOUGH, WORK
+ * @returns boolean|object if what is not set, returns an object with { body_part: true }
+ */
+module.exports.can = function(creep, what)
+{
+	if (!what) var parts = {};
+	for (let part in creep.body) if (creep.body.hasOwnProperty(part)) {
+		part = creep.body[part];
+		if (!what) parts[part.type] = true;
+		else if (part.type == what) return true;
+	}
+	return what ? false : parts;
 };
 
 /**
@@ -163,7 +163,7 @@ module.exports.energyFull = function(object)
  */
 module.exports.getEnergy = function(creep, source, allow_dismantle)
 {
-	var creep_can = can(creep);
+	var creep_can = this.can(creep);
 	if (this.DEBUG) console.log(creep, 'getEnergy', source, tests.dump(creep_can));
 	if (creep_can[CARRY]) {
 		if (this.DEBUG) console.log('- can carry');
@@ -203,7 +203,7 @@ module.exports.getEnergy = function(creep, source, allow_dismantle)
  */
 module.exports.putEnergy = function(creep, target)
 {
-	var creep_can = can(creep);
+	var creep_can = this.can(creep);
 	if (this.DEBUG) console.log(creep, 'putEnergy', target, tests.dump(creep_can));
 	if (creep_can[HEAL]) {
 		if (this.DEBUG) console.log('- can heal');

@@ -33,6 +33,23 @@ module.exports.canWorkSource = function(creep)
 };
 
 /**
+ * The harvester does the standard job.
+ * If it has a 'CARRY' part and a nearly LINK, then it immediately stores the harvester energy into the link
+ *
+ * @param creep  Creep
+ * @return number 0 if no error, error code if error during the job
+ */
+module.exports.sourceJob = function(creep)
+{
+	let result = module.exports.__proto__.sourceJob(creep);
+	if ((result == OK) && creep.memory.link && objects.can(CARRY)) {
+		let link = objects.get(creep, creep.memory.link);
+		if (link) result = creep.transfer(link);
+	}
+	return result;
+};
+
+/**
  * Select the source with the minimum count of harvesters.
  *
  * @param context RoomObject
