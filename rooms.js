@@ -118,11 +118,14 @@ module.exports.get = function(room, object_name, property)
 		else if (Memory.rooms[room_name][object_name] && Memory.rooms[room_name][object_name].id) {
 			this.rooms[room_name][object_name] = Game.getObjectById(Memory.rooms[room_name][object_name].id);
 		}
-		else {
+		else if (Memory.rooms[room_name][object_name]) {
 			this.rooms[room_name][object_name] = Game.rooms[room_name].getPositionAt(
 				Memory.rooms[room_name][object_name].x,
 				Memory.rooms[room_name][object_name].y
 			);
+		}
+		else {
+			this.rooms[room_name][object_name] = {};
 		}
 	}
 	return this.rooms[room_name][object_name];
