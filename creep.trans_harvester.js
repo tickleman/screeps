@@ -25,7 +25,7 @@ module.exports.sourceJob = function(creep)
 		return module.exports.__proto__.sourceJob(creep);
 	}
 	else {
-		if (!objects.range(creep, Game.flags[creep_memory.source_flag])) {
+		if (!objects.range(creep, Game.flags[creep.memory.source_flag])) {
 			delete creep.memory.source;
 			return OK;
 		}
