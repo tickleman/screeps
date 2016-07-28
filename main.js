@@ -67,7 +67,8 @@ module.exports.loop = function ()
 
 	// give orders using flags position and name
 	for (let flag in Game.flags) if (Game.flags.hasOwnProperty(flag)) {
-		if (!orders.give(Game.flags[flag])) {
+		flag = Game.flags[flag];
+		if (!orders.give(flag)) {
 			this.flags[flag.name] = flag;
 		}
 	}
