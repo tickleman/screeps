@@ -105,7 +105,7 @@ module.exports.get = function(room, object_name, property)
 		return Memory.rooms[room_name][object_name];
 	}
 	if (property) {
-		return Memory.rooms[room_name][object_name][property];
+		return Memory.rooms[room_name][object_name] ? Memory.rooms[room_name][object_name][property] : null;
 	}
 
 	if (!this.rooms[room_name]) {
