@@ -65,8 +65,8 @@ module.exports.loop = function ()
 
 	// creeps work
 	creeps.forEach(function(creep) {
-		if (!creep.spawning && this.creep_of[creep.memory.role]) {
-			this.creep_of[creep.memory.role].work(creep);
+		if (!creep.spawning && main.creep_of[creep.memory.role]) {
+			main.creep_of[creep.memory.role].work(creep);
 		}
 	});
 
