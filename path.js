@@ -134,6 +134,15 @@ module.exports.calculate = function(source, destination, opts)
 					}
 				}
 
+				for (let construction_site of room.find(FIND_CONSTRUCTION_SITES)) {
+					if (
+						(construction_site.structureType !== STRUCTURE_ROAD)
+						&& (construction_site.structureType !== STRUCTURE_RAMPART)
+					) {
+						costs.set(construction_site.pos.x, construction_site.pos.y, 0xff);
+					}
+				}
+
 				if (!opts.ignore_creeps) {
 					for (let creep of room.find(FIND_CREEPS)) {
 						costs.set(creep.pos.x, creep.pos.y, 0xff);
