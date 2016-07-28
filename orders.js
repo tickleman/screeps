@@ -9,6 +9,7 @@ var creeps = require('./creeps');
  */
 module.exports.give = function(flag)
 {
+	let order = true;
 	if (flag.name.substr(0, 5) == 'step=') {
 		let creep = flag.pos.findClosestByRange(FIND_MY_CREEPS);
 		if (creep) {
@@ -16,7 +17,10 @@ module.exports.give = function(flag)
 			this.log(creep, flag.name);
 		}
 	}
-	flag.remove();
+	else {
+		order = false;
+	}
+	if (order) flag.remove();
 };
 
 /**
