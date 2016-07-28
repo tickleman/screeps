@@ -84,8 +84,8 @@ module.exports.filter = function(callback)
 module.exports.forEach = function(callback, thisArg)
 {
 	if (thisArg == undefined) thisArg = this;
-	for (var key in Game.rooms) if (Game.rooms.hasOwnProperty(key)) {
-		if (callback.call(thisArg, Game.rooms[key], key, Game.rooms)) break;
+	for (var room_name in Game.rooms) if (Game.rooms.hasOwnProperty(room_name)) {
+		if (callback.call(thisArg, Game.rooms[room_name], room_name, Game.rooms)) break;
 	}
 };
 
@@ -196,7 +196,7 @@ module.exports.memorize = function(reset)
 			});
 			// spawn information
 			if (cache.spawn) {
-				cache.spawn_source            = cache.spawn.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
+				cache.spawn_source            = cache.spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
 				memory.spawn_source           = toMemoryObject(cache.spawn_source);
 				memory.spawn_carrier          = { path: Path.calculate(cache.spawn_source, cache.spawn, { range: 1 }) };
 				memory.spawn_harvester        = Path.start(memory.spawn_carrier.path);
@@ -206,7 +206,7 @@ module.exports.memorize = function(reset)
 			}
 			// controller information
 			if (cache.controller) {
-				cache.controller_source  = cache.controller.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
+				cache.controller_source  = cache.controller.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
 				memory.controller_source = toMemoryObject(cache.controller_source);
 				// controller source is the same than spawn source
 				if (cache.controller_source.id == cache.spawn_source.id) {
@@ -248,7 +248,7 @@ module.exports.memorize = function(reset)
 				target: 'controller_upgrader'
 			};
 
-			this.rooms[room.name]        = cache;
+			this.rooms[room.name]   = cache;
 			Memory.rooms[room.name] = memory;
 			Path.cost(save_cost);
 		}
