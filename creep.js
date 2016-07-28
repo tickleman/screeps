@@ -149,7 +149,7 @@ module.exports.findSource = function(context)
 	else {
 		console.log(context, 'source');
 	}
-	var sources = shorter_path.sort(this.sources(context));
+	var sources = shorter_path.sort(context, this.sources(context));
 	if (sources.length) {
 		var source = sources[0];
 		if (context instanceof Creep) context.memory.source = source.id;
@@ -188,7 +188,7 @@ module.exports.findTarget = function(context)
 	else {
 		console.log(context, 'target');
 	}
-	var targets = shorter_path.sort(this.targets(context));
+	var targets = shorter_path.sort(context, this.targets(context));
 	if (targets.length) {
 		var target = targets[0];
 		if (context instanceof Creep) context.memory.target = target.id;
