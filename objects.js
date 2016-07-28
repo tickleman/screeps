@@ -246,6 +246,21 @@ module.exports.range = function(source, target)
 };
 
 /**
+ * Gets the id of each object
+ *
+ * @param objects RoomObject[]
+ * @returns string[]
+ */
+module.exports.toIds = function(objects)
+{
+	let ids = [];
+	for (let object in objects) if (objects.hasOwnProperty(object)) {
+		ids.push(objects[object].id);
+	}
+	return ids;
+};
+
+/**
  * @param object RoomObject
  * @return boolean true if the object is wounded, false if it is fully healed
  */
