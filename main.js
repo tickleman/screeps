@@ -1,28 +1,37 @@
 
-var base_creep = require('./creep');
-var builder    = require('./creep.builder');
-var carrier    = require('./creep.carrier');
-var harvester  = require('./creep.harvester');
-var creeps     = require('./creeps');
-var objects    = require('./objects');
-var orders     = require('./orders');
-var repairer   = require('./creep.repairer');
-var rooms      = require('./rooms');
-var spawner    = require('./spawner');
-var tower      = require('./structure.tower');
-var upgrader   = require('./creep.upgrader');
+var base_creep      = require('./creep');
+var builder         = require('./creep.builder');
+var carrier         = require('./creep.carrier');
+var harvester       = require('./creep.harvester');
+var creeps          = require('./creeps');
+var objects         = require('./objects');
+var orders          = require('./orders');
+var repairer        = require('./creep.repairer');
+var rooms           = require('./rooms');
+var spawner         = require('./spawner');
+var tower           = require('./structure.tower');
+var trans_carrier   = require('./trans_carrier');
+var trans_harvester = require('./trans_harvester');
+var upgrader        = require('./creep.upgrader');
 
 /**
  * @type object|base_creep[]
  */
 module.exports.creep_of = {
-	base_creep: base_creep,
-	builder:    builder,
-	carrier:    carrier,
-	harvester:  harvester,
-	repairer:   repairer,
-	upgrader:   upgrader
+	base_creep:      base_creep,
+	builder:         builder,
+	carrier:         carrier,
+	harvester:       harvester,
+	repairer:        repairer,
+	trans_carrier:   trans_carrier,
+	trans_harvester: trans_harvester,
+	upgrader:        upgrader
 };
+
+/**
+ * @type {{ string: Flag }}
+ */
+module.exports.flags = {};
 
 /**
  * @type object|tower[]
@@ -39,6 +48,7 @@ module.exports.loop = function ()
 	creeps.cache  = undefined;
 	objects.cache = {};
 	rooms.rooms   = {};
+	this.flags    = {};
 
 	// count, memorize
 	this.count = creeps.count();
@@ -56,7 +66,11 @@ module.exports.loop = function ()
 	}
 
 	// give orders using flags position and name
-	for (let flag in Game.flags) if (Game.flags.hasOwnProperty(flag)) orders.give(Game.flags[flag]);
+	for (let flag in Game.flags) if (Game.flags.hasOwnProperty(flag)) {
+		if (!orders.give(Game.flags[flag])) {
+			this.flags[flag.name] = flag;
+		}
+	}
 
 	// spawn creeps
 	rooms.forEach(function(room) {

@@ -83,14 +83,19 @@ module.exports.forEachDeadCreep = function(callback, dead_creep_free_memory)
 /**
  * Free memory for dead creeps :
  * - list dead creeps
- * - empty memory about this creep from Memory.rooms
- * - empty memory about this creep from from Memory.creeps
+ * - empty memory about this creep from Memory.rooms.<room>.<room_role>.creep
+ * - empty memory about this creep from Memory.creeps
+ * - empty memory about this creep from Game.flags.<flag>.memory.creep
  */
 module.exports.freeDeadCreeps = function()
 {
-	this.forEachDeadCreep(function() {
+	this.forEachDeadCreep(function(creep_name) {
 		if (this.room && this.room_role) {
 			rooms.removeRoleCreep(this.room, this.room_role);
+		}
+		for (let flag of Game.flags) {
+			if (flag.memory.carrier   && (flag.memory.carrier   == creep_name)) delete flag.memory.carrier;
+			if (flag.memory.harvester && (flag.memory.harvester == creep_name)) delete flag.memory.harvester;
 		}
 	}, true);
 };

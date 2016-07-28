@@ -6,6 +6,7 @@ var creeps = require('./creeps');
 
 /**
  * @param flag Flag
+ * @returns boolean true if was an order, else false
  */
 module.exports.give = function(flag)
 {
@@ -21,6 +22,7 @@ module.exports.give = function(flag)
 		order = false;
 	}
 	if (order) flag.remove();
+	return order;
 };
 
 /**
