@@ -40,18 +40,18 @@ module.exports.targetJobDone = function(creep)
 module.exports.targets = function(context)
 {
 	let structures     = context.room.find(FIND_STRUCTURES, { filter: structure => objects.wounded(structure) });
-	let min_range      = 99;
-	let min_hits_ratio = 101;
-	let target         = null;
+	let min_hits_ratio = 1000;
+	let targets        = [];
 	for (let structure of structures) {
 		let hits_ratio = Math.round(objects.hitsRatio(structure) * 100);
-		let range = (hits_ratio <= min_hits_ratio) ? objects.range(context, structure) : 99;
-		if ((hits_ratio < min_hits_ratio) || (range < min_range)) {
+		if (hits_ratio < min_hits_ratio) {
 			min_hits_ratio = hits_ratio;
-			min_range      = range;
-			target         = structure;
+			targets        = [structure];
+		}
+		else if (hits_ratio == min_hits_ratio) {
+			targets.push(structure);
 		}
 	}
-	if (target) { this.setTargetDuration(context, 20); return [target]; }
-	return [];
+	if (targets.length) this.setTargetDuration(context, 20);
+	return targets;
 };

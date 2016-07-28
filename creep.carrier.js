@@ -58,39 +58,34 @@ module.exports.targetJobDone = function(creep)
  */
 module.exports.targets = function(context)
 {
-	// the nearest extension without energy into the current room
-	var target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_EXTENSION) && needsEnergy(structure)
+	// the extensions and spawns without energy into the current room
+	var targets = context.room.find(FIND_STRUCTURES, { filter: structure =>
+		((structure.structureType == STRUCTURE_EXTENSION) || (structure.structureType == STRUCTURE_SPAWN))
+		&& needsEnergy(structure)
 	});
-	if (target) return [target];
-	// the nearest spawn without energy into the current room
-	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_SPAWN) && needsEnergy(structure)
+	if (targets.length) return targets;
+	// next targets : towers with less than 80% of energy
+	targets = context.room.find(FIND_MY_STRUCTURES, { filter: structure =>
+		(structure.structureType == STRUCTURE_TOWER) && (objects.energyRatio(structure) < .8)
 	});
-	if (target) return [target];
-	// next target : towers with less than 80% of energy
-	target = context.pos.findClosestByRange(
-		FIND_MY_STRUCTURES,
-		{ filter: structure => (structure.structureType == STRUCTURE_TOWER) && (objects.energyRatio(structure) < .8) }
-	);
-	if (target) { this.setTargetDuration(context, 1); return [target]; }
-	// next target : builder and upgrader creeps
+	if (targets.length) { this.setTargetDuration(context, 1); return targets; }
+	// next targets : builders, upgraders, towers
 	for (let ratio in [.3, .7]) {
-		target = context.pos.findClosestByRange(FIND_MY_CREEPS, { filter: creep =>
+		targets = context.room.find(FIND_MY_CREEPS, { filter: creep =>
 			((creep.memory.role == 'builder') || (creep.memory.role == 'repairer')) && (objects.energyRatio(creep) < ratio)
 		});
-		if (target) { this.setTargetDuration(context, 1); return [target]; }
+		if (targets.length) { this.setTargetDuration(context, 1); return targets; }
 	}
 	// towers with less than 100% of energy
-	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
+	targets = context.room.find(FIND_MY_STRUCTURES, { filter: structure =>
 		(structure.structureType == STRUCTURE_TOWER) && needsEnergy(structure)
 	});
-	if (target) { this.setTargetDuration(context, 5); return [target]; }
-	// container and storage with available energy
-	target = context.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: structure =>
+	if (targets.length) { this.setTargetDuration(context, 5); return targets; }
+	// then container and storage with available energy
+	targets = context.room.find(FIND_MY_STRUCTURES, { filter: structure =>
 		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
 		&& needsEnergy(structure)
 	});
-	if (target) { this.setTargetDuration(context, 1); return [target]; }
+	if (targets.length) { this.setTargetDuration(context, 1); return targets; }
 	return [];
 };

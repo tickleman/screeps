@@ -2,14 +2,15 @@
  * The creep library : how to manage creeps with basic features that you can override
  */
 
-var basic_work = require('./work.basic');
-var body       = require('./body');
-var messages   = require('./messages');
-var names      = require('./names');
-var objects    = require('./objects');
-var path       = require('./path');
-var rooms      = require('./rooms');
-var rooms_work = require('./work.rooms');
+var basic_work   = require('./work.basic');
+var body         = require('./body');
+var messages     = require('./messages');
+var names        = require('./names');
+var objects      = require('./objects');
+var path         = require('./path');
+var rooms        = require('./rooms');
+var rooms_work   = require('./work.rooms');
+var shorter_path = require('./shorter_path');
 
 /**
  * Use sources() / targets() to find its initial source / target
@@ -148,7 +149,7 @@ module.exports.findSource = function(context)
 	else {
 		console.log(context, 'source');
 	}
-	var sources = this.sources(context);
+	var sources = shorter_path.sort(this.sources(context));
 	if (sources.length) {
 		var source = sources[0];
 		if (context instanceof Creep) context.memory.source = source.id;
@@ -187,7 +188,7 @@ module.exports.findTarget = function(context)
 	else {
 		console.log(context, 'target');
 	}
-	var targets = this.targets(context);
+	var targets = shorter_path.sort(this.targets(context));
 	if (targets.length) {
 		var target = targets[0];
 		if (context instanceof Creep) context.memory.target = target.id;
@@ -380,16 +381,16 @@ module.exports.sources = function(context)
 {
 	if (!this.source_work) return [];
 
-	var source = context.pos.findClosestByRange(FIND_DROPPED_ENERGY);
-	if (source) return [source];
+	var sources = context.room.find(FIND_DROPPED_ENERGY);
+	if (sources.length) return sources;
 
-	source = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
+	sources = context.room.find(FIND_STRUCTURES, { filter: structure =>
 		(structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE)
 	});
-	if (source) { this.setSourceDuration(context, 1); return [source]; }
+	if (sources.length) { this.setSourceDuration(context, 1); return sources; }
 
-	source = context.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
-	if (source) { this.setSourceDuration(context, 1); return [source]; }
+	sources = context.room.find(FIND_SOURCES_ACTIVE);
+	if (sources.length) { this.setSourceDuration(context, 1); return sources; }
 
 	return [];
 };
@@ -544,26 +545,24 @@ module.exports.targetJobDone = function(creep)
  **/
 module.exports.targets = function(context)
 {
-	if (!this.target_work) return [];
-
 	// the nearest extension without energy into the current room
-	let target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
+	let targets = context.room.find(FIND_STRUCTURES, { filter: structure =>
 		(structure.structureType == STRUCTURE_EXTENSION) && !objects.energyFull(structure)
 	});
-	if (target) return [target];
+	if (targets.length) return targets;
 
 	// the nearest spawn without energy into the current room
-	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
+	targets = context.room.find(FIND_STRUCTURES, { filter: structure =>
 		(structure.structureType == STRUCTURE_SPAWN) && !objects.energyFull(structure)
 	});
-	if (target) return [target];
+	if (targets.length) return targets;
 
 	// the nearest container or storage
-	target = context.pos.findClosestByRange(FIND_STRUCTURES, { filter: structure =>
+	targets = context.room.find(FIND_STRUCTURES, { filter: structure =>
 		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
 		&& !objects.energyFull(structure)
 	});
-	if (target) { this.setTargetDuration(context, 1); return [target] }
+	if (targets.length) { this.setTargetDuration(context, 1); return targets; }
 
 	return [];
 };

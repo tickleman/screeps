@@ -11,7 +11,7 @@ var objects = require('./objects');
  * @param targets RoomObject[]|RoomPosition[]
  * @returns RoomObject[] sorted targets
  */
-module.exports.sortTargets = function(context, targets)
+module.exports.sort = function(context, targets)
 {
 	let count = Object.keys(targets).length;
 	let sorted = [];

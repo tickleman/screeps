@@ -22,6 +22,5 @@ module.exports.source_work = false;
  **/
 module.exports.targets = function(context)
 {
-	var target = context.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
-	return target ? [target] : [];
+	return context.room.find(FIND_CONSTRUCTION_SITES);
 };
