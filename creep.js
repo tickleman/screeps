@@ -192,10 +192,10 @@ module.exports.findTarget = function(context)
 {
 	if (context instanceof Creep) {
 		delete context.memory.target_duration;
-		if (context.memory.sources) {
-			context.memory.source = context.memory.sources.shift();
-			if (!context.memory.sources.length) delete context.memory.sources;
-			return context.memory.source;
+		if (context.memory.targets) {
+			context.memory.target = context.memory.targets.shift();
+			if (!context.memory.targets.length) delete context.memory.targets;
+			return context.memory.target;
 		}
 		context.say('target');
 	}
