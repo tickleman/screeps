@@ -100,6 +100,7 @@ module.exports.forEach = function(callback, thisArg)
 module.exports.get = function(room, object_name, property)
 {
 	var room_name = (room instanceof Room) ? room.name : room;
+	if (!Memory.rooms[room_name]) Memory.rooms[room_name] = {};
 	if (property == this.MEMORY) {
 		return Memory.rooms[room_name][object_name];
 	}
@@ -111,10 +112,10 @@ module.exports.get = function(room, object_name, property)
 		this.rooms[room_name] = {};
 	}
 	if (!this.rooms[room_name][object_name]) {
-		if (Memory.rooms[room_name][object_name].creep) {
+		if (Memory.rooms[room_name][object_name] && Memory.rooms[room_name][object_name].creep) {
 			this.rooms[room_name][object_name] = Game.creeps[Memory.rooms[room_name][object_name].creep];
 		}
-		else if (Memory.rooms[room_name][object_name].id) {
+		else if (Memory.rooms[room_name][object_name] && Memory.rooms[room_name][object_name].id) {
 			this.rooms[room_name][object_name] = Game.getObjectById(Memory.rooms[room_name][object_name].id);
 		}
 		else {
