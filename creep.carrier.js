@@ -28,7 +28,7 @@ module.exports.role = 'carrier';
  */
 var needsEnergy = function(target)
 {
-	return (objects.energyCapacity(target) - objects.energy(target)) > 10;
+	return (objects.energyCapacity(target) - objects.energy(target)) >= 50;
 };
 
 /**
@@ -61,7 +61,7 @@ module.exports.targets = function(context)
 	// the extensions and spawns without energy into the current room
 	var targets = context.room.find(FIND_STRUCTURES, { filter: structure =>
 		((structure.structureType == STRUCTURE_EXTENSION) || (structure.structureType == STRUCTURE_SPAWN))
-		&& needsEnergy(structure)
+		&& !objects.energyFull(structure)
 	});
 	if (targets.length) return targets;
 	// next targets : towers with less than 80% of energy
@@ -81,11 +81,15 @@ module.exports.targets = function(context)
 		(structure.structureType == STRUCTURE_TOWER) && needsEnergy(structure)
 	});
 	if (targets.length) { this.setTargetDuration(context, 5); return targets; }
-	// then container and storage with available energy
+	// then container, link and storage with available energy
 	targets = context.room.find(FIND_MY_STRUCTURES, { filter: structure =>
-		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
+		(
+			(structure.structureType == STRUCTURE_CONTAINER)
+			|| (structure.structureType == STRUCTURE_LINK)
+			|| (structure.structureType == STRUCTURE_STORAGE)
+		)
 		&& needsEnergy(structure)
 	});
-	if (targets.length) { this.setTargetDuration(context, 1); return targets; }
-	return [];
+	if (targets.length) this.setTargetDuration(context, 1);
+	return targets;
 };
