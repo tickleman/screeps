@@ -1,5 +1,4 @@
 
-var rooms = require('./rooms');
 var tests = require('./tests');
 
 /**
@@ -70,7 +69,7 @@ module.exports.get = function(context, target)
 	// a room role ?
 	if (Memory.rooms[context.roomName][target]) {
 		if (!this.cache[context.roomName]) this.cache[context.roomName] = {};
-		return this.cache[context.roomName][target] = rooms.get(context.roomName, target);
+		return this.cache[context.roomName][target] = require('./rooms').get(context.roomName, target);
 	}
 	// the name of a creep ?
 	if (Game.creeps[target]) {

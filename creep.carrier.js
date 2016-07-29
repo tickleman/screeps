@@ -83,11 +83,7 @@ module.exports.targets = function(context)
 	if (targets.length) { this.setTargetDuration(context, 5); return targets; }
 	// then container, link and storage with available energy
 	targets = context.room.find(FIND_MY_STRUCTURES, { filter: structure =>
-		(
-			(structure.structureType == STRUCTURE_CONTAINER)
-			|| (structure.structureType == STRUCTURE_LINK)
-			|| (structure.structureType == STRUCTURE_STORAGE)
-		)
+		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
 		&& needsEnergy(structure)
 	});
 	if (targets.length) this.setTargetDuration(context, 1);
