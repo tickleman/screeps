@@ -2,7 +2,8 @@
  * Functions on Game.rooms
  */
 
-var Path = require('./path');
+var objects = require('./objects');
+var Path    = require('./path');
 
 module.exports =
 {
@@ -191,10 +192,12 @@ module.exports.memorize = function(reset)
 		if (!Memory.rooms[room.name]) {
 			let save_cost = Path.cost(1, 1, 1);
 			let cache  = {};
+			let links  = [];
 			let memory = {};
 			room.find(FIND_MY_STRUCTURES).forEach(function(structure) {
 				switch (structure.structureType) {
 					case STRUCTURE_CONTROLLER: memory.controller = toMemoryObject(cache.controller = structure); break;
+					case STRUCTURE_LINK:       links.push(structure); break;
 					case STRUCTURE_SPAWN:      memory.spawn      = toMemoryObject(cache.spawn = structure);      break;
 				}
 			});
@@ -251,6 +254,12 @@ module.exports.memorize = function(reset)
 				source: FIND_DROPPED_ENERGY,
 				target: 'controller_upgrader'
 			};
+
+			// links
+			for (let link of links) {
+				if (objects.range(link, room.storage) <= 2) memory.storage_link = link.id;
+				else memory.source_link = link.id;
+			}
 
 			this.rooms[room.name]   = cache;
 			Memory.rooms[room.name] = memory;
