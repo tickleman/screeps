@@ -21,16 +21,20 @@ module.exports.role = 'trans_harvester';
  */
 module.exports.sourceJob = function(creep)
 {
-	if (creep.room.name == this.sourceRoomName(creep)) {
-		return module.exports.__proto__.sourceJob(creep);
-	}
-	else {
-		if (!objects.range(creep, Game.flags[creep.memory.source_flag])) {
-			delete creep.memory.source;
-			return OK;
-		}
-		return ERR_NOT_IN_RANGE;
-	}
+	return (creep.room.name == this.sourceRoomName(creep))
+		? module.exports.__proto__.sourceJob(creep)
+		: ERR_NOT_IN_RANGE;
+};
+
+/**
+ * @param creep Creep
+ * @return boolean
+ */
+module.exports.sourceJobDone = function(creep)
+{
+	return (creep.room.name == this.sourceRoomName(creep))
+		? module.exports.__proto__.sourceJobDone(creep)
+		: !objects.range(creep, Game.flags[creep.memory.source_flag]);
 };
 
 /**
