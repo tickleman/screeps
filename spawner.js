@@ -60,8 +60,8 @@ module.exports.room = function(main, room)
 			|| this.roleCreep   (main, room, 'controller_harvester', { accept_little: true })
 			|| this.roleCreep   (main, room, 'controller_carrier',   { accept_little: true })
 			|| this.simpleCreep (main, room, { accept_little: true, count: 3, role: 'carrier' })
-			|| this.simpleCreep (main, room, { count: 1, role: 'builder' })
-			|| this.simpleCreep (main, room, { count: 1, role: 'repairer' })
+			|| (objects.energyFull(room) && this.simpleCreep(main, room, { count: 1, role: 'builder' }))
+			|| (objects.energyFull(room) && this.simpleCreep(main, room, { count: 1, role: 'repairer' }))
 		) {
 			return true;
 		}
