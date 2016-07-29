@@ -46,7 +46,7 @@ module.exports.sourceJob = function(creep)
 		let link = objects.get(creep, creep.memory.link);
 		if (link) {
 			result = creep.transfer(link, RESOURCE_ENERGY);
-			if ((result == OK) && (objects.energyRatio(link) > .9)) {
+			if (objects.energyRatio(link) > .9) {
 				let target;
 				if (link.memory.target) {
 					target = Game.getObjectById(link.memory.target);
