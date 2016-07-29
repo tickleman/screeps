@@ -70,7 +70,11 @@ module.exports.room = function(main, room)
 			flag = main.flags[flag];
 			if ((flag.name.substr(0, 3) == 'to-')) {
 				if (!flag.memory.harvester) {
-					this.simpleCreep(main, room, { even_no_target: true, flag: flag, role: 'trans_harvester' });
+					let creep = this.simpleCreep(main, room, { even_no_target: true, flag: flag, role: 'trans_harvester' });
+					if (creep) {
+						creep.memory.source_flag = flag.name;
+						flag.memory.harvester = creep.name;
+					}
 				}
 				if (!flag.memory.carrier) {
 					// TODO
