@@ -412,8 +412,10 @@ module.exports.sources = function(context)
 	});
 	if (sources.length) { this.setSourceDuration(context, 1); return sources; }
 
-	sources = context.room.find(FIND_SOURCES_ACTIVE);
-	if (sources.length) { this.setSourceDuration(context, 1); return sources; }
+	if (objects.can(context, WORK)) {
+		sources = context.room.find(FIND_SOURCES_ACTIVE);
+		if (sources.length) { this.setSourceDuration(context, 1); return sources; }
+	}
 
 	return [];
 };
