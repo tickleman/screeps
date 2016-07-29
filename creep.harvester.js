@@ -42,9 +42,24 @@ module.exports.canWorkSource = function()
 module.exports.sourceJob = function(creep)
 {
 	let result = module.exports.__proto__.sourceJob(creep);
-	if ((result == OK) && creep.memory.link && objects.can(creep, CARRY)) {
+	if (creep.memory.link && (result == OK) && objects.can(creep, CARRY)) {
 		let link = objects.get(creep, creep.memory.link);
-		if (link) result = creep.transfer(link, RESOURCE_ENERGY);
+		if (link) {
+			result = creep.transfer(link, RESOURCE_ENERGY);
+			if ((result == OK) && (objects.energyRatio(link) > .9)) {
+				let target;
+				if (link.memory.target) {
+					target = Game.getObjectById(link.memory.target);
+				}
+				else {
+					target = link.room.find(FIND_MY_STRUCTURES, { filter: structure =>
+						(structure.structureType == STRUCTURE_LINK) && (structure.id != link.id)
+					}).shift();
+					link.memory.target = target.id;
+				}
+				if (target) link.transferEnergy(target);
+			}
+		}
 	}
 	return result;
 };
