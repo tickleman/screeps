@@ -403,7 +403,9 @@ module.exports.sources = function(context)
 	if (sources.length) return sources;
 
 	sources = context.room.find(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE)
+		(structure.structureType == STRUCTURE_CONTAINER)
+		|| (structure.structureType == STRUCTURE_LINK)
+		|| (structure.structureType == STRUCTURE_STORAGE)
 	});
 	if (sources.length) { this.setSourceDuration(context, 1); return sources; }
 
