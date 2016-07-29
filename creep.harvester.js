@@ -44,7 +44,7 @@ module.exports.sourceJob = function(creep)
 	let result = module.exports.__proto__.sourceJob(creep);
 	if ((result == OK) && creep.memory.link && objects.can(CARRY)) {
 		let link = objects.get(creep, creep.memory.link);
-		if (link) result = creep.transfer(link);
+		if (link) result = creep.transfer(link, RESOURCE_ENERGY);
 	}
 	return result;
 };
