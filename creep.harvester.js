@@ -48,14 +48,16 @@ module.exports.sourceJob = function(creep)
 			result = creep.transfer(link, RESOURCE_ENERGY);
 			if (objects.energyRatio(link) > .9) {
 				let target;
-				if (link.memory.target) {
-					target = Game.getObjectById(link.memory.target);
+				if (!Memory.links) Memory.links = {};
+				if (!Memory.links[link.id]) Memory.links[link.id] = {};
+				if (Memory.links[link.id].target) {
+					target = Game.getObjectById(Memory.links[link.id].target);
 				}
 				else {
 					target = link.room.find(FIND_MY_STRUCTURES, { filter: structure =>
 						(structure.structureType == STRUCTURE_LINK) && (structure.id != link.id)
 					}).shift();
-					link.memory.target = target.id;
+					Memory.links[link.id].target = target.id;
 				}
 				if (target) link.transferEnergy(target);
 			}
