@@ -23,13 +23,13 @@ module.exports.target_work   = false;
 /**
  * Returns true if the creep can continue its source work, without any consideration about its source state
  *
- * Default behaviour : the creep is not full of energy
+ * Default behaviour : the creep can always work : it fills its carry capacity, then drops resource on the ground
  *
- * @param creep
+ * @returns boolean true
  */
-module.exports.canWorkSource = function(creep)
+module.exports.canWorkSource = function()
 {
-	return !objects.energyCapacity(creep) || !objects.energyFull(creep);
+	return true;
 };
 
 /**
@@ -42,7 +42,7 @@ module.exports.canWorkSource = function(creep)
 module.exports.sourceJob = function(creep)
 {
 	let result = module.exports.__proto__.sourceJob(creep);
-	if ((result == OK) && creep.memory.link && objects.can(CARRY)) {
+	if ((result == OK) && creep.memory.link && objects.can(creep, CARRY)) {
 		let link = objects.get(creep, creep.memory.link);
 		if (link) result = creep.transfer(link, RESOURCE_ENERGY);
 	}
