@@ -68,8 +68,9 @@ module.exports.spawn = function(opts)
 {
 	var creep = module.exports.__proto__.spawn(opts);
 	if (creep) {
-		creep.memory.source_flag = opts.flag.name;
-		opts.flag.harvester      = creep.name;
+		creep.memory.source        = opts.flag.name;
+		creep.memory.source_flag   = opts.flag.name;
+		opts.flag.memory.harvester = creep.name;
 	}
 	return creep;
 };
