@@ -236,7 +236,7 @@ module.exports.findTargetId = function(creep)
 module.exports.log = function(context, args)
 {
 	if (this.DEBUG !== false) {
-		args  = arguments;
+		args  = Array.prototype.slice.call(arguments);
 		context = args.shift();
 		if ((this.DEBUG === true) || ((context instanceof Creep) && (this.DEBUG === context.name))) {
 			console.log.apply(console, args);
