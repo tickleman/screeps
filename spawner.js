@@ -4,6 +4,19 @@ var rooms        = require('./rooms');
 var shorter_path = require('./shorter_path');
 
 /**
+ * @type boolean
+ */
+module.exports.DEBUG = true;
+
+/**
+ * @param arguments string[]
+ */
+module.exports.log = function()
+{
+	if (this.DEBUG !== false) console.log.apply(console, arguments);
+};
+
+/**
  * @param main      object
  * @param room      Room
  * @param room_role string @example 'spawn_harvester'
@@ -17,7 +30,7 @@ module.exports.roleCreep = function(main, room, room_role, opts)
 		opts.accept_little = true;
 	}
 	if (!rooms.has(room, room_role)) {
-		console.log('wish to spawn a ', room_role);
+		this.log('wish to spawn a ', room_role);
 		let role  = rooms.get(room, room_role, 'role');
 		let spawn = opts.spawn ? opts.spawn : rooms.get(room, 'spawn');
 		if (role && spawn) {
@@ -98,10 +111,10 @@ module.exports.simpleCreep = function(main, room, opts)
 		return false;
 	}
 	let spawn = opts.spawn ? opts.spawn : rooms.get(room, 'spawn');
-	console.log(opts.role, 'targets ?');
+	this.log(opts.role, 'targets ?');
 	let creepjs = main.creep_of[opts.role];
 	if (opts.even_no_target || creepjs.targets(spawn).length) {
-		console.log('> wish to spawn a ', opts.role);
+		this.log('> wish to spawn a ', opts.role);
 		if (!opts.spawn) opts.spawn = spawn;
 		let creep = creepjs.spawn(opts);
 		if (creep) {

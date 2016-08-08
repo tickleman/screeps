@@ -20,9 +20,9 @@ var shorter_path = require('./shorter_path');
 module.exports.AUTO = 'AUTO';
 
 /**
- * @type boolean
+ * @type boolean|string If string : creep name
  */
-module.exports.DEBUG = false;
+module.exports.DEBUG = true;
 
 /**
  * This value for spawn() enables the automatic available source terrain finder
@@ -152,7 +152,7 @@ module.exports.findSource = function(context)
 		context.say('source');
 	}
 	else {
-		console.log(context, 'source');
+		this.log(context, 'source');
 	}
 	var sources = shorter_path.sort(context, this.sources(context));
 	if (sources.length) {
@@ -200,7 +200,7 @@ module.exports.findTarget = function(context)
 		context.say('target');
 	}
 	else {
-		console.log(context, 'target');
+		this.log(context, 'target');
 	}
 	var targets = shorter_path.sort(context, this.targets(context));
 	if (targets.length) {
@@ -227,6 +227,21 @@ module.exports.findTargetId = function(creep)
 {
 	var target = this.findTarget(creep);
 	return target ? target.id : null;
+};
+
+/**
+ * @param context RoomObject
+ * @param args    string ...
+ */
+module.exports.log = function(context, args)
+{
+	if (this.DEBUG !== false) {
+		args  = arguments;
+		context = args.shift();
+		if ((this.DEBUG === true) || ((context instanceof Creep) && (this.DEBUG === context.name))) {
+			console.log.apply(console, args);
+		}
+	}
 };
 
 /**
@@ -350,15 +365,15 @@ module.exports.sourceCount = function(source, context)
  * The work the creep must do at its source
  * Or how it gets its energy from source
  *
- * @param creep  Creep
+ * @param creep Creep
  * @return number 0 if no error, error code if error during the job
  */
 module.exports.sourceJob = function(creep)
 {
 	let source = objects.get(creep, creep.memory.source);
-	if (this.DEBUG) console.log('s: source =', source);
+	this.log(creep, 's: source =', source);
 	let result = objects.getEnergy(creep, source);
-	if (this.DEBUG) console.log('s: result =', messages.error(result));
+	this.log(creep, 's: result =', messages.error(result));
 	if (
 		!this.target_work
 		&& (result == OK)
@@ -380,11 +395,9 @@ module.exports.sourceJob = function(creep)
 module.exports.sourceJobDone = function(creep)
 {
 	let source = objects.get(creep, creep.memory.source);
-	if (this.DEBUG) console.log('s: source =', source);
+	this.log(creep, 's: source =', source);
 	let result = !objects.energy(source);
-	if (this.DEBUG) console.log(
-		result ? 's: source job done (source energy empty)' : 's: source job continue (need more energy)'
-	);
+	this.log(creep, result ? 's: source job done (source energy empty)' : 's: source job continue (need more energy)');
 	return result;
 };
 
@@ -476,7 +489,7 @@ module.exports.spawn = function(opts)
 		if (opts.target) memory.target = opts.target;
 		// spawn a new creep
 		var creep_name = opts.spawn.createCreep(body_parts, opts.name, memory);
-		console.log('spawns ' + opts.role + ' ' + creep_name);
+		this.log(null, 'spawns ' + opts.role + ' ' + creep_name);
 		return Game.creeps[creep_name];
 	}
 	return null;
@@ -531,9 +544,9 @@ module.exports.targetCount = function(target, context)
 module.exports.targetJob = function(creep)
 {
 	let target = objects.get(creep, creep.memory.target);
-	if (this.DEBUG) console.log('t: target =', target);
+	this.log(creep, 't: target =', target);
 	let result = objects.putEnergy(creep, target);
-	if (this.DEBUG) console.log('t: result =', messages.error(result));
+	this.log(creep, 't: result =', messages.error(result));
 	if (
 		!this.source_work
 		&& (result == OK)
@@ -554,10 +567,10 @@ module.exports.targetJob = function(creep)
 module.exports.targetJobDone = function(creep)
 {
 	let target = objects.get(creep, creep.memory.target);
-	if (this.DEBUG) console.log('t: target =', target);
+	this.log(creep, 't: target =', target);
 	let result = objects.energyFull(target);
-	if (this.DEBUG) console.log(
-		result ? 't: target job done (target energy full)' : 't: target job continue (target energy not full)'
+	this.log(
+		creep, result ? 't: target job done (target energy full)' : 't: target job continue (target energy not full)'
 	);
 	return result;
 };
@@ -622,17 +635,16 @@ module.exports.targetWork = function(creep)
  **/
 module.exports.work = function(creep)
 {
-	if (this.DEBUG) {
-		console.log(
-			'WORK',
-			creep.name,
-			creep.memory.role,
-			creep.memory.room_role ? creep.memory.room_role : 'basic',
-			creep.memory.step ? creep.memory.step : 'no-step'
-		);
-		console.log('w: single source =', this.singleSource(creep), ', single target =', this.singleTarget(creep));
-		console.log('w: source work =',   this.source_work, ', target work =', this.target_work);
-	}
+	this.log(
+		creep,
+		'WORK',
+		creep.name,
+		creep.memory.role,
+		creep.memory.room_role ? creep.memory.room_role : 'basic',
+		creep.memory.step ? creep.memory.step : 'no-step'
+	);
+	this.log(creep, 'w: single source =', this.singleSource(creep), ', single target =', this.singleTarget(creep));
+	this.log(creep, 'w: source work =',   this.source_work, ', target work =', this.target_work);
 	if (creep.memory.room_role) rooms_work.work(this, creep);
 	else                        basic_work.work(this, creep);
 };
