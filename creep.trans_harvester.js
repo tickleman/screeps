@@ -21,9 +21,15 @@ module.exports.role = 'trans_harvester';
  */
 module.exports.sourceJob = function(creep)
 {
-	return (creep.room.name == this.sourceRoomName(creep))
-		? module.exports.__proto__.sourceJob(creep)
-		: ERR_NOT_IN_RANGE;
+	if (creep.room.name == this.sourceRoomName(creep)) {
+		if (!creep.pos.x)           creep.move(RIGHT);
+		else if (!creep.pos.y)      creep.move(BOTTOM);
+		else if (creep.pos.x == 49) creep.move(LEFT);
+		else if (creep.pos.y == 49) creep.move(TOP);
+		else return module.exports.__proto__.sourceJob(creep);
+		return OK;
+	}
+	return ERR_NOT_IN_RANGE;
 };
 
 /**
