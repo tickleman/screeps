@@ -63,7 +63,7 @@ module.exports.room = function(main, room)
 	if (spawn && !spawn.spawning) {
 		// spawn the first needed creep
 		if (!main.count[room.name]) {
-			this.simpleCreep(main, room, { accept_little: true, count: 1, role: 'carrier' });
+			this.simpleCreep(main, room, { accept_little: true, count: 1, even_no_target: true, role: 'carrier' });
 		}
 		// spawn other creeps
 		else if (
