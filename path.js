@@ -634,7 +634,7 @@ module.exports.unserialize = function(path)
  */
 module.exports.unshift = function(path, count)
 {
-	if (!count) count = 1;
+	if (count === undefined) count = 1;
 	var direction;
 	var pos = this.start(path);
 	for (let i = 0; i < count; i ++) {

@@ -142,6 +142,8 @@ module.exports.body = function()
 	this.assert('noLoose',       body_parts, [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]);
 };
 
+//--------------------------------------------------------------------------------------------------------------- path
+
 /**
  * Path calculation tests
  */
@@ -197,7 +199,9 @@ module.exports.path = function()
 	this.assert('unserialize',
 		path.unserialize(test), [{x: 10, y: 10}, {x: 11, y: 10}, {x: 12, y: 10}, path.WAYPOINT, {x: 11, y: 9}]
 	);
-	this.assert('unshift',  path.unshift(test), '11103w8');
+	this.assert('unshift1', path.unshift(test),    '11103w8');
+	this.assert('unshift0', path.unshift(test, 0), test);
+	this.assert('unshift1', path.unshift(test, 1), '11103w8');
 	this.assert('unshift2', path.unshift(test, 2), '1210w8');
 	this.assert('unshift3', path.unshift(test, 3), '12108');
 	this.assert('waypoint', path.waypoint(test), {x: 12, y: 10});

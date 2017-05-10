@@ -198,7 +198,7 @@ module.exports.memorize = function(reset)
 				switch (structure.structureType) {
 					case STRUCTURE_CONTROLLER: memory.controller = toMemoryObject(cache.controller = structure); break;
 					case STRUCTURE_LINK:       links.push(structure); break;
-					case STRUCTURE_SPAWN:      memory.spawn      = toMemoryObject(cache.spawn = structure);      break;
+					case STRUCTURE_SPAWN:      memory.spawn = toMemoryObject(cache.spawn = structure); break;
 				}
 			});
 			// spawn information
