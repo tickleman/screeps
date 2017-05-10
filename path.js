@@ -614,9 +614,10 @@ module.exports.unserialize = function(path)
 module.exports.unshift = function(path, count)
 {
 	if (!count) count = 1;
-	var pos       = this.start(path);
-	var direction = path.substr(4, 1);
+	var direction;
+	var pos = this.start(path);
 	for (let i = 0; i < count; i ++) {
+	    direction = path.substr(4 + i, 1);
 		if (direction != this.WAYPOINT) {
 			pos = this.movePos(pos, Number(direction));
 		}
