@@ -1,4 +1,4 @@
 
 module.exports = {
-	'spawn' => 'Spawn1'
+	spawn: 'Spawn1'
 };
