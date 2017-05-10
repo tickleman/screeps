@@ -167,7 +167,7 @@ module.exports.calculate = function(source, destination, opts)
 		}
 	);
 
-	path = this.serialize(path.path, opts);
+	path = this.serialize(path.path.length ? path.path : [source], opts);
 	if (!opts.source_range) {
 		path = this.shift(path, source);
 	}
