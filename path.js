@@ -295,6 +295,27 @@ module.exports.direction = function(from, to)
 };
 
 /**
+ * Returns the direction as text (useful for debugging purpose)
+ *
+ * @param direction number a direction constant value
+ * @return string
+ */
+module.exports.directionString = function(direction)
+{
+	switch (direction) {
+		case TOP_LEFT:     return 'top-left';
+		case BOTTOM_LEFT:  return 'bottom-left';
+		case LEFT:         return 'left';
+		case TOP_RIGHT:    return 'top-right';
+		case BOTTOM_RIGHT: return 'bottom-right';
+		case RIGHT:        return 'right';
+		case TOP:          return 'top';
+		case BOTTOM:       return 'bottom';
+	}
+	return source;
+};
+
+/**
  * Will draw flags (for debugging purpose)
  *
  * @param path string 'xxyy123w456'
