@@ -162,14 +162,14 @@ module.exports.path = function()
 	this.assert('bottom',       path.direction(source, {x: 1, y: 2}), BOTTOM);
 
 	this.prefix = 'path.move';
-	this.assert('top-left',     path.move(source, TOP_LEFT),     {x: 0, y: 0});
-	this.assert('left',         path.move(source, LEFT),         {x: 0, y: 1});
-	this.assert('bottom-left',  path.move(source, BOTTOM_LEFT),  {x: 0, y: 2});
-	this.assert('top-right',    path.move(source, TOP_RIGHT),    {x: 2, y: 0});
-	this.assert('right',        path.move(source, RIGHT),        {x: 2, y: 1});
-	this.assert('bottom-right', path.move(source, BOTTOM_RIGHT), {x: 2, y: 2});
-	this.assert('top',          path.move(source, TOP),          {x: 1, y: 0});
-	this.assert('bottom',       path.move(source, BOTTOM),       {x: 1, y: 2});
+	this.assert('top-left',     path.movePos(source, TOP_LEFT),     {x: 0, y: 0});
+	this.assert('left',         path.movePos(source, LEFT),         {x: 0, y: 1});
+	this.assert('bottom-left',  path.movePos(source, BOTTOM_LEFT),  {x: 0, y: 2});
+	this.assert('top-right',    path.movePos(source, TOP_RIGHT),    {x: 2, y: 0});
+	this.assert('right',        path.movePos(source, RIGHT),        {x: 2, y: 1});
+	this.assert('bottom-right', path.movePos(source, BOTTOM_RIGHT), {x: 2, y: 2});
+	this.assert('top',          path.movePos(source, TOP),          {x: 1, y: 0});
+	this.assert('bottom',       path.movePos(source, BOTTOM),       {x: 1, y: 2});
 
 	this.prefix = 'path.step';
 	this.assert('0',  path.step(test, 0),       {x: 10, y: 10});
