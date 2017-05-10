@@ -100,6 +100,7 @@ module.exports.calculate = function(source, destination, opts)
 	if (source instanceof RoomObject)      source             = source.pos;
 	if (destination instanceof RoomObject) destination        = destination.pos;
 	if (!opts)                             opts               = {};
+	if (opts.DEBUG && opts.caption) console.log('calculate : ' + opts.caption);
 	if (opts.exclude       === undefined)  opts.exclude       = this.exclude;
 	if (opts.plain_cost    === undefined)  opts.plain_cost    = this.plain_cost;
 	if (opts.range         === undefined)  opts.range         = 0;
@@ -184,14 +185,16 @@ module.exports.calculate = function(source, destination, opts)
 /**
  * @param source      object
  * @param destination object
- * @param opts        {{ [accumulate_exclude]: boolean, [exclude]: Array, [range]: number }}
+ * @param opts        {{ [accumulate_exclude]: boolean, [caption]: string, [exclude]: Array, [range]: number }}
  * @returns string @example 'xx123w456'
  */
 module.exports.calculateTwoWay = function(source, destination, opts)
 {
 	if (source.pos)               source      = source.pos;
 	if (destination.pos)          destination = destination.pos;
+	if (!opts)                    opts        = {};
 	if (opts.DEBUG === undefined) opts.DEBUG  = this.DEBUG;
+	if (opts.DEBUG && opts.caption) console.log('calculateTwoWay : ' + opts.caption);
 	if (opts.DEBUG) console.log('source = ' + source.x + ', ' + source.y);
 	if (opts.DEBUG) console.log('destination = ' + destination.x + ', ' + destination.y);
 	if (opts.DEBUG) console.log('range = ' + opts.range);
