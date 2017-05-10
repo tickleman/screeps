@@ -184,7 +184,7 @@ module.exports.path = function()
 	this.prefix = 'path';
 	this.assert('last',      path.last(test),              {x: 11, y: 9});
 	this.assert('length',    path.length(test),            4);
-	this.assert('move',      path.move(source, TOP_RIGHT), {x: 2, y: 0});
+	this.assert('move',      path.movePos(source, TOP_RIGHT), {x: 2, y: 0});
 	this.assert('pop',       path.pop(test),               '101033w');
 	this.assert('pop2',      path.pop(test, 2),            '101033');
 	this.assert('pop3',      path.pop(test, 3),            '10103');
