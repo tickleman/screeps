@@ -23,7 +23,7 @@ module.exports.AUTO = 'AUTO';
 /**
  * @type boolean|string If string : creep name
  */
-module.exports.DEBUG = true;
+module.exports.DEBUG = false;
 
 /**
  * This value for spawn() enables the automatic available source terrain finder
