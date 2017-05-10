@@ -1,5 +1,4 @@
 
-var constants    = require('./constants');
 var objects      = require('./objects');
 var rooms        = require('./rooms');
 var shorter_path = require('./shorter_path');
@@ -33,7 +32,7 @@ module.exports.roleCreep = function(main, room, room_role, opts)
 	if (!rooms.has(room, room_role)) {
 		this.log('wish to spawn a ', room_role);
 		let role  = rooms.get(room, room_role, 'role');
-		let spawn = opts.spawn ? opts.spawn : rooms.get(room, constants.spawn);
+		let spawn = opts.spawn ? opts.spawn : rooms.get(room, 'spawn');
 		if (role && spawn) {
 			if (!opts.role)  opts.role  = role;
 			if (!opts.spawn) opts.spawn = spawn;
@@ -60,7 +59,7 @@ module.exports.roleCreep = function(main, room, room_role, opts)
  */
 module.exports.room = function(main, room)
 {
-	let spawn = rooms.get(room, constants.spawn);
+	let spawn = rooms.get(room, 'spawn');
 	if (spawn && !spawn.spawning) {
 		// spawn the first needed creep
 		if (!main.count[room.name]) {
@@ -111,7 +110,7 @@ module.exports.simpleCreep = function(main, room, opts)
 	) {
 		return false;
 	}
-	let spawn = opts.spawn ? opts.spawn : rooms.get(room, constants.spawn);
+	let spawn = opts.spawn ? opts.spawn : rooms.get(room, 'spawn');
 	this.log(opts.role, 'targets ?');
 	let creepjs = main.creep_of[opts.role];
 	if (opts.even_no_target || creepjs.targets(spawn).length) {
