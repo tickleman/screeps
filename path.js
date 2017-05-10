@@ -88,9 +88,10 @@ module.exports.valorize = [];
  *
  * @param source             RoomObject|RoomPosition the source point
  * @param destination        RoomObject|RoomPosition the destination point
- * @param [opts]             {{ [accumulate_exclude]: boolean, [exclude]: Array, [plain_cost]: number, [range]: number }}
- *        range : number range from the destination @default 0
+ * @param [opts]             {{ [accumulate_exclude]: boolean, [caption]: string, [exclude]: Array, [plain_cost]: number, [range]: number }}
  *        accumulate_exclude :  boolean if true, the new path will append to this.exclude
+ *        caption : if set, this caption is displayed to the console when in debug mode : 'calculate : caption'
+ *        range : number range from the destination @default 0
  * @return string 'xxyy123' where xx and yy are the start coordinates and 123 are the moves
  **/
 module.exports.calculate = function(source, destination, opts)
@@ -100,7 +101,6 @@ module.exports.calculate = function(source, destination, opts)
 	if (source instanceof RoomObject)      source             = source.pos;
 	if (destination instanceof RoomObject) destination        = destination.pos;
 	if (!opts)                             opts               = {};
-	if (opts.DEBUG && opts.caption) console.log('calculate : ' + opts.caption);
 	if (opts.exclude       === undefined)  opts.exclude       = this.exclude;
 	if (opts.plain_cost    === undefined)  opts.plain_cost    = this.plain_cost;
 	if (opts.range         === undefined)  opts.range         = 0;
@@ -110,6 +110,7 @@ module.exports.calculate = function(source, destination, opts)
 	if (opts.valorize      === undefined)  opts.valorize      = this.valorize;
 	if (opts.ignore_creeps === undefined)  opts.ignore_creeps = this.ignore_creeps;
 	if (opts.DEBUG         === undefined)  opts.DEBUG         = this.DEBUG;
+	if (opts.DEBUG && opts.caption) console.log('calculate : ' + opts.caption);
 	if (opts.DEBUG) console.log('calculate.source = ' + source.x + ', ' + source.y);
 	if (opts.DEBUG) console.log('calculate.destination = ' + destination.x + ', ' + destination.y);
 	if (opts.DEBUG) console.log('calculate.range = ' + opts.range);
