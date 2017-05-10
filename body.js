@@ -1,4 +1,6 @@
 
+var constants = require('./constants');
+
 /**
  * Body parts costs
  *
@@ -36,7 +38,7 @@ module.exports.cost = function(body_parts)
  * Calculate body parts you can build immediately
  *
  * @param from_parts integer[] @default this.body_parts
- * @param available_energy integer @default Game.spawns.Spawn.room.energyAvailable
+ * @param available_energy integer @default Game.spawns[constants.spawn].room.energyAvailable
  * @return integer[] null if the minimum body parts count costs too much energy
  */
 module.exports.parts = function(from_parts, available_energy)
@@ -45,7 +47,7 @@ module.exports.parts = function(from_parts, available_energy)
 		from_parts = this.body_parts;
 	}
 	if (available_energy == undefined) {
-		available_energy = Game.spawns.Spawn.room.energyAvailable;
+		available_energy = Game.spawns[constants.spawn].room.energyAvailable;
 	}
 	var cost = this.cost(from_parts);
 	if (available_energy >= cost) {

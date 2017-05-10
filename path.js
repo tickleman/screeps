@@ -10,16 +10,18 @@
  *
  * Want to test ? This draw flags :
  * - a creep goes from the spawn to the source, in order to stay here
- * require('path').flags(require('path').calculate(Game.spawns.Spawn, Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), 1))
+ * require('path').flags(require('path').calculate(Game.spawns[constants.spawn], Game.spawns[constants.spawn].pos.findClosestByRange(FIND_SOURCES_ACTIVE), 1))
  * - a creep goes from a source to the spawn, then back
- * require('path').flags(require('path').calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn, 1))
+ * require('path').flags(require('path').calculateTwoWay(Game.spawns[constants.spawn].pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns[constants.spawn], 1))
  * - a creep goes from a source to the upgrader, then back
- * require('path').flags(require('path').calculateTwoWay(Game.spawns.Spawn.pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns.Spawn.room.controller, 3))
+ * require('path').flags(require('path').calculateTwoWay(Game.spawns[constants.spawn].pos.findClosestByRange(FIND_SOURCES_ACTIVE), Game.spawns[constants.spawn].room.controller, 3))
  *
  * Cleanup test flags :
  * require('path').clearFlags()
  */
 
+var constants = require('./constants');
+ 
 /**
  * @type number
  */
@@ -58,7 +60,7 @@ module.exports.road_cost = 1;
 /**
  * @type Room
  */
-module.exports.room = Game.spawns.Spawn.room;
+module.exports.room = Game.spawns[constants.spawn].room;
 
 /**
  * Source range default is 1. May be 0 (others won't work)

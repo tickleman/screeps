@@ -4,6 +4,7 @@
 
 var basic_work   = require('./work.basic');
 var body         = require('./body');
+var constants    = require('./constants');
 var messages     = require('./messages');
 var names        = require('./names');
 var objects      = require('./objects');
@@ -467,8 +468,8 @@ module.exports.spawn = function(opts)
 {
 	if (!opts) opts = {};
 	// spawn
-	if (!opts.spawn && opts.source) opts.spawn = rooms.get(rooms.nameOf(opts.source), 'spawn');
-	if (!opts.spawn && opts.target) opts.spawn = rooms.get(rooms.nameOf(opts.target), 'spawn');
+	if (!opts.spawn && opts.source) opts.spawn = rooms.get(rooms.nameOf(opts.source), constants.spawn);
+	if (!opts.spawn && opts.target) opts.spawn = rooms.get(rooms.nameOf(opts.target), constants.spawn);
 	// body parts
 	var body_parts = opts.body_parts ? opts.body_parts : this.body_parts;
 	if (opts.accept_little && opts.spawn.canCreateCreep(body_parts)) {
