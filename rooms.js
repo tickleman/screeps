@@ -2,8 +2,8 @@
  * Functions on Game.rooms
  */
 
-var objects = require('./objects');
-var Path    = require('./path');
+let objects = require('./objects');
+let Path    = require('./path');
 
 module.exports =
 {
@@ -13,7 +13,7 @@ module.exports =
 	 */
 	get length()
 	{
-		if (this.length_ == undefined) {
+		if (this.length_ === undefined) {
 			this.length_ = Object.keys(Game.rooms).length;
 		}
 		return this.length_;
@@ -27,9 +27,9 @@ module.exports =
  * @var object RoomObject
  * @return object { creep, id, x, y }
  */
-var toMemoryObject = function(object)
+let toMemoryObject = function(object)
 {
-	var result = { x: object.pos.x, y: object.pos.y };
+	let result = { x: object.pos.x, y: object.pos.y };
 	if (object.creep) {
 		result.creep = object.name;
 	}
@@ -57,14 +57,14 @@ module.exports.rooms = {};
  */
 module.exports.copyRoleCreep = function(room, source_room_role)
 {
-	var room_name = (room instanceof Room) ? room.name : room;
-	var source_role = Memory.rooms[room_name][source_room_role].role;
-	var source_pos = this.getPos(room, source_room_role);
+	let room_name = (room instanceof Room) ? room.name : room;
+	let source_role = Memory.rooms[room_name][source_room_role].role;
+	let source_pos = this.getPos(room, source_room_role);
 	if (source_role) {
 		for (let room_role in Memory.rooms[room_name]) if (Memory.rooms[room_name].hasOwnProperty(room_role)) {
 			let object = Memory.rooms[room_name][room_role];
 			let pos = this.getPos(room, room_role);
-			if ((object.role == source_role) && !(pos.x - source_pos.x) && !(pos.y - source_pos.y)) {
+			if ((object.role === source_role) && !(pos.x - source_pos.x) && !(pos.y - source_pos.y)) {
 				Memory.rooms[room_name][room_role].creep = Memory.rooms[room_name][source_room_role].creep;
 			}
 		}
@@ -86,8 +86,8 @@ module.exports.filter = function(callback)
  */
 module.exports.forEach = function(callback, thisArg)
 {
-	if (thisArg == undefined) thisArg = this;
-	for (var room_name in Game.rooms) if (Game.rooms.hasOwnProperty(room_name)) {
+	if (thisArg === undefined) thisArg = this;
+	for (let room_name in Game.rooms) if (Game.rooms.hasOwnProperty(room_name)) {
 		if (callback.call(thisArg, Game.rooms[room_name], room_name, Game.rooms)) break;
 	}
 };
@@ -102,9 +102,9 @@ module.exports.forEach = function(callback, thisArg)
  */
 module.exports.get = function(room, object_name, property)
 {
-	var room_name = (room instanceof Room) ? room.name : room;
+	let room_name = (room instanceof Room) ? room.name : room;
 	if (!Memory.rooms[room_name]) Memory.rooms[room_name] = {};
-	if (property == this.MEMORY) {
+	if (property === this.MEMORY) {
 		return Memory.rooms[room_name][object_name];
 	}
 	if (property) {
@@ -143,8 +143,8 @@ module.exports.get = function(room, object_name, property)
  */
 module.exports.getPos = function(room, object_name)
 {
-	var room_name = (room instanceof Room) ? room.name : room;
-	var pos = Memory.rooms[room_name][object_name];
+	let room_name = (room instanceof Room) ? room.name : room;
+	let pos = Memory.rooms[room_name][object_name];
 	if (pos.path && ((pos.x === undefined) || (pos.y === undefined))) pos = Path.start(pos.path);
 	return pos;
 };
@@ -159,7 +159,7 @@ module.exports.getPos = function(room, object_name)
 module.exports.getRoomPosition = function(room, object_name)
 {
 	if (!(room instanceof Room)) room = Game.rooms[room];
-	var pos = this.getPos(room, object_name);
+	let pos = this.getPos(room, object_name);
 	return room.getPositionAt(pos.x, pos.y);
 };
 
@@ -172,8 +172,8 @@ module.exports.getRoomPosition = function(room, object_name)
  */
 module.exports.has = function(room, object_name)
 {
-	var room_name = (room instanceof Room) ? room.name : room;
-	return (Memory.rooms[room_name][object_name] && Memory.rooms[room_name][object_name].creep) ? true : false;
+	let room_name = (room instanceof Room) ? room.name : room;
+	return !!(Memory.rooms[room_name][object_name] && Memory.rooms[room_name][object_name].creep);
 };
 
 /**
@@ -218,7 +218,7 @@ module.exports.memorize = function(reset)
 				cache.controller_source  = cache.controller.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
 				memory.controller_source = toMemoryObject(cache.controller_source);
 				// controller source is the same than spawn source
-				if (cache.controller_source.id == cache.spawn_source.id) {
+				if (cache.controller_source.id === cache.spawn_source.id) {
 					cache.controller_harvester  = cache.spawn_harvester;
 					memory.controller_harvester = memory.spawn_harvester;
 					memory.controller_carrier = {
@@ -303,7 +303,7 @@ module.exports.memorized = function()
  */
 module.exports.nameOf = function(object)
 {
-	if (typeof object == 'string')      object = Game.getObjectById(object);
+	if (typeof object === 'string')     object = Game.getObjectById(object);
 	if (object instanceof RoomObject)   return object.room.name;
 	if (object instanceof RoomPosition) return object.roomName;
 	return null;
@@ -317,7 +317,7 @@ module.exports.nameOf = function(object)
  */
 module.exports.of = function(object)
 {
-	if (typeof object == 'string')      object = Game.getObjectById(object);
+	if (typeof object === 'string')     object = Game.getObjectById(object);
 	if (object instanceof RoomObject)   return object.room;
 	if (object instanceof RoomPosition) return Game.rooms[object.roomName];
 	return null;
@@ -332,14 +332,14 @@ module.exports.of = function(object)
  */
 module.exports.removeRoleCreep = function(room, source_room_role)
 {
-	var room_name = (room instanceof Room) ? room.name : room;
-	var source_role = Memory.rooms[room_name][source_room_role].role;
-	var source_pos = this.getPos(room, source_room_role);
+	let room_name = (room instanceof Room) ? room.name : room;
+	let source_role = Memory.rooms[room_name][source_room_role].role;
+	let source_pos = this.getPos(room, source_room_role);
 	if (source_role) {
 		for (let room_role in Memory.rooms[room_name]) if (Memory.rooms[room_name].hasOwnProperty(room_role)) {
 			let object = Memory.rooms[room_name][room_role];
 			let pos = this.getPos(room, room_role);
-			if ((object.role == source_role) && !(pos.x - source_pos.x) && !(pos.y - source_pos.y)) {
+			if ((object.role === source_role) && !(pos.x - source_pos.x) && !(pos.y - source_pos.y)) {
 				delete Memory.rooms[room_name][room_role].creep;
 			}
 		}
@@ -355,7 +355,7 @@ module.exports.removeRoleCreep = function(room, source_room_role)
  */
 module.exports.setCreep = function(room, object_name, creep)
 {
-	var room_name = (room instanceof Room) ? room.name : room;
+	let room_name = (room instanceof Room) ? room.name : room;
 	Memory.rooms[room_name][object_name].creep = creep.name;
 	this.copyRoleCreep(room, object_name, Memory.rooms[room_name][object_name].role);
 	this.rooms[room_name][object_name] = creep;

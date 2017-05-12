@@ -2,7 +2,7 @@
  * Functions on Game.creeps
  */
 
-var rooms = require('./rooms');
+let rooms = require('./rooms');
 
 module.exports =
 {
@@ -12,7 +12,7 @@ module.exports =
 	 */
 	get length()
 	{
-		if (this.length_ == undefined) {
+		if (this.length_ === undefined) {
 			this.length_ = Object.keys(Game.creeps).length;
 		}
 		return this.length_;
@@ -28,7 +28,7 @@ module.exports =
 module.exports.count = function()
 {
 	if (this.cache) return this.cache;
-	var count = {};
+	let count = {};
 	for (let creep in Game.creeps) if (Game.creeps.hasOwnProperty(creep)) {
 		creep = Game.creeps[creep];
 		if (!count[creep.room.name]) count[creep.room.name] = {};
@@ -55,8 +55,8 @@ module.exports.filter = function(callback)
  */
 module.exports.forEach = function(callback, thisArg)
 {
-	if (thisArg == undefined) thisArg = this;
-	for (var key in Game.creeps) if (Game.creeps.hasOwnProperty(key)) {
+	if (thisArg === undefined) thisArg = this;
+	for (let key in Game.creeps) if (Game.creeps.hasOwnProperty(key)) {
 		if (callback.call(thisArg, Game.creeps[key], key, Game.creeps)) break;
 	}
 };
@@ -95,8 +95,8 @@ module.exports.freeDeadCreeps = function()
 		}
 		for (let flag in Game.flags) if (Game.flags.hasOwnProperty(flag)) {
 			flag = Game.flags[flag];
-			if (flag.memory.carrier   && (flag.memory.carrier   == creep_name)) delete flag.memory.carrier;
-			if (flag.memory.harvester && (flag.memory.harvester == creep_name)) delete flag.memory.harvester;
+			if (flag.memory.carrier   && (flag.memory.carrier   === creep_name)) delete flag.memory.carrier;
+			if (flag.memory.harvester && (flag.memory.harvester === creep_name)) delete flag.memory.harvester;
 		}
 	}, true);
 };

@@ -2,10 +2,10 @@
  * Work from rooms configuration module
  */
 
-var messages = require('./messages');
-var objects  = require('./objects');
-var path     = require('./path');
-var rooms    = require('./rooms');
+let messages = require('./messages');
+let objects  = require('./objects');
+let path     = require('./path');
+let rooms    = require('./rooms');
 
 /**
  * Room-role-planned work : depends on work step
@@ -35,7 +35,7 @@ module.exports.work = function(creepjs, creep)
  */
 module.exports.spawning = function(creepjs, creep)
 {
-	var position = rooms.getRoomPosition(creep.room, creep.memory.room_role);
+	let position = rooms.getRoomPosition(creep.room, creep.memory.room_role);
 	if (position) {
 		if (!(position.x - creep.pos.x) && !(position.y - creep.pos.y)) {
 			creepjs.nextStep(creep, 'sourceWork');
@@ -64,7 +64,7 @@ module.exports.spawning = function(creepjs, creep)
 module.exports.goToStart = function(creepjs, creep)
 {
 	let moved = path.move(creep);
-	if (moved == path.ARRIVED) {
+	if (moved === path.ARRIVED) {
 		let room_memory = rooms.get(creep.memory.room, creep.memory.room_role, rooms.MEMORY);
 		if (room_memory.path) creep.memory.path = room_memory.path;
 		else delete creep.memory.path;
@@ -86,8 +86,8 @@ module.exports.goToStart = function(creepjs, creep)
 module.exports.sourceWork = function(creepjs, creep)
 {
 	let error = creepjs.sourceWork(creep);
-	if (error == creepjs.NEXT_STEP) creepjs.nextStep(creep, 'goToTarget');
-	else if (error)                 creep.say('s:' + messages.error(error));
+	if (error === creepjs.NEXT_STEP) creepjs.nextStep(creep, 'goToTarget');
+	else if (error)                  creep.say('s:' + messages.error(error));
 };
 
 /**
@@ -99,7 +99,7 @@ module.exports.sourceWork = function(creepjs, creep)
 module.exports.goToTarget = function(creepjs, creep)
 {
 	let moved = creep.memory.path ? path.move(creep) : path.ARRIVED;
-	if ((moved == path.ARRIVED) || (moved == path.WAYPOINT)) {
+	if ((moved === path.ARRIVED) || (moved === path.WAYPOINT)) {
 		creepjs.nextStep(creep, 'targetWork');
 		this.targetWork(creepjs, creep);
 	}
@@ -117,8 +117,8 @@ module.exports.goToTarget = function(creepjs, creep)
 module.exports.targetWork = function(creepjs, creep)
 {
 	let error = creepjs.targetWork(creep);
-	if (error == creepjs.NEXT_STEP) creepjs.nextStep(creep, 'goToSource');
-	else if (error)                 creep.say('t:' + messages.error(error));
+	if (error === creepjs.NEXT_STEP) creepjs.nextStep(creep, 'goToSource');
+	else if (error)                  creep.say('t:' + messages.error(error));
 };
 
 /**
@@ -131,7 +131,7 @@ module.exports.targetWork = function(creepjs, creep)
 module.exports.goToSource = function(creepjs, creep)
 {
 	let moved = creep.memory.path ? path.move(creep) : path.ARRIVED;
-	if (moved == path.ARRIVED) {
+	if (moved === path.ARRIVED) {
 		delete creep.memory.path_step;
 		creepjs.nextStep(creep, 'sourceWork');
 		this.sourceWork(creepjs, creep);

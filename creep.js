@@ -2,16 +2,16 @@
  * The creep library : how to manage creeps with basic features that you can override
  */
 
-var basic_work   = require('./work.basic');
-var body         = require('./body');
-var constants    = require('./constants');
-var messages     = require('./messages');
-var names        = require('./names');
-var objects      = require('./objects');
-var path         = require('./path');
-var rooms        = require('./rooms');
-var rooms_work   = require('./work.rooms');
-var shorter_path = require('./shorter_path');
+let basic_work   = require('./work.basic');
+let body         = require('./body');
+let constants    = require('./constants');
+let messages     = require('./messages');
+let names        = require('./names');
+let objects      = require('./objects');
+let path         = require('./path');
+let rooms        = require('./rooms');
+let rooms_work   = require('./work.rooms');
+let shorter_path = require('./shorter_path');
 
 /**
  * Use sources() / targets() to find its initial source / target
@@ -155,9 +155,9 @@ module.exports.findSource = function(context)
 	else {
 		this.log(context, 'source');
 	}
-	var sources = shorter_path.sort(context, this.sources(context));
+	let sources = shorter_path.sort(context, this.sources(context));
 	if (sources.length) {
-		var source = sources.shift();
+		let source = sources.shift();
 		if (context instanceof Creep) {
 			context.memory.source = source.id;
 			if (sources.length) context.memory.sources = objects.toIds(sources);
@@ -174,11 +174,11 @@ module.exports.findSource = function(context)
  * If no available source, delete the source from memory and returns null.
  *
  * @param creep Creep
- * @return string
+ * @return string|null
  */
 module.exports.findSourceId = function(creep)
 {
-	var source = this.findSource(creep);
+	let source = this.findSource(creep);
 	return source ? source.id : null;
 };
 
@@ -203,9 +203,9 @@ module.exports.findTarget = function(context)
 	else {
 		this.log(context, 'target');
 	}
-	var targets = shorter_path.sort(context, this.targets(context));
+	let targets = shorter_path.sort(context, this.targets(context));
 	if (targets.length) {
-		var target = targets.shift();
+		let target = targets.shift();
 		if (context instanceof Creep) {
 			context.memory.target = target.id;
 			if (targets.length) context.memory.targets = objects.toIds(targets);
@@ -222,11 +222,11 @@ module.exports.findTarget = function(context)
  * If no available target, delete the target from memory and return null.
  *
  * @param creep Creep
- * @return string
+ * @return string|null
  */
 module.exports.findTargetId = function(creep)
 {
-	var target = this.findTarget(creep);
+	let target = this.findTarget(creep);
 	return target ? target.id : null;
 };
 
@@ -255,14 +255,14 @@ module.exports.nextStep = function(creep, step)
 {
 	creep.memory.step = step;
 	if (
-		(step == 'sourceWork')
+		(step === 'sourceWork')
 		&& (creep.memory.source_duration !== undefined)
 		&& !creep.memory.source_duration--
 	) {
 		delete creep.memory.source;
 	}
 	if (
-		(step == 'targetWork')
+		(step === 'targetWork')
 		&& (creep.memory.target_duration !== undefined)
 		&& !creep.memory.target_duration--
 	) {
@@ -352,10 +352,10 @@ module.exports.source = function(creep)
  */
 module.exports.sourceCount = function(source, context)
 {
-	var count = 0;
+	let count = 0;
 	for (let creep_name in Memory.creeps) if (Memory.creeps.hasOwnProperty(creep_name)) {
 		let creep = Memory.creeps[creep_name];
-		if ((creep.source == source.id) && (!context || !context.name || (context.name != creep_name))) {
+		if ((creep.source === source.id) && (!context || !context.name || (context.name !== creep_name))) {
 			count ++;
 		}
 	}
@@ -377,7 +377,7 @@ module.exports.sourceJob = function(creep)
 	this.log(creep, 's: result =', messages.error(result));
 	if (
 		!this.target_work
-		&& (result == OK)
+		&& (result === OK)
 		&& (creep.memory.source_duration !== undefined)
 		&& !--creep.memory.source_duration
 	) {
@@ -413,14 +413,14 @@ module.exports.sources = function(context)
 {
 	if (!this.source_work) return [];
 
-	var sources = context.room.find(FIND_DROPPED_ENERGY);
+	let sources = context.room.find(FIND_DROPPED_ENERGY);
 	if (sources.length) return sources;
 
 	sources = context.room.find(FIND_STRUCTURES, { filter: structure =>
 		(
-			(structure.structureType == STRUCTURE_CONTAINER)
-			|| (structure.structureType == STRUCTURE_LINK)
-			|| (structure.structureType == STRUCTURE_STORAGE)
+			(structure.structureType === STRUCTURE_CONTAINER)
+			|| (structure.structureType === STRUCTURE_LINK)
+			|| (structure.structureType === STRUCTURE_STORAGE)
 		)
 		&& (objects.energy(structure) >= 50)
 	});
@@ -471,7 +471,7 @@ module.exports.spawn = function(opts)
 	if (!opts.spawn && opts.source) opts.spawn = rooms.get(rooms.nameOf(opts.source), 'spawn');
 	if (!opts.spawn && opts.target) opts.spawn = rooms.get(rooms.nameOf(opts.target), 'spawn');
 	// body parts
-	var body_parts = opts.body_parts ? opts.body_parts : this.body_parts;
+	let body_parts = opts.body_parts ? opts.body_parts : this.body_parts;
 	if (opts.accept_little && opts.spawn.canCreateCreep(body_parts)) {
 		body_parts = body.parts(body_parts, opts.spawn.room.energyAvailable);
 	}
@@ -485,11 +485,11 @@ module.exports.spawn = function(opts)
 		if (opts.source && (opts.source instanceof RoomObject)) opts.source = opts.source.id;
 		if (opts.target && (opts.target instanceof RoomObject)) opts.target = opts.target.id;
 		// prepare creep memory
-		var memory = { role: opts.role };
+		let memory = { role: opts.role };
 		if (opts.source) memory.source = opts.source;
 		if (opts.target) memory.target = opts.target;
 		// spawn a new creep
-		var creep_name = opts.spawn.createCreep(body_parts, opts.name, memory);
+		let creep_name = opts.spawn.createCreep(body_parts, opts.name, memory);
 		this.log(null, 'spawns ' + opts.role + ' ' + creep_name);
 		return Game.creeps[creep_name];
 	}
@@ -524,16 +524,15 @@ module.exports.target = function(creep)
  */
 module.exports.targetCount = function(target, context)
 {
-	var count = 0;
+	let count = 0;
 	for (let creep_name in Memory.creeps) if (Memory.creeps.hasOwnProperty(creep_name)) {
 		let creep = Memory.creeps[creep_name];
-		if ((creep.target == target.id) && (!context || !context.name || (context.name != creep_name))) {
+		if ((creep.target === target.id) && (!context || !context.name || (context.name !== creep_name))) {
 			count ++;
 		}
 	}
 	return count;
 };
-
 
 /**
  * The work the creep must do at its target
@@ -550,7 +549,7 @@ module.exports.targetJob = function(creep)
 	this.log(creep, 't: result =', messages.error(result));
 	if (
 		!this.source_work
-		&& (result == OK)
+		&& (result === OK)
 		&& (creep.memory.target_duration !== undefined)
 		&& !--creep.memory.target_duration
 	) {
@@ -586,19 +585,19 @@ module.exports.targets = function(context)
 {
 	// the nearest extension without energy into the current room
 	let targets = context.room.find(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_EXTENSION) && !objects.energyFull(structure)
+		(structure.structureType === STRUCTURE_EXTENSION) && !objects.energyFull(structure)
 	});
 	if (targets.length) return targets;
 
 	// the nearest spawn without energy into the current room
 	targets = context.room.find(FIND_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_SPAWN) && !objects.energyFull(structure)
+		(structure.structureType === STRUCTURE_SPAWN) && !objects.energyFull(structure)
 	});
 	if (targets.length) return targets;
 
 	// the nearest container or storage
 	targets = context.room.find(FIND_STRUCTURES, { filter: structure =>
-		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
+		((structure.structureType === STRUCTURE_CONTAINER) || (structure.structureType === STRUCTURE_STORAGE))
 		&& !objects.energyFull(structure)
 	});
 	if (targets.length) { this.setTargetDuration(context, 1); return targets; }

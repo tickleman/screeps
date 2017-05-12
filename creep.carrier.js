@@ -5,8 +5,8 @@
  * - bring this energy to extensions and spawn
  */
 
-var objects = require('./objects');
-var rooms   = require('./rooms');
+let objects = require('./objects');
+let rooms   = require('./rooms');
 
 module.exports.__proto__ = require('./creep');
 
@@ -26,7 +26,7 @@ module.exports.role = 'carrier';
  *
  * @param target
  */
-var needsEnergy = function(target)
+let needsEnergy = function(target)
 {
 	return (objects.energyCapacity(target) - objects.energy(target)) >= 50;
 };
@@ -59,31 +59,31 @@ module.exports.targetJobDone = function(creep)
 module.exports.targets = function(context)
 {
 	// the extensions and spawns without energy into the current room
-	var targets = context.room.find(FIND_STRUCTURES, { filter: structure =>
-		((structure.structureType == STRUCTURE_EXTENSION) || (structure.structureType == STRUCTURE_SPAWN))
+	let targets = context.room.find(FIND_STRUCTURES, { filter: structure =>
+		((structure.structureType === STRUCTURE_EXTENSION) || (structure.structureType === STRUCTURE_SPAWN))
 		&& !objects.energyFull(structure)
 	});
 	if (targets.length) return targets;
 	// next targets : towers with less than 80% of energy
 	targets = context.room.find(FIND_MY_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_TOWER) && (objects.energyRatio(structure) < .8)
+		(structure.structureType === STRUCTURE_TOWER) && (objects.energyRatio(structure) < .8)
 	});
 	if (targets.length) { this.setTargetDuration(context, 1); return targets; }
 	// next targets : builders, upgraders, towers
 	for (let ratio in [.3, .7]) {
 		targets = context.room.find(FIND_MY_CREEPS, { filter: creep =>
-			((creep.memory.role == 'builder') || (creep.memory.role == 'repairer')) && (objects.energyRatio(creep) < ratio)
+			((creep.memory.role === 'builder') || (creep.memory.role === 'repairer')) && (objects.energyRatio(creep) < ratio)
 		});
 		if (targets.length) { this.setTargetDuration(context, 1); return targets; }
 	}
 	// towers with less than 100% of energy
 	targets = context.room.find(FIND_MY_STRUCTURES, { filter: structure =>
-		(structure.structureType == STRUCTURE_TOWER) && needsEnergy(structure)
+		(structure.structureType === STRUCTURE_TOWER) && needsEnergy(structure)
 	});
 	if (targets.length) { this.setTargetDuration(context, 5); return targets; }
 	// then container, link and storage with available energy
 	targets = context.room.find(FIND_MY_STRUCTURES, { filter: structure =>
-		((structure.structureType == STRUCTURE_CONTAINER) || (structure.structureType == STRUCTURE_STORAGE))
+		((structure.structureType === STRUCTURE_CONTAINER) || (structure.structureType === STRUCTURE_STORAGE))
 		&& needsEnergy(structure)
 	});
 	if (targets.length) this.setTargetDuration(context, 1);

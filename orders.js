@@ -2,7 +2,7 @@
  * Give orders to you creeps using flags
  */
 
-var creeps = require('./creeps');
+let creep = require('./creep');
 
 /**
  * @param flag Flag
@@ -11,11 +11,11 @@ var creeps = require('./creeps');
 module.exports.give = function(flag)
 {
 	let order = true;
-	if (flag.name.substr(0, 5) == 'step=') {
-		let creep = flag.pos.findClosestByRange(FIND_MY_CREEPS);
-		if (creep) {
-			creeps.nextStep(creep, flag.name.substr(5));
-			this.log(creep, flag.name);
+	if (flag.name.substr(0, 5) === 'step=') {
+		let closest_creep = flag.pos.findClosestByRange(FIND_MY_CREEPS);
+		if (closest_creep) {
+			creep.nextStep(closest_creep, flag.name.substr(5));
+			this.log(closest_creep, flag.name);
 		}
 	}
 	else {

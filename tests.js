@@ -51,10 +51,10 @@ module.exports.assert = function(name, test, assume)
 module.exports.dump = function(value)
 {
 	if (typeof value === 'undefined') return 'undefined';
-	if (typeof value != 'object')     return value.toString();
+	if (typeof value !== 'object')    return value.toString();
 
-	var result = Array.isArray(value) ? '[' : '{';
-	var already = false;
+	let result = Array.isArray(value) ? '[' : '{';
+	let already = false;
 	for (let i in value) if (value.hasOwnProperty(i)) {
 		if (already) result = result.concat(', '); else already = true;
 		result = result.concat(i.toString(), ': ', this.dump(value[i]));
@@ -118,7 +118,7 @@ module.exports.run = function()
 /**
  * Body unit tests
  */
-var body = require('./body');
+let body = require('./body');
 module.exports.body = function()
 {
 	this.prefix = 'body.cost';
@@ -137,7 +137,7 @@ module.exports.body = function()
 		body.parts([CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], 300),
 		[CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]
 	);
-	var body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
+	let body_parts = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
 	this.assert('carrier.road',  body.parts(body_parts, 300), [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE]);
 	this.assert('noLoose',       body_parts, [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE]);
 };
@@ -147,11 +147,11 @@ module.exports.body = function()
 /**
  * Path calculation tests
  */
-var path = require('./path');
+let path = require('./path');
 module.exports.path = function()
 {
-	var source = {x: 1, y: 1};
-	var test = '101033w8';
+	let source = {x: 1, y: 1};
+	let test = '101033w8';
 
 	this.prefix = 'path.direction';
 	this.assert('top-left',     path.direction(source, {x: 0, y: 0}), TOP_LEFT);

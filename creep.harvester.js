@@ -5,7 +5,7 @@
  * - it harvests the energy (10 / tick) and throw it on the ground
  */
 
-var objects = require('./objects');
+let objects = require('./objects');
 
 module.exports.__proto__ = require('./creep');
 
@@ -42,7 +42,7 @@ module.exports.canWorkSource = function()
 module.exports.sourceJob = function(creep)
 {
 	let result = module.exports.__proto__.sourceJob(creep);
-	if (creep.memory.link && (result == OK) && objects.can(creep, CARRY)) {
+	if (creep.memory.link && (result === OK) && objects.can(creep, CARRY)) {
 		let link = objects.get(creep, creep.memory.link);
 		if (link) {
 			result = creep.transfer(link, RESOURCE_ENERGY);
@@ -55,7 +55,7 @@ module.exports.sourceJob = function(creep)
 				}
 				else {
 					target = link.room.find(FIND_MY_STRUCTURES, { filter: structure =>
-						(structure.structureType == STRUCTURE_LINK) && (structure.id != link.id)
+						(structure.structureType === STRUCTURE_LINK) && (structure.id !== link.id)
 					}).shift();
 					Memory.links[link.id].target = target.id;
 				}
@@ -75,8 +75,8 @@ module.exports.sourceJob = function(creep)
 module.exports.sources = function(context)
 {
 	if (!this.source_work) return [];
-	var min_count  = 99;
-	var min_source = null;
+	let min_count  = 99;
+	let min_source = null;
 	for (let source of context.room.find(FIND_SOURCES_ACTIVE)) {
 		let count = this.sourceCount(source, context);
 		if (count < min_count) {

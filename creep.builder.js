@@ -1,5 +1,5 @@
 
-var objects = require('./objects');
+let objects = require('./objects');
 
 module.exports.__proto__ = require('./creep');
 

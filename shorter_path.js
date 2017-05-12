@@ -1,5 +1,5 @@
 
-var objects = require('./objects');
+let objects = require('./objects');
 
 /**
  * Sort targets :

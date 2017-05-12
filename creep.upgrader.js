@@ -8,7 +8,7 @@
  * This is the first creep that starts the colony.
  */
 
-var objects = require('./objects');
+let objects = require('./objects');
 
 module.exports.__proto__ = require('./creep');
 

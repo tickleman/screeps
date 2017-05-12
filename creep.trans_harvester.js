@@ -2,7 +2,7 @@
  * The trans-harvester harvests a source into a foreign room
  */
 
-var objects = require('./objects');
+let objects = require('./objects');
 
 module.exports.__proto__ = require('./creep.harvester');
 
@@ -21,11 +21,11 @@ module.exports.role = 'trans_harvester';
  */
 module.exports.sourceJob = function(creep)
 {
-	if (creep.room.name == this.sourceRoomName(creep)) {
-		if (!creep.pos.x)           creep.move(RIGHT);
-		else if (!creep.pos.y)      creep.move(BOTTOM);
-		else if (creep.pos.x == 49) creep.move(LEFT);
-		else if (creep.pos.y == 49) creep.move(TOP);
+	if (creep.room.name === this.sourceRoomName(creep)) {
+		if (!creep.pos.x)            creep.move(RIGHT);
+		else if (!creep.pos.y)       creep.move(BOTTOM);
+		else if (creep.pos.x === 49) creep.move(LEFT);
+		else if (creep.pos.y === 49) creep.move(TOP);
 		else return module.exports.__proto__.sourceJob(creep);
 		return OK;
 	}
@@ -38,7 +38,7 @@ module.exports.sourceJob = function(creep)
  */
 module.exports.sourceJobDone = function(creep)
 {
-	return (creep.room.name == this.sourceRoomName(creep))
+	return (creep.room.name === this.sourceRoomName(creep))
 		? module.exports.__proto__.sourceJobDone(creep)
 		: !objects.range(creep, Game.flags[creep.memory.source_flag]);
 };
@@ -52,7 +52,7 @@ module.exports.sourceJobDone = function(creep)
 module.exports.sources = function(context)
 {
 	if (context instanceof Creep) {
-		return (context.room.name == this.sourceRoomName(context))
+		return (context.room.name === this.sourceRoomName(context))
 			? [context.room.find(FIND_SOURCES_ACTIVE).shift()]
 			: [Game.flags[context.memory.source_flag]];
 	}
@@ -76,7 +76,7 @@ module.exports.sourceRoomName = function(creep)
  */
 module.exports.spawn = function(opts)
 {
-	var creep = module.exports.__proto__.spawn(opts);
+	let creep = module.exports.__proto__.spawn(opts);
 	if (creep) {
 		creep.memory.source        = opts.flag.name;
 		creep.memory.source_flag   = opts.flag.name;

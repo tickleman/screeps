@@ -2,7 +2,7 @@
  * Prepare to build roads
  */
 
-var Path = require('./path');
+let Path = require('./path');
 
 module.exports.build = function()
 {

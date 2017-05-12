@@ -1,7 +1,7 @@
 
-var objects      = require('./objects');
-var rooms        = require('./rooms');
-var shorter_path = require('./shorter_path');
+let objects      = require('./objects');
+let rooms        = require('./rooms');
+let shorter_path = require('./shorter_path');
 
 /**
  * @type boolean
@@ -26,7 +26,7 @@ module.exports.log = function()
 module.exports.roleCreep = function(main, room, room_role, opts)
 {
 	if (!opts) opts = {};
-	if (room.controller.level == 1) {
+	if (room.controller.level === 1) {
 		opts.accept_little = true;
 	}
 	if (!rooms.has(room, room_role)) {
@@ -81,7 +81,7 @@ module.exports.room = function(main, room)
 		// count foreign-working flags
 		for (let flag in main.flags) if (main.flags.hasOwnProperty(flag)) {
 			flag = main.flags[flag];
-			if ((flag.name.substr(0, 3) == 'to-')) {
+			if ((flag.name.substr(0, 3) === 'to-')) {
 				if (!flag.memory.harvester) {
 					this.simpleCreep(main, room, { even_no_target: true, flag: flag, role: 'trans_harvester' });
 				}
@@ -149,7 +149,7 @@ module.exports.spawnHarvester = function(main, room)
 	if (
 		!rooms.has(room, 'spawn_harvester')
 		&& (
-			(links = room.find(FIND_MY_STRUCTURES, { filter: structure => structure.structureType == STRUCTURE_LINK })).length
+			(links = room.find(FIND_MY_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_LINK })).length
 			>= 2
 		)
 	) {

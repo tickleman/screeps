@@ -1,5 +1,5 @@
 
-var tests = require('./tests');
+let tests = require('./tests');
 
 /**
  * @type boolean
@@ -29,11 +29,11 @@ module.exports.hitsRatio = function(object)
  */
 module.exports.can = function(creep, what)
 {
-	if (!what) var parts = {};
+	let parts = {};
 	for (let part in creep.body) if (creep.body.hasOwnProperty(part)) {
 		part = creep.body[part];
 		if (!what) parts[part.type] = true;
-		else if (part.type == what) return true;
+		else if (part.type === what) return true;
 	}
 	return what ? false : parts;
 };
@@ -101,7 +101,7 @@ module.exports.energyRatio = function(object)
  */
 module.exports.energyFull = function(object)
 {
-	return this.energy(object) == this.energyCapacity(object);
+	return this.energy(object) === this.energyCapacity(object);
 };
 
 /**
@@ -126,7 +126,7 @@ module.exports.get = function(context, target)
 		}
 	}
 	// a 24 characters long string : it is probably an id
-	if (target.length == 24) {
+	if (target.length === 24) {
 		let object = Game.getObjectById(target);
 		if (object instanceof RoomObject) {
 			return this.cache[target] = object;
@@ -162,7 +162,7 @@ module.exports.get = function(context, target)
  */
 module.exports.getEnergy = function(creep, source, allow_dismantle)
 {
-	var creep_can = this.can(creep);
+	let creep_can = this.can(creep);
 	if (this.DEBUG) console.log(creep, 'getEnergy', source, tests.dump(creep_can));
 	if (creep_can[CARRY]) {
 		if (this.DEBUG) console.log('- can carry');
@@ -202,7 +202,7 @@ module.exports.getEnergy = function(creep, source, allow_dismantle)
  */
 module.exports.putEnergy = function(creep, target)
 {
-	var creep_can = this.can(creep);
+	let creep_can = this.can(creep);
 	if (this.DEBUG) console.log(creep, 'putEnergy', target, tests.dump(creep_can));
 	if (creep_can[HEAL]) {
 		if (this.DEBUG) console.log('- can heal');
@@ -265,5 +265,5 @@ module.exports.toIds = function(objects)
  */
 module.exports.wounded = function(object)
 {
-	return !(object.hits == object.hitsMax);
+	return !(object.hits === object.hitsMax);
 };

@@ -1,18 +1,18 @@
 
-var base_creep      = require('./creep');
-var builder         = require('./creep.builder');
-var carrier         = require('./creep.carrier');
-var harvester       = require('./creep.harvester');
-var creeps          = require('./creeps');
-var objects         = require('./objects');
-var orders          = require('./orders');
-var repairer        = require('./creep.repairer');
-var rooms           = require('./rooms');
-var spawner         = require('./spawner');
-var tower           = require('./structure.tower');
-var trans_carrier   = require('./creep.trans_carrier');
-var trans_harvester = require('./creep.trans_harvester');
-var upgrader        = require('./creep.upgrader');
+let base_creep      = require('./creep');
+let builder         = require('./creep.builder');
+let carrier         = require('./creep.carrier');
+let harvester       = require('./creep.harvester');
+let creeps          = require('./creeps');
+let objects         = require('./objects');
+let orders          = require('./orders');
+let repairer        = require('./creep.repairer');
+let rooms           = require('./rooms');
+let spawner         = require('./spawner');
+let tower           = require('./structure.tower');
+let trans_carrier   = require('./creep.trans_carrier');
+let trans_harvester = require('./creep.trans_harvester');
+let upgrader        = require('./creep.upgrader');
 
 /**
  * @type object|base_creep[]
@@ -42,7 +42,7 @@ module.exports.structure_of = {
 
 module.exports.loop = function ()
 {
-	var main = this;
+	let main = this;
 
 	// reset caches
 	creeps.cache  = undefined;

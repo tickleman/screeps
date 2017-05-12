@@ -1,5 +1,5 @@
 
-var objects = require('./objects');
+let objects = require('./objects');
 
 module.exports.__proto__ = require('./creep');
 
@@ -48,7 +48,7 @@ module.exports.targets = function(context)
 			min_hits_ratio = hits_ratio;
 			targets        = [structure];
 		}
-		else if (hits_ratio == min_hits_ratio) {
+		else if (hits_ratio === min_hits_ratio) {
 			targets.push(structure);
 		}
 	}

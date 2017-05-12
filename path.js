@@ -20,7 +20,7 @@
  * require('path').clearFlags()
  */
 
-var constants = require('./constants');
+let constants = require('./constants');
  
 /**
  * @type number
@@ -96,7 +96,7 @@ module.exports.valorize = [];
  **/
 module.exports.calculate = function(source, destination, opts)
 {
-	var source_creep;
+	let source_creep;
 	if (source instanceof Creep)           source_creep       = source;
 	if (source instanceof RoomObject)      source             = source.pos;
 	if (destination instanceof RoomObject) destination        = destination.pos;
@@ -115,16 +115,16 @@ module.exports.calculate = function(source, destination, opts)
 	if (opts.DEBUG) console.log('calculate.destination = ' + destination.x + ', ' + destination.y);
 	if (opts.DEBUG) console.log('calculate.range = ' + opts.range);
 	//noinspection JSUnusedGlobalSymbols Used by search()
-	var path = PathFinder.search(
+	let path = PathFinder.search(
 		source,
 		{ pos: destination, range: opts.range },
 		{
 			plainCost: opts.plain_cost,
 			swampCost: opts.swamp_cost,
 			roomCallback: function(room_name) {
-				var room = Game.rooms[room_name];
+				let room = Game.rooms[room_name];
 				if (!room) return;
-				var costs = new PathFinder.CostMatrix;
+				let costs = new PathFinder.CostMatrix;
 
 				for (let structure of room.find(FIND_STRUCTURES)) {
 					if (structure.structureType === STRUCTURE_ROAD) {
@@ -174,7 +174,7 @@ module.exports.calculate = function(source, destination, opts)
 		path = this.shift(path, source);
 	}
 	else if (opts.source_range > 1) {
-		path = this.unshift(path, source_range - 1);
+		path = this.unshift(path, opts.source_range - 1);
 	}
 	if (source_creep) {
 		source_creep.memory.path      = path;
@@ -201,14 +201,14 @@ module.exports.calculateTwoWay = function(source, destination, opts)
 	if (opts.DEBUG) console.log('range = ' + opts.range);
 
 	// calculate path
-	var accumulate_exclude = opts.accumulate_exclude;
+	let accumulate_exclude = opts.accumulate_exclude;
 	opts.accumulate_exclude = true;
-	var path = this.calculate(source, destination, opts);
+	let path = this.calculate(source, destination, opts);
 	opts.accumulate_exclude = accumulate_exclude;
 
 	// prepare back path limits
-	var back_source      = this.last(path);
-	var back_destination = this.start(path);
+	let back_source      = this.last(path);
+	let back_destination = this.start(path);
 	back_source      = this.toRoomPosition(back_source);
 	back_destination = this.toRoomPosition(back_destination);
 	opts.exclude.pop();
@@ -216,11 +216,11 @@ module.exports.calculateTwoWay = function(source, destination, opts)
 	if (opts.DEBUG) console.log('back_destination = ' + back_destination.x + ', ' + back_destination.y);
 
 	// calculate return
-	var range        = opts.range;
-	var source_range = opts.source_range;
+	let range        = opts.range;
+	let source_range = opts.source_range;
 	opts.range        = 0;
 	opts.source_range = 1;
-	var back_path = this.calculate(back_source, back_destination, opts);
+	let back_path = this.calculate(back_source, back_destination, opts);
 	opts.range        = range;
 	opts.source_range = source_range;
 
@@ -259,7 +259,7 @@ module.exports.clearFlags = function(after)
  */
 module.exports.cost = function(road, plain, swamp)
 {
-	var old_cost = { road: this.road_cost, plain: this.plain_cost, swamp: this.swamp_cost };
+	let old_cost = { road: this.road_cost, plain: this.plain_cost, swamp: this.swamp_cost };
 	if (typeof road === 'object') {
 		this.road_cost  = (road.road  === undefined) ?  1 : road.road;
 		this.plain_cost = (road.plain === undefined) ?  2 : road.plain;
@@ -316,7 +316,7 @@ module.exports.directionString = function(direction)
 		case TOP:          return 'top';
 		case BOTTOM:       return 'bottom';
 	}
-	return source;
+	return '';
 };
 
 /**
@@ -327,9 +327,9 @@ module.exports.directionString = function(direction)
  */
 module.exports.flags = function(path)
 {
-	var counter = 0;
+	let counter = 0;
 	for (let pos of this.unserialize(path)) {
-		if (pos == this.WAYPOINT) {
+		if (pos === this.WAYPOINT) {
 			console.log('waypoint');
 		}
 		else {
@@ -394,7 +394,7 @@ module.exports.length = function(path)
  */
 module.exports.move = function(creep, path, step)
 {
-	var increment_step = step ? false : true;
+	let increment_step = !step;
 	if (!path) path = creep.memory.path;
 	if (!step) step = creep.memory.path_step;
 
@@ -421,8 +421,8 @@ module.exports.move = function(creep, path, step)
 	}
 
 	// arrived / waypoint
-	if (step >= path.length)         return this.ARRIVED;
-	if (path[step] == this.WAYPOINT) return this.WAYPOINT;
+	if (step >= path.length)          return this.ARRIVED;
+	if (path[step] === this.WAYPOINT) return this.WAYPOINT;
 
 	// move
 	return creep.move(path[step]);
@@ -494,19 +494,19 @@ module.exports.serialize = function(path, opts)
 	if (!opts) opts = {};
 	if (opts.DEBUG === undefined) opts.DEBUG = this.DEBUG;
 	if (opts.accumulate_exclude && !opts.exclude) opts.exclude = [];
-	var pos = path[Object.keys(path)[0]];
+	let pos = path[Object.keys(path)[0]];
 	if (opts.DEBUG) console.log('SERIALIZE');
 
-	var xx = pos.x.toString();
+	let xx = pos.x.toString();
 	if (xx.length < 2) xx = '0' + xx;
-	var yy = pos.y.toString();
+	let yy = pos.y.toString();
 	if (yy.length < 2) yy = '0' + yy;
-	var result = xx.concat(yy);
+	let result = xx.concat(yy);
 
-	var last_pos = pos;
+	let last_pos = pos;
 	if (opts.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + result);
 	for (pos of path.slice(1)) {
-		if (pos == this.WAYPOINT) {
+		if (pos === this.WAYPOINT) {
 			result = result.concat(pos);
 			if (opts.DEBUG) console.log('+ ' + pos.x + ', ' + pos.y + ' = ' + this.WAYPOINT);
 		}
@@ -536,7 +536,7 @@ module.exports.serialize = function(path, opts)
  */
 module.exports.shift = function(path, pos)
 {
-	if (pos == this.WAYPOINT) {
+	if (pos === this.WAYPOINT) {
 		return path.substr(0, 4).concat(this.WAYPOINT, path.substr(4));
 	}
 	return this.serialize([pos]).concat(this.direction(pos, this.start(path)), path.substr(4));
@@ -574,11 +574,11 @@ module.exports.startRoomPosition = function(path)
  */
 module.exports.step = function(path, step, position)
 {
-	if (!position && ((path.substr(3 + step, 1) == this.WAYPOINT))) {
+	if (!position && ((path.substr(3 + step, 1) === this.WAYPOINT))) {
 		return this.WAYPOINT;
 	}
-	var pos = this.start(path);
-	var i = 4;
+	let pos = this.start(path);
+	let i = 4;
 	while (step) {
 		pos = this.movePos(pos, Number(path.substr(i, 1)));
 		i ++;
@@ -615,12 +615,12 @@ module.exports.toRoomPosition = function(pos)
  */
 module.exports.unserialize = function(path)
 {
-	var pos    = this.start(path);
-	var result = [pos];
-	var i      = 4;
+	let pos    = this.start(path);
+	let result = [pos];
+	let i      = 4;
 	while (i < path.length) {
 		result.push(
-			(path[i] == this.WAYPOINT)
+			(path[i] === this.WAYPOINT)
 				? this.WAYPOINT
 				: (pos = this.movePos(pos, Number(path[i])))
 		);
@@ -639,11 +639,11 @@ module.exports.unserialize = function(path)
 module.exports.unshift = function(path, count)
 {
 	if (count === undefined) count = 1;
-	var direction;
-	var pos = this.start(path);
+	let direction;
+	let pos = this.start(path);
 	for (let i = 0; i < count; i ++) {
 	    direction = path.substr(4 + i, 1);
-		if (direction != this.WAYPOINT) {
+		if (direction !== this.WAYPOINT) {
 			pos = this.movePos(pos, Number(direction));
 		}
 	}
@@ -659,11 +659,11 @@ module.exports.unshift = function(path, count)
  */
 module.exports.waypoint = function(path, count = 1)
 {
-	var pos = this.start(path);
+	let pos = this.start(path);
 	if (!this.waypoint) return pos;
-	var i = 4;
+	let i = 4;
 	while (i < path.length) {
-		if (path[i] == this.WAYPOINT) {
+		if (path[i] === this.WAYPOINT) {
 			count --;
 			if (count <= 0) {
 				return pos;

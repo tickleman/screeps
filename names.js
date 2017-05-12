@@ -31,8 +31,8 @@ module.exports.use_names = ['game_of_thrones', 'fight_club', 'bappli'];
 
 module.exports.chooseName = function()
 {
-	var name;
-	var creeps_count = _.filter(Game.creeps).length;
+	let name;
+	let creeps_count = _.filter(Game.creeps).length;
 	for (let names of this.use_names) {
 		if (creeps_count < this[names].length) {
 			let retry = 100;

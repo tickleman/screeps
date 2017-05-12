@@ -2,8 +2,8 @@
  * A big fast carrier that makes it job into a foreign room
  */
 
-var objects = require('./objects');
-var rooms   = require('./rooms');
+let objects = require('./objects');
+let rooms   = require('./rooms');
 
 module.exports.__proto__ = require('./creep.carrier');
 
@@ -26,7 +26,7 @@ module.exports.role = 'trans_carrier';
  *
  * @param target
  */
-var needsEnergy = function(target)
+let needsEnergy = function(target)
 {
 	return (objects.energyCapacity(target) - objects.energy(target)) > 10;
 };
@@ -37,7 +37,7 @@ var needsEnergy = function(target)
  */
 module.exports.sourceJobDone = function(creep)
 {
-	if (creep.room.name == creep.memory.source_room) {
+	if (creep.room.name === creep.memory.source_room) {
 		return module.exports.__proto__.sourceJobDone(creep);
 	}
 	else {
@@ -55,7 +55,7 @@ module.exports.sourceJobDone = function(creep)
 module.exports.sources = function(context)
 {
 	if (context instanceof Creep) {
-		if (context.room.name == context.memory.source_room) {
+		if (context.room.name === context.memory.source_room) {
 			return [Game.getObjectById(context.memory.final_source)];
 		}
 		else {
@@ -71,11 +71,11 @@ module.exports.sources = function(context)
  */
 module.exports.targetJobDone = function(creep)
 {
-	if (creep.room.name == creep.memory.target_room) {
+	if (creep.room.name === creep.memory.target_room) {
 		return module.exports.__proto__.targetJobDone(creep);
 	}
 	else {
-		if (!objecs.range(creep, Game.flags['to-' + creep.memory.target_room])) {
+		if (!objects.range(creep, Game.flags['to-' + creep.memory.target_room])) {
 			creep.memory.target = creep.memory.final_target;
 		}
 		return false;
@@ -89,7 +89,7 @@ module.exports.targetJobDone = function(creep)
 module.exports.targets = function(context)
 {
 	if (context instanceof Creep) {
-		return (context.room.name == context.memory.target_room)
+		return (context.room.name === context.memory.target_room)
 			? module.exports.__proto__.targets(context)
 			: [Game.flags['to-' + context.memory.target_room]];
 	}

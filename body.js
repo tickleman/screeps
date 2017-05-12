@@ -1,5 +1,5 @@
 
-var constants = require('./constants');
+let constants = require('./constants');
 
 /**
  * Body parts costs
@@ -27,7 +27,7 @@ module.exports.cost = function(body_parts)
 	if (!body_parts) {
 		body_parts = this.body_parts;
 	}
-	var cost = 0;
+	let cost = 0;
 	for (let body_part of body_parts) {
 		cost += this.COST[body_part];
 	}
@@ -43,21 +43,21 @@ module.exports.cost = function(body_parts)
  */
 module.exports.parts = function(from_parts, available_energy)
 {
-	if (from_parts == undefined) {
+	if (from_parts === undefined) {
 		from_parts = this.body_parts;
 	}
-	if (available_energy == undefined) {
+	if (available_energy === undefined) {
 		available_energy = Game.spawns[constants.spawn].room.energyAvailable;
 	}
-	var cost = this.cost(from_parts);
+	let cost = this.cost(from_parts);
 	if (available_energy >= cost) {
 		return from_parts;
 	}
 	// parts count and ratio = 1 for each body part type
-	var body_parts = [];
-	var can_remove = 0;
-	var parts = [];
-	var ratios = [];
+	let body_parts = [];
+	let can_remove = 0;
+	let parts = [];
+	let ratios = [];
 	for (let body_part of from_parts) {
 		body_parts.push(body_part);
 		if (parts[body_part]) {
@@ -81,7 +81,7 @@ module.exports.parts = function(from_parts, available_energy)
 		}
 		// remove the chosen body part
 		for (let i in body_parts) if (body_parts.hasOwnProperty(i) && (body_parts[i] === chosen)) {
-			body_parts.splice(i, 1);
+			body_parts.splice(Number(i), 1);
 			break;
 		}
 		parts[chosen] --;

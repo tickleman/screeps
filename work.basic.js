@@ -1,6 +1,6 @@
 
-var messages = require('./messages');
-var objects  = require('./objects');
+let messages = require('./messages');
+let objects  = require('./objects');
 
 /**
  * Source work : if source job is not done, then move to source, then do the job
@@ -11,9 +11,9 @@ var objects  = require('./objects');
 module.exports.sourceWork = function(creepjs, creep)
 {
 	let error = creepjs.sourceWork(creep);
-	if (error == creepjs.NEXT_STEP) creepjs.nextStep(creep, 'targetWork');
-	if (error == ERR_NOT_IN_RANGE)  creep.moveTo(objects.get(creep, creep.memory.source));
-	else if (error)                 creep.say('s:' + messages.error(error));
+	if (error === creepjs.NEXT_STEP) creepjs.nextStep(creep, 'targetWork');
+	if (error === ERR_NOT_IN_RANGE)  creep.moveTo(objects.get(creep, creep.memory.source));
+	else if (error)                  creep.say('s:' + messages.error(error));
 };
 
 /**
@@ -25,9 +25,9 @@ module.exports.sourceWork = function(creepjs, creep)
 module.exports.targetWork = function(creepjs, creep)
 {
 	let error = creepjs.targetWork(creep);
-	if (error == creepjs.NEXT_STEP)     creepjs.nextStep(creep, 'sourceWork');
-	else if (error == ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.target));
-	else if (error)                     creep.say('t:' + messages.error(error));
+	if (error === creepjs.NEXT_STEP)     creepjs.nextStep(creep, 'sourceWork');
+	else if (error === ERR_NOT_IN_RANGE) creep.moveTo(objects.get(creep, creep.memory.target));
+	else if (error)                      creep.say('t:' + messages.error(error));
 };
 
 /**

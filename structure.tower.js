@@ -50,15 +50,15 @@ module.exports.run = function(tower)
 				delete Memory.towers[tower.id];
 			}
 			// attack
-			else if (memory.action == 'attack') {
+			else if (memory.action === 'attack') {
 				tower.attack(target);
 			}
 			// repair
-			else if (memory.action == 'repair') {
+			else if (memory.action === 'repair') {
 				tower.repair(target);
 				// repaired or not the most damaged structure
 				if (
-					(target.hits == target.hitsMax)
+					(target.hits === target.hitsMax)
 					|| ((target.hits / target.hitsMax) > memory.until)
 					|| ((tower.energy / tower.energyCapacity) <= .8)
 				) {
